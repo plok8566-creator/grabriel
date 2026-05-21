@@ -1,0 +1,2539 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>推广赚钱</title>
+  <style>
+    /* ============ 设计令牌 ============ */
+    :root {
+      /* 主色系 — 深蓝 */
+      --c-primary:       #1a6fd8;
+      --c-primary-dark:  #0e54b0;
+      --c-primary-light: #3b8ef0;
+      --c-header-bg:     linear-gradient(180deg,#0c50ae 0%,#1260c8 100%);
+      --c-nav-bg:        #1460c6;
+
+      /* 金色强调 */
+      --c-gold:          #ffcc2e;
+      --c-gold-dark:     #e6a800;
+      --c-orange:        #ff9226;
+
+      /* 节点层级配色 */
+      --c-node-a:        #fff4db;   /* A层 — 暖黄 */
+      --c-node-a-bd:     #f5c842;
+      --c-node-b:        #e4eeff;   /* B层 — 蓝 */
+      --c-node-b-bd:     #5b8de8;
+      --c-node-c:        #e8f7e8;   /* C层 — 绿 */
+      --c-node-c-bd:     #52b96a;
+      --c-node-d:        #f3e8ff;   /* D层 — 紫 */
+      --c-node-d-bd:     #9b6be0;
+
+      /* 背景 */
+      --c-bg:            #edf1f8;
+      --c-surface:       #ffffff;
+      --c-surface-2:     #f4f7fd;
+
+      /* 文字 */
+      --c-text:          #16202e;
+      --c-text-2:        #4a5568;
+      --c-text-3:        #8898aa;
+
+      /* 边框 & 阴影 */
+      --c-border:        rgba(26,111,216,.12);
+      --shadow-sm:       0 2px 8px rgba(14,60,140,.08);
+      --shadow-md:       0 4px 18px rgba(14,60,140,.12);
+      --shadow-lg:       0 8px 28px rgba(14,60,140,.14);
+
+      /* 间距 */
+      --pad:             14px;
+      --r:               12px;
+    }
+
+    /* ============ 基础 ============ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #c8d5e8;
+      color: var(--c-text);
+      padding-top: 0;
+      font: 15px/1.6 "PingFang SC","Microsoft YaHei",-apple-system,BlinkMacSystemFont,sans-serif;
+    }
+    .global-links {
+      position: relative;
+      top: auto;
+      left: 0;
+      right: 0;
+      z-index: 80;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid #e7edf5;
+      box-shadow: 0 4px 14px rgba(15, 40, 80, .08);
+      backdrop-filter: blur(8px);
+    }
+    .global-links a {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid #cfd7e3;
+      border-radius: 6px;
+      color: var(--c-primary);
+      background: #fff;
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .global-links a:hover {
+      border-color: var(--c-primary-light);
+      background: #f8fbff;
+      color: var(--c-primary-light);
+    }
+    .phone {
+      width: min(100vw, 390px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding-bottom: 180px;
+      background: var(--c-bg);
+      overflow-x: hidden;
+    }
+    .phone.ratio-active .share-card { display: none; }
+    .phone.hide-promo .share-card { display: none; }
+
+    /* ============ 顶栏 ============ */
+    .hero {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: var(--c-header-bg);
+      box-shadow: 0 2px 14px rgba(8,48,130,.30);
+    }
+    .titlebar {
+      height: 52px;
+      display: grid;
+      grid-template-columns: 44px 1fr 44px;
+      align-items: center;
+      padding: 0 12px;
+    }
+    .back {
+      width: 28px; height: 28px; position: relative; cursor: pointer;
+    }
+    .back::before {
+      content: "";
+      position: absolute;
+      left: 10px; top: 7px;
+      width: 11px; height: 11px;
+      border-left: 2.5px solid rgba(255,255,255,.9);
+      border-bottom: 2.5px solid rgba(255,255,255,.9);
+      transform: rotate(45deg);
+    }
+    .title {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: .5px;
+    }
+    .pc { display: none; }
+
+    .nav {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      padding: 0 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      background: var(--c-nav-bg);
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav button {
+      position: relative;
+      flex-shrink: 0;
+      height: 44px;
+      padding: 0 10px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+      color: rgba(255,255,255,.80);
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: color .15s, background .15s;
+    }
+    .nav button:hover { background: rgba(255,255,255,.10); color: #fff; }
+    .nav button.active {
+      color: var(--c-gold);
+      font-weight: 700;
+    }
+    .nav button.active::after {
+      content: "";
+      position: absolute;
+      left: 50%; bottom: 0;
+      width: 60%; height: 2.5px;
+      border-radius: 99px;
+      background: var(--c-gold);
+      transform: translateX(-50%);
+    }
+
+    /* ============ 推广卡片 ============ */
+    .share-card {
+      margin: var(--pad);
+      padding: 14px;
+      border-radius: var(--r);
+      background: linear-gradient(135deg, #1e76e8 0%, #1155c0 100%);
+      box-shadow: 0 8px 28px rgba(10,56,160,.28);
+    }
+    .promo-grid {
+      display: grid;
+      grid-template-columns: 108px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+    .qr-box {
+      border-radius: 10px;
+      background: linear-gradient(160deg,#ffd600,#f5b500);
+      overflow: hidden;
+      box-shadow: 0 4px 14px rgba(200,140,0,.35);
+    }
+    .qr {
+      width: 100%; aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(9,1fr);
+      grid-template-rows: repeat(9,1fr);
+      gap: 2px;
+      padding: 8px;
+      background: #fff;
+      border-radius: 10px 10px 0 0;
+    }
+    .qr i { background: #111; border-radius: 1px; }
+    .qr span { background: transparent; }
+    .qr-save {
+      height: 34px;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #5a3800;
+      letter-spacing: .3px;
+    }
+    .promo-main { min-width: 0; }
+    .promo-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: rgba(255,255,255,.60);
+      font-size: 13px;
+    }
+    .edit-link {
+      color: var(--c-gold);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .link-row {
+      display: grid;
+      grid-template-columns: 1fr 14px 18px;
+      gap: 8px;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,.20);
+      background: rgba(255,255,255,.12);
+      font-size: 12px;
+      color: rgba(255,255,255,.90);
+    }
+    .link-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .down {
+      width: 10px; height: 10px;
+      border-right: 2px solid rgba(255,255,255,.7);
+      border-bottom: 2px solid rgba(255,255,255,.7);
+      transform: rotate(45deg) translateY(-2px);
+    }
+    .copy { position: relative; width: 18px; height: 18px; }
+    .copy::before, .copy::after {
+      content: "";
+      position: absolute;
+      width: 11px; height: 13px;
+      border: 1.8px solid rgba(255,255,255,.85);
+      border-radius: 2px;
+    }
+    .copy::before { left: 4px; top: 2px; }
+    .copy::after  { left: 1px; top: 5px; background: rgba(255,255,255,.10); }
+    .socials {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      padding: 10px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-radius: 8px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+    .socials::-webkit-scrollbar { display: none; }
+    .social {
+      flex-shrink: 0;
+      width: 46px;
+      text-align: center;
+      font-size: 10px;
+      color: rgba(255,255,255,.80);
+      line-height: 1.3;
+    }
+    .icon {
+      width: 36px; height: 36px;
+      margin: 0 auto 4px;
+      display: grid; place-items: center;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 700;
+      box-shadow: 0 2px 8px rgba(0,0,0,.20);
+    }
+    .icon.wa, .icon.line { background: linear-gradient(135deg,#25d366,#128c4e); color: #fff; }
+    .icon.tw { background: #000; color: #fff; font-size: 16px; }
+    .icon.tk { background: #111; color: #fff; font-size: 9px; line-height: 1.1; }
+    .icon.yt { background: #ff0000; color: #fff; font-size: 19px; }
+
+    /* ============ 页面面板 ============ */
+    .page-panel { display: none; }
+    .page-panel.active { display: block; animation: fadeUp .18s ease-out; }
+    @keyframes fadeUp {
+      from { opacity: .85; transform: translateY(4px); }
+      to   { opacity: 1;   transform: none; }
+    }
+
+    /* ============ 通用区块 ============ */
+    .section-head {
+      display: flex;
+      align-items: center;
+      padding: 16px var(--pad) 10px;
+    }
+    .section-head h2 {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--c-text);
+      letter-spacing: .3px;
+    }
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin: 0 var(--pad) 12px;
+      background: rgba(26,111,216,.09);
+      border-radius: 10px;
+      padding: 3px;
+    }
+    .tab {
+      flex: 1;
+      height: 36px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--c-text-2);
+      font: inherit;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .tab.active {
+      background: #fff;
+      color: var(--c-primary);
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ============ 流程画布（有效投注 & 净盈利） ============ */
+    .tutorial-canvas, .profit-canvas {
+      margin: 0 var(--pad) 14px;
+      border-radius: var(--r);
+      background: var(--c-surface-2);
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+    .commission {
+      position: relative;
+      padding: 12px 12px 16px;
+    }
+
+    /* 汇总卡 */
+    .summary {
+      display: grid;
+      grid-template-columns: 96px 1fr;
+      align-items: center;
+      min-height: 90px;
+      margin-bottom: 28px;
+      padding: 12px 14px 12px 10px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-md);
+    }
+    .summary-lines {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--c-text);
+    }
+
+    /* 人物头像 */
+    .person {
+      position: relative;
+      width: 60px; height: 60px;
+      margin: 0 auto;
+      display: grid; place-items: center;
+      border: 2.5px solid var(--c-gold-dark);
+      border-radius: 50%;
+      background: linear-gradient(145deg,#fff9ee,#fff);
+      font-size: 32px;
+      box-shadow: 0 3px 10px rgba(200,120,0,.18);
+    }
+    .person.female { border-color: #8b6cf5; box-shadow: 0 3px 10px rgba(130,80,240,.18); }
+    .person.n      { border-color: #3bb55a; box-shadow: 0 3px 10px rgba(50,160,80,.18); }
+    .badge {
+      position: absolute;
+      right: -4px; bottom: 4px;
+      min-width: 20px; height: 20px;
+      padding: 0 3px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#ffb830,#ff8f00);
+      color: #fff;
+      font-size: 11px; font-weight: 800;
+      box-shadow: 0 2px 6px rgba(200,100,0,.35);
+    }
+    .orange { color: var(--c-orange); font-weight: 700; }
+
+    /* ============ 流程树（重做） ============ */
+    .tree {
+      position: relative;
+      width: 100%;
+    }
+    /* 让 SVG 绝对叠在节点下方 */
+    .tree-wrap {
+      position: relative;
+    }
+    .tree-svg {
+      position: absolute;
+      inset: 0; width: 100%; height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .tree-svg path, .tree-svg line {
+      fill: none;
+      stroke: #b8c8e0;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .tree-svg .arrow-blue   { stroke: #5a52e8; stroke-width: 3; }
+    .tree-svg .arrow-yellow { stroke: #f0a800; stroke-width: 3; }
+
+    /* 节点卡片 */
+    .node-card {
+      position: absolute;
+      width: 148px;
+      padding: 36px 8px 10px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 13px;
+      z-index: 2;
+      border: 1.5px solid var(--c-node-a-bd);
+      background: var(--c-node-a);
+      box-shadow: var(--shadow-sm);
+    }
+    .node-card.purple {
+      background: var(--c-node-b);
+      border-color: var(--c-node-b-bd);
+    }
+    .node-card .person {
+      position: absolute;
+      left: 50%; top: -28px;
+      width: 54px; height: 54px;
+      font-size: 28px;
+      transform: translateX(-50%);
+    }
+    .node-title { font-weight: 700; color: var(--c-text); margin-bottom: 2px; }
+    .node-sub   { color: var(--c-text-2); font-size: 12px; }
+
+    /* 无限级绿色底注 */
+    .green-note {
+      position: relative;
+      margin: 24px 0 0;
+      padding: 44px 12px 14px;
+      border-radius: 10px;
+      background: var(--c-node-c);
+      border: 1.5px solid var(--c-node-c-bd);
+      text-align: center;
+      color: #2d6640;
+      font-size: 13px;
+      box-shadow: var(--shadow-sm);
+    }
+    .green-note .person {
+      position: absolute;
+      left: 50%; top: -32px;
+      width: 62px; height: 62px;
+      font-size: 34px;
+      transform: translateX(-50%);
+    }
+    /* 位置 */
+    .tree-a .b1 { left: 48px; top: 82px; }
+    .tree-a .b2 { right: 24px; top: 82px; }
+    .tree-a .c1 { left: 6px;  top: 232px; }
+    .tree-a .c2 { left: 146px; top: 232px; }
+    .tree-a .c3 { right: 6px; top: 232px; }
+    .tree-b1 .c1 { left: 36px;  top: 90px; }
+    .tree-b1 .c2 { right: 36px; top: 90px; }
+    .tree-b2 .c3 { left: 50%; top: 84px; transform: translateX(-50%); }
+
+    .bet-flowchart {
+      display: grid;
+      gap: 14px;
+      padding: 12px;
+    }
+    .bet-flow-section {
+      position: relative;
+      padding: 14px 12px 16px;
+      border: 1px solid var(--c-border);
+      border-radius: var(--r);
+      background: #fff;
+      box-shadow: var(--shadow-sm);
+    }
+    .bet-flow-section-title {
+      margin-bottom: 12px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--c-primary-dark);
+      text-align: center;
+    }
+    .bet-flow-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      align-items: start;
+    }
+    .flow-node {
+      min-height: 92px;
+      padding: 10px 8px;
+      border-radius: 10px;
+      border: 1.5px solid var(--c-node-b-bd);
+      background: var(--c-node-b);
+      color: var(--c-text);
+      text-align: center;
+      font-size: 12px;
+      line-height: 1.45;
+      box-shadow: var(--shadow-sm);
+    }
+    .flow-node b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 13px;
+      color: var(--c-text);
+    }
+    .flow-node.a {
+      grid-column: 2 / 6;
+      border-color: #cc6bdc;
+      background: #fde8ff;
+      box-shadow: 0 4px 16px rgba(175, 75, 190, .16);
+    }
+    .flow-node.b1 { grid-column: 1 / 4; }
+    .flow-node.b2 { grid-column: 4 / 7; }
+    .flow-node.c1 { grid-column: 1 / 3; }
+    .flow-node.c2 { grid-column: 3 / 5; }
+    .flow-node.c3 { grid-column: 5 / 7; }
+    .flow-node.b3 { grid-column: 5 / 7; }
+    .triple-grid .flow-node.b1 { grid-column: 1 / 3; }
+    .triple-grid .flow-node.b2 { grid-column: 3 / 5; }
+    .triple-grid .flow-node.b3 { grid-column: 5 / 7; }
+    .flow-node.d1 { grid-column: 1 / 3; }
+    .flow-node.d2 { grid-column: 3 / 5; }
+    .flow-node.d3 { grid-column: 5 / 7; }
+    .flow-node.n {
+      grid-column: 1 / -1;
+      min-height: 86px;
+      border-color: var(--c-node-c-bd);
+      background: var(--c-node-c);
+    }
+    .flow-node.calc {
+      min-height: 78px;
+      border-color: var(--c-node-c-bd);
+      background: var(--c-node-c);
+    }
+    .flow-node.total {
+      border-color: #7286ff;
+      background: #e7ebff;
+      box-shadow: 0 4px 16px rgba(82, 102, 210, .18);
+    }
+    .flow-arrow-row {
+      display: grid;
+      place-items: center;
+      min-height: 24px;
+      color: #8aa0bb;
+      font-size: 18px;
+      line-height: 1;
+    }
+    .flow-arrow-row.double {
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .flow-arrow-row.triple {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+    .flow-calc-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .flow-calc-grid .wide {
+      grid-column: 1 / -1;
+    }
+    .flow-dashed {
+      margin: 2px auto;
+      width: 76%;
+      border-top: 2px dashed #91a5c1;
+    }
+    @media (max-width: 420px) {
+      .bet-flow-grid,
+      .flow-calc-grid {
+        gap: 8px;
+      }
+      .flow-node {
+        min-height: 86px;
+        padding: 8px 5px;
+        font-size: 10.5px;
+      }
+      .flow-node b { font-size: 11.5px; }
+    }
+    /* canvas 高度控制 */
+    .tutorial-canvas { min-height: 680px; }
+    #page-tutorial.bet-one .tutorial-canvas { min-height: 400px; }
+    #page-tutorial.bet-two .tutorial-canvas { min-height: 560px; }
+    #page-tutorial.bet-one .tree-a,
+    #page-tutorial.bet-one .tree-b1,
+    #page-tutorial.bet-one .tree-b2 { min-height: 220px; }
+    #page-tutorial.bet-two .tree-a  { min-height: 400px; }
+    #page-tutorial.bet-two .tree-b1,
+    #page-tutorial.bet-two .tree-b2 { min-height: 260px; }
+    /* 隐藏逻辑 */
+    #page-tutorial.bet-one #pane-a .tree-a .node-card.purple,
+    #page-tutorial.bet-one #pane-a .tree-a .green-note,
+    #page-tutorial.bet-one #pane-a .tree-a svg path:nth-of-type(n+2),
+    #page-tutorial.bet-one #pane-a .tree-a svg line,
+    #page-tutorial.bet-one #pane-b1 .green-note,
+    #page-tutorial.bet-one #pane-b1 svg path:nth-of-type(2),
+    #page-tutorial.bet-one #pane-b2 .green-note,
+    #page-tutorial.bet-one #pane-b2 svg path:nth-of-type(2),
+    #page-tutorial.bet-two #pane-a .tree-a .green-note,
+    #page-tutorial.bet-two #pane-a .tree-a svg path:nth-of-type(4),
+    #page-tutorial.bet-two #pane-b1 .green-note,
+    #page-tutorial.bet-two #pane-b1 svg path:nth-of-type(2),
+    #page-tutorial.bet-two #pane-b2 .green-note,
+    #page-tutorial.bet-two #pane-b2 svg path:nth-of-type(2) { display: none !important; }
+
+    /* 树 SVG 不绝对定位了 — 保持 inline 高度撑开 */
+    .tree { min-height: 540px; }
+    .tree-b1, .tree-b2 { min-height: 400px; }
+
+    /* ============ 说明文字卡 ============ */
+    .guide {
+      margin: 0 var(--pad) 20px;
+      padding: 16px;
+      border-radius: var(--r);
+      background: #fff;
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-sm);
+      font-size: 13.5px;
+      line-height: 1.78;
+      color: var(--c-text-2);
+    }
+    .guide h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--c-text);
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--c-border);
+    }
+    .guide p { margin-bottom: 6px; text-align: justify; }
+    .guide strong { font-weight: 700; color: var(--c-primary-dark); }
+
+    /* ============ 净盈利面板 ============ */
+    .profit-panel { padding-bottom: 24px; }
+    .profit-canvas { min-height: 640px; }
+    .profit-panel.one-level .profit-canvas { min-height: 420px; }
+    .profit-panel.two-level .profit-canvas { min-height: 560px; }
+    .profit-panel.one-level .profit-level-3,
+    .profit-panel.one-level .profit-depth-2,
+    .profit-panel.one-level .profit-depth-3,
+    .profit-panel.two-level .profit-level-3,
+    .profit-panel.two-level .profit-depth-3 { display: none !important; }
+
+    .profit-card {
+      margin: 0 0 20px;
+      padding: 14px;
+      border-radius: 10px;
+      background: #fff;
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-md);
+    }
+    .profit-summary {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      align-items: center;
+      min-height: 100px;
+    }
+    .profit-lines {
+      font-size: 13.5px;
+      line-height: 1.7;
+      color: var(--c-text);
+    }
+    .profit-tree {
+      position: relative;
+      min-height: 460px;
+    }
+    .profit-tree svg {
+      position: absolute;
+      inset: 0; width: 100%; height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .profit-tree path, .profit-tree line {
+      fill: none;
+      stroke: #b8c8e0;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    .profit-node {
+      position: absolute;
+      width: 148px;
+      padding: 36px 8px 10px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 13px;
+      z-index: 2;
+      border: 1.5px solid var(--c-node-b-bd);
+      background: var(--c-node-b);
+      box-shadow: var(--shadow-sm);
+    }
+    .profit-node.loss  { background: #ffeeee; border-color: #e05555; }
+    .profit-node.deep  { background: var(--c-node-c); border-color: var(--c-node-c-bd); }
+    .profit-node .person {
+      position: absolute;
+      left: 50%; top: -28px;
+      width: 54px; height: 54px;
+      font-size: 28px;
+      transform: translateX(-50%);
+    }
+    .profit-node b   { display: block; font-weight: 700; color: var(--c-text); margin-bottom: 2px; }
+    .profit-node div { font-size: 12px; color: var(--c-text-2); }
+    .profit-b1 { left: 24px;  top: 84px; }
+    .profit-b2 { right: 24px; top: 84px; }
+    .profit-c1 { left: 24px;  top: 234px; }
+    .profit-c2 { right: 24px; top: 234px; }
+    .profit-extra {
+      position: absolute;
+      left: 10px; right: 10px; bottom: 16px;
+      min-height: 96px;
+      padding: 42px 12px 14px;
+      border-radius: 10px;
+      background: var(--c-node-a);
+      border: 1.5px solid var(--c-node-a-bd);
+      text-align: center;
+      color: #6a4800;
+      font-size: 13px;
+      z-index: 2;
+      box-shadow: var(--shadow-sm);
+    }
+    .profit-extra .person {
+      position: absolute;
+      left: 50%; top: -32px;
+      width: 60px; height: 60px;
+      font-size: 32px;
+      transform: translateX(-50%);
+    }
+
+    /* ============ 多奖励面板（浅色，与有效投注一致） ============ */
+    .multi-panel {
+      padding: 0 0 24px;
+      background: var(--c-bg);
+      color: var(--c-text);
+    }
+    .multi-screen {
+      padding: 0 var(--pad) 0;
+    }
+    /* 佣金汇总卡 */
+    .multi-summary {
+      margin: 0 0 14px;
+      border-radius: var(--r);
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-sm);
+      font-size: 13px;
+      color: var(--c-text);
+      overflow: hidden;
+    }
+    .multi-settle {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--c-border);
+      text-align: center;
+      font-size: 12px;
+      color: var(--c-text-3);
+      background: var(--c-surface-2);
+    }
+    /* 每个奖励块：标题 + 数据行 */
+    .multi-reward-row {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--c-border);
+    }
+    .multi-reward-row:last-child { border-bottom: 0; }
+    .multi-reward-title {
+      text-align: center;
+      color: var(--c-primary-dark);
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px dashed var(--c-border);
+    }
+    /* 数据项：flex两列 */
+    .multi-reward-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px 8px;
+    }
+    .multi-reward-item {
+      font-size: 12.5px;
+      color: var(--c-text-2);
+    }
+    /* 单项时占满宽度 */
+    .multi-reward-item.full { grid-column: 1 / -1; }
+    .multi-money { color: var(--c-orange); font-weight: 700; }
+
+    .multi-title {
+      margin: 16px 0 10px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--c-text);
+      padding-left: 2px;
+    }
+    /* 代理 A 总佣金卡 */
+    .multi-top-card {
+      display: grid;
+      grid-template-columns: 66px 1fr;
+      align-items: center;
+      min-height: 88px;
+      margin-bottom: 14px;
+      padding: 14px;
+      border-radius: var(--r);
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-md);
+    }
+    .multi-avatar {
+      position: relative;
+      width: 52px; height: 52px;
+      display: grid; place-items: center;
+      border: 2px solid var(--c-gold-dark);
+      border-radius: 50%;
+      background: linear-gradient(145deg,#fff9ee,#fff);
+      color: #1d2838;
+      font-size: 28px;
+      box-shadow: 0 2px 10px rgba(200,100,0,.18);
+    }
+    .multi-avatar::after {
+      content: attr(data-name);
+      position: absolute;
+      right: -6px; bottom: -3px;
+      min-width: 20px; height: 20px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#ffb830,#ff8f00);
+      color: #fff;
+      font-size: 10px; font-weight: 800;
+      box-shadow: 0 2px 5px rgba(200,100,0,.3);
+    }
+    .multi-top-lines {
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--c-text);
+    }
+
+    /* ── 多奖励树：三列 flex，每列独立 ── */
+    /* ── 多奖励树：三列 flex，每列独立 ── */
+    .multi-tree {
+      display: grid;
+      gap: 14px;
+      margin-bottom: 14px;
+      padding: 12px;
+      border: 1px solid var(--c-border);
+      border-radius: var(--r);
+      background: var(--c-surface-2);
+      box-shadow: var(--shadow-sm);
+    }
+    .multi-tree.bet-flowchart {
+      display: grid;
+      padding: 12px;
+    }
+    .multi-tree.bet-flowchart .flow-node {
+      font-size: 11.5px;
+    }
+    .mt-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .mt-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .mt-dot.green  { background: var(--c-node-c-bd); }
+    .mt-dot.yellow { background: var(--c-node-a-bd); }
+    .mt-dot.blue   { background: var(--c-node-b-bd); }
+    .mt-line {
+      width: 2px;
+      flex-shrink: 0;
+      align-self: center;
+    }
+    .mt-line.green  { background: var(--c-node-c-bd); }
+    .mt-line.yellow { background: var(--c-node-a-bd); }
+    .mt-line.blue   { background: var(--c-node-b-bd); }
+    .mt-node {
+      width: 100%;
+      min-height: 98px;
+      padding: 6px 6px 8px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 10.5px;
+      line-height: 1.3;
+      box-shadow: var(--shadow-sm);
+    }
+    .mt-node.gold  { background: var(--c-node-a); border: 1.5px solid var(--c-node-a-bd); }
+    .mt-node.blue  { background: var(--c-node-b); border: 1.5px solid var(--c-node-b-bd); }
+    .mt-node.green { background: var(--c-node-c); border: 1.5px solid var(--c-node-c-bd); }
+    .mt-node b { display: block; font-size: 10.5px; font-weight: 700; color: var(--c-text); margin-bottom: 2px; }
+    .mt-node .multi-money { color: var(--c-orange); }
+    .mt-person-wrap { display: flex; justify-content: center; margin-bottom: 5px; }
+    .mt-person {
+      position: relative;
+      width: 36px; height: 36px;
+      display: grid; place-items: center;
+      border: 2px solid var(--c-gold-dark);
+      border-radius: 50%;
+      background: linear-gradient(145deg,#fff9ee,#fff);
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 1px 5px rgba(200,100,0,.15);
+    }
+    .mt-person.green-border { border-color: var(--c-node-c-bd); }
+    .mt-person.blue-border  { border-color: var(--c-node-b-bd); }
+    .mt-person::after {
+      content: attr(data-badge);
+      position: absolute;
+      right: -4px; bottom: -1px;
+      min-width: 14px; height: 14px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(135deg,#ffb830,#ff8f00);
+      color: #fff;
+      font-size: 7.5px; font-weight: 800;
+    }
+    .multi-panel.two-level .mt-level-3 { display: none !important; }
+    .multi-node, .multi-person { display: none !important; }
+    .multi-tree > svg { display: none !important; }
+    /* 全局字体缩小 */
+    .multi-panel { font-size: 12px; }
+    .multi-title { font-size: 16px; }
+    .multi-top-lines { font-size: 12px; }
+    .multi-summary { font-size: 11.5px; }
+    .multi-reward-title { font-size: 12.5px; }
+    .multi-reward-item { font-size: 11.5px; }
+    .multi-copy { font-size: 12px; }
+    .multi-copy table { font-size: 11px; }
+
+
+    .multi-copy {
+      margin-top: 14px;
+      padding: 16px;
+      border-radius: var(--r);
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-sm);
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--c-text-2);
+    }
+    .multi-copy p { margin-bottom: 7px; }
+    .multi-copy b { color: var(--c-text); font-weight: 700; }
+    .multi-copy table {
+      width: 100%;
+      margin: 12px 0;
+      border-collapse: collapse;
+      table-layout: fixed;
+      background: #fff;
+      color: var(--c-text);
+      font-size: 12px;
+      text-align: center;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .multi-copy th, .multi-copy td {
+      border: 1px solid #dde6f0;
+      padding: 7px 5px;
+      font-weight: 400;
+      word-break: break-word;
+    }
+    .multi-copy th {
+      background: var(--c-surface-2);
+      font-weight: 700;
+      color: var(--c-primary-dark);
+    }
+    .multi-copy .orange { color: var(--c-orange); font-weight: 700; }
+    .multi-copy tr.hidden, .multi-copy p.hidden, .multi-node .hidden { display: none !important; }
+
+    /* ============ 占位面板 ============ */
+    .nav-placeholder {
+      margin: var(--pad);
+      padding: 36px 20px;
+      border-radius: var(--r);
+      background: #fff;
+      text-align: center;
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-md);
+    }
+    .placeholder-icon {
+      width: 72px; height: 72px;
+      margin: 0 auto 14px;
+      display: grid; place-items: center;
+      border-radius: 18px;
+      background: linear-gradient(135deg,#e4effe,#d0e4ff);
+      font-size: 34px;
+      box-shadow: 0 4px 14px rgba(26,111,216,.14);
+    }
+    .nav-placeholder h2 {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--c-text);
+      margin-bottom: 8px;
+    }
+    .nav-placeholder p {
+      font-size: 13.5px;
+      color: var(--c-text-3);
+      line-height: 1.6;
+    }
+
+    /* ============ 返佣比例页面 ============ */
+    .ratio-page {
+      min-height: calc(100vh - 150px);
+      padding: var(--pad);
+      background: var(--c-bg);
+      color: var(--c-text);
+    }
+    .ratio-page.dark {
+      background: var(--c-bg);
+      color: var(--c-text);
+    }
+    .ratio-layout {
+      display: grid;
+      grid-template-columns: 118px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+    .ratio-venues {
+      display: grid;
+      gap: 10px;
+    }
+    .ratio-venue {
+      min-height: 54px;
+      display: grid;
+      grid-template-columns: 32px 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 0 10px;
+      border: 1px solid var(--c-border);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--c-text-2);
+      font-size: 14px;
+      font-weight: 700;
+      box-shadow: var(--shadow-sm);
+    }
+    .ratio-venue.active {
+      border-color: rgba(26,111,216,.30);
+      background: linear-gradient(135deg,#e8f1ff,#fff);
+      color: var(--c-primary-dark);
+      box-shadow: var(--shadow-md);
+    }
+    .ratio-venue-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .ratio-card,
+    .ratio-dark-card,
+    .ratio-reward-card {
+      overflow: hidden;
+      border: 1px solid var(--c-border);
+      border-radius: var(--r);
+      background: #fff;
+      box-shadow: var(--shadow-md);
+    }
+    .ratio-card { min-width: 0; }
+    .ratio-table,
+    .ratio-reward-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .ratio-table th,
+    .ratio-reward-table th {
+      height: 52px;
+      color: var(--c-primary-dark);
+      border-bottom: 1px solid var(--c-border);
+      background: var(--c-surface-2);
+      font-weight: 800;
+    }
+    .ratio-table td,
+    .ratio-reward-table td {
+      height: 54px;
+      color: var(--c-text-2);
+      border-bottom: 1px solid rgba(26,111,216,.08);
+    }
+    .ratio-table tbody tr:nth-child(even),
+    .ratio-reward-table tbody tr:nth-child(even) {
+      background: #f7faff;
+    }
+    .ratio-commission,
+    .ratio-reward-table .yellow {
+      color: var(--c-orange);
+      font-weight: 800;
+    }
+    .ratio-dark-card {
+      margin-bottom: 14px;
+      padding: 16px;
+    }
+    .ratio-dark-card h3 {
+      margin-bottom: 10px;
+      text-align: center;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--c-primary-dark);
+    }
+    .ratio-dark-card p {
+      margin-bottom: 6px;
+      color: var(--c-text-2);
+      font-size: 13px;
+      line-height: 1.65;
+      font-weight: 600;
+    }
+    .ratio-reward-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 14px;
+      padding: 3px;
+      overflow-x: auto;
+      border-radius: 10px;
+      background: rgba(26,111,216,.09);
+      scrollbar-width: none;
+    }
+    .ratio-reward-tabs::-webkit-scrollbar { display: none; }
+    .ratio-reward-tab {
+      flex: 0 0 auto;
+      min-width: 116px;
+      height: 36px;
+      padding: 0 14px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--c-text-2);
+      font: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .ratio-reward-tab.active {
+      background: #fff;
+      color: var(--c-primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .ratio-reward-card {
+      margin: 0;
+      padding: 12px 10px 14px;
+    }
+    .ratio-reward-title {
+      margin-bottom: 12px;
+      text-align: center;
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--c-text);
+    }
+    .ratio-empty {
+      padding: 24px 10px;
+      color: var(--c-text-3);
+      text-align: center;
+      font-weight: 700;
+    }
+    @media (max-width: 420px) {
+      .ratio-layout { grid-template-columns: 94px 1fr; gap: 10px; }
+      .ratio-venue { grid-template-columns: 26px 1fr; padding: 0 8px; font-size: 13px; }
+      .ratio-venue-icon { font-size: 19px; }
+      .ratio-table,
+      .ratio-reward-table { font-size: 12px; }
+      .ratio-table th,
+      .ratio-table td,
+      .ratio-reward-table th,
+      .ratio-reward-table td { height: 48px; }
+    }
+
+    /* ============ 调试面板 ============ */
+    .front-debug {
+      position: fixed;
+      right: 14px; bottom: 14px;
+      z-index: 40;
+      width: min(290px, calc(100vw - 28px));
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.22);
+      border-radius: var(--r);
+      background: linear-gradient(180deg, rgba(14,84,176,.97), rgba(10,45,105,.97));
+      color: #fff;
+      box-shadow: 0 16px 44px rgba(8,48,130,.38);
+      backdrop-filter: blur(18px);
+      font-size: 12px;
+      max-height: min(480px, calc(100vh - 28px));
+      overflow: auto;
+    }
+    .front-debug h3 {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .front-debug h3::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--c-gold);
+      box-shadow: 0 0 0 3px rgba(255,204,46,.18);
+    }
+    .debug-row {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .front-debug label { color: rgba(255,255,255,.75); white-space: nowrap; }
+    .front-debug select, .debug-input {
+      width: 100%; height: 30px;
+      border: 1px solid rgba(255,255,255,.28);
+      border-radius: 6px;
+      background: #fff;
+      color: #172033;
+      padding: 0 8px;
+      font: inherit;
+      outline: none;
+    }
+    .debug-checks {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 10px;
+      margin-bottom: 6px;
+    }
+    .debug-checks label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 26px;
+      padding: 0 7px;
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 6px;
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+    .debug-field { margin-bottom: 8px; }
+    .debug-field.hidden { display: none; }
+    .debug-field-title { display: block; margin-bottom: 6px; color: rgba(255,255,255,.75); }
+    .debug-warning { display: none; margin-top: 5px; color: #ffd06f; line-height: 1.45; }
+    .debug-warning.show { display: block; }
+    .debug-summary {
+      margin-top: 8px;
+      padding: 8px 9px;
+      border: 1px solid rgba(255,204,46,.24);
+      border-radius: 8px;
+      background: rgba(255,204,46,.12);
+      color: #ffe38a;
+      line-height: 1.5;
+    }
+    /* ============ 只算一级专属视图样式 ============ */
+    .ol-a-card {
+      text-align: center;
+      padding: 14px 12px 12px;
+      margin-bottom: 10px;
+      background: var(--c-surface);
+      border-radius: var(--r);
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-sm);
+    }
+    .ol-a-name {
+      font-size: 13.5px; font-weight: 700;
+      color: var(--c-text); margin: 7px 0 3px;
+    }
+    .ol-a-stats {
+      font-size: 11.5px; color: var(--c-text-2); line-height: 1.7;
+    }
+    /* 一级流程树容器，与 .tutorial-canvas 同风格 */
+    .ol-tree-canvas {
+      position: relative;
+      margin: 0 0 14px;
+      border-radius: var(--r);
+      background: var(--c-surface-2);
+      border: 1px solid var(--c-border);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      padding: 12px 0 0;
+    }
+    /* 树区 */
+    .ol-tree {
+      position: relative;
+      width: 100%;
+      min-height: 560px;
+    }
+    /* SVG 覆盖层 */
+    .ol-tree-svg {
+      position: absolute;
+      inset: 0; width: 100%; height: 100%;
+      overflow: visible;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .ol-tree-svg path, .ol-tree-svg line {
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      vector-effect: non-scaling-stroke;
+    }
+    /* 节点位置（三列，B层+C层） */
+    /* B层：左/中/右 */
+    .ol-b1 { left: 6px;  top: 50px; }
+    .ol-b2 { left: 50%; top: 50px; transform: translateX(-50%); }
+    .ol-b3 { right: 6px; top: 50px; }
+    /* C层：左/中/右 */
+    .ol-c1 { left: 6px;  top: 240px; }
+    .ol-c2 { left: 50%; top: 240px; transform: translateX(-50%); }
+    .ol-c3 { right: 6px; top: 240px; }
+
+    .hidden { display: none; }
+
+    /* ============ 响应式 ============ */
+    @media (max-width: 370px) {
+      .nav button { font-size: 12.5px; padding: 0 8px; }
+      .share-card { margin: 10px; padding: 12px; }
+      .node-card { width: 135px; }
+      .tutorial-canvas, .profit-canvas { margin-left: 10px; margin-right: 10px; }
+      .front-debug { right: 10px; bottom: 10px; width: calc(100vw - 20px); }
+      .phone { padding-bottom: 220px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="global-links" aria-label="页面关联入口">
+    <a href="代理模式页面.html" target="_blank">代理模式页面</a>
+    <a href="后台代理模式需求文档.html" target="_blank">后台代理模式需求文档</a>
+    <a href="../后台其他页面.html" target="_blank">后台关联页面</a>
+    <a href="前台关联页面.html" target="_blank">前台关联页面（作废）</a>
+    <a href="前台推广原型页面.html" target="_blank">前台推广原型</a>
+    <a href="前台推广页面需求文档.html" target="_blank">前台推广页面需求文档</a>
+    <a href="佣金计算工具.html" target="_blank">佣金计算工具</a>
+  </nav>
+  <main class="phone">
+    <!-- ===== 顶栏 ===== -->
+    <header class="hero">
+      <div class="titlebar">
+        <div class="back" aria-label="返回"></div>
+        <div class="title">推广赚钱</div>
+        <div class="pc">切换PC端</div>
+      </div>
+      <nav class="nav" aria-label="前台导航">
+        <button class="active" data-page="tutorial">推广教程</button>
+        <button data-page="all-data">全部数据</button>
+        <button data-page="my-data">我的数据</button>
+        <button data-page="performance">我的表现</button>
+        <button data-page="my-commission">我的佣金</button>
+        <button data-page="direct-data">直属数据</button>
+        <button data-page="bets">下级的赌注</button>
+        <button data-page="finance">直属财务</button>
+        <button data-page="receive">直属领取</button>
+        <button data-page="overview">下级总览</button>
+        <button data-page="ratio">返佣比例</button>
+        <button data-page="open">直属开户</button>
+      </nav>
+    </header>
+
+    <!-- ===== 推广卡片（全局显示） ===== -->
+    <section class="share-card" id="promo-card">
+      <div class="promo-grid">
+        <div class="qr-box">
+          <div class="qr" aria-label="二维码">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <i></i><i></i><span></span><i></i><span></span><i></i><span></span><i></i><i></i>
+            <i></i><span></span><i></i><i></i><i></i><span></span><i></i><span></span><i></i>
+            <span></span><i></i><i></i><span></span><i></i><i></i><span></span><i></i><span></span>
+            <i></i><span></span><i></i><i></i><span></span><i></i><i></i><span></span><i></i>
+            <i></i><i></i><span></span><i></i><i></i><span></span><i></i><i></i><span></span>
+            <span></span><i></i><i></i><span></span><i></i><i></i><span></span><i></i><i></i>
+            <i></i><span></span><i></i><i></i><span></span><i></i><i></i><span></span><i></i>
+            <i></i><i></i><i></i><span></span><i></i><span></span><i></i><i></i><i></i>
+          </div>
+          <div class="qr-save">点击保存</div>
+        </div>
+        <div class="promo-main">
+          <div class="promo-head">
+            <span>推广链接</span>
+            <span class="edit-link">修改</span>
+          </div>
+          <div class="link-row">
+            <span class="link-text">https://web-cny.yq-dev.top/?id=838578786&amp;currency=CNY&amp;type=2</span>
+            <span class="down"></span>
+            <span class="copy"></span>
+          </div>
+        </div>
+      </div>
+      <div class="socials">
+        <div class="social"><div class="icon wa">☎</div><div>WhatsApp</div></div>
+        <div class="social"><div class="icon tw">𝕏</div><div>Twitter</div></div>
+        <div class="social"><div class="icon tk">♪<br>Tik</div><div>TikTok</div></div>
+        <div class="social"><div class="icon line">LINE</div><div>Line</div></div>
+        <div class="social"><div class="icon line">LINE</div><div>Line</div></div>
+        <div class="social"><div class="icon line">LINE</div><div>Line</div></div>
+        <div class="social"><div class="icon yt">▶</div><div>YouTube</div></div>
+      </div>
+    </section>
+
+    <!-- ===== 多奖励模式面板 ===== -->
+    <section class="page-panel multi-panel" id="page-multi">
+      <div class="multi-screen">
+        <section class="multi-summary">
+          <div class="multi-settle">结算时间后可领取你的佣金：2026-04-25 00:30:00</div>
+          <div class="multi-reward-row" data-reward-block="首充佣金">
+            <div class="multi-reward-title">首次充值佣金</div>
+            <div class="multi-reward-items">
+              <div class="multi-reward-item">首次充值：<span class="multi-money">0.00</span></div>
+              <div class="multi-reward-item">首次充值佣金：<span class="multi-money">0.00</span></div>
+            </div>
+          </div>
+          <div class="multi-reward-row" data-reward-block="充值佣金">
+            <div class="multi-reward-title">充值佣金</div>
+            <div class="multi-reward-items">
+              <div class="multi-reward-item full">总充值佣金：<span class="multi-money">0.00</span></div>
+              <div class="multi-reward-item">一级充值佣金：<span class="multi-money">0.00</span></div>
+              <div class="multi-reward-item" data-level="2">二级充值佣金：<span class="multi-money" id="summaryRechargeLevel2">0.00</span></div>
+              <div class="multi-reward-item" data-level="3">三级充值佣金：<span class="multi-money" id="summaryRechargeLevel3">0.00</span></div>
+            </div>
+          </div>
+          <div class="multi-reward-row" data-reward-block="投注佣金">
+            <div class="multi-reward-title">投注佣金</div>
+            <div class="multi-reward-items">
+              <div class="multi-reward-item full">总投注佣金：<span class="multi-money">0.00</span></div>
+              <div class="multi-reward-item">一级投注佣金：<span class="multi-money">0.00</span></div>
+              <div class="multi-reward-item" data-level="2">二级投注佣金：<span class="multi-money" id="summaryBetLevel2">0.00</span></div>
+              <div class="multi-reward-item" data-level="3">三级投注佣金：<span class="multi-money" id="summaryBetLevel3">0.00</span></div>
+            </div>
+          </div>
+        </section>
+
+        <h2 class="multi-title">代理教程</h2>
+        <section class="multi-top-card">
+          <div class="multi-avatar" data-name="A">🧔</div>
+          <div class="multi-top-lines">
+            <div data-reward-block="首充佣金">首次充值佣金=<span class="multi-money">200</span></div>
+            <div data-reward-block="充值佣金">充值佣金=22+11+5=<span class="multi-money">38</span></div>
+            <div data-reward-block="投注佣金">投注佣金=14+12.8+9.6=<span class="multi-money">36.4</span></div>
+            <div id="multiTotalLine">本期佣金=200+38+36.4=<span class="multi-money">274.4</span></div>
+          </div>
+        </section>
+
+        <section class="multi-tree bet-flowchart" id="multiTree">
+          <div class="bet-flow-section">
+            <div class="bet-flow-section-title">代理层级结构</div>
+            <div class="bet-flow-grid triple-grid">
+              <div class="flow-node b1">
+                <b>B1</b>
+                <div data-reward-block="首充佣金">首次充值完成</div>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">22</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">14</span></div>
+              </div>
+              <div class="flow-node b2">
+                <b>B2</b>
+                <div data-reward-block="首充佣金">首次充值完成</div>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">11</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">12</span></div>
+              </div>
+              <div class="flow-node b3">
+                <b>B3</b>
+                <div data-reward-block="首充佣金">首次充值完成</div>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">5</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">1</span></div>
+              </div>
+            </div>
+            <div class="flow-arrow-row triple"><span>↓</span><span>↓</span><span>↓</span></div>
+            <div class="bet-flow-grid">
+              <div class="flow-node c1">
+                <b>C1</b>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">2</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">8</span></div>
+              </div>
+              <div class="flow-node c2">
+                <b>C2</b>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">0</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">4</span></div>
+              </div>
+              <div class="flow-node c3">
+                <b>C3</b>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">200</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">20</span></div>
+              </div>
+            </div>
+            <div class="flow-arrow-row triple mt-level-3"><span>↓</span><span>↓</span><span>↓</span></div>
+            <div class="bet-flow-grid mt-level-3">
+              <div class="flow-node d1">
+                <b>D1</b>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">1</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">1.8</span></div>
+              </div>
+              <div class="flow-node d2">
+                <b>D2</b>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">0</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">1.2</span></div>
+              </div>
+              <div class="flow-node d3">
+                <b>D3</b>
+                <div data-reward-block="充值佣金">充值佣金=<span class="multi-money">0</span></div>
+                <div data-reward-block="投注佣金">投注佣金=<span class="multi-money">0</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flow-dashed"></div>
+
+          <div class="bet-flow-section">
+            <div class="bet-flow-section-title">佣金计算</div>
+            <div class="flow-calc-grid">
+              <div class="flow-node calc" data-reward-block="首充佣金">
+                <b>首充佣金</b>
+                3人命中阶梯 = <span class="multi-money">200</span>
+              </div>
+              <div class="flow-node calc" data-reward-block="充值佣金">
+                <b>充值佣金</b>
+                22 + 11<span data-level="3"> + 5</span> = <span class="multi-money" id="multiRechargeCalc">38</span>
+              </div>
+              <div class="flow-node calc" data-reward-block="投注佣金">
+                <b>投注佣金</b>
+                14 + 12.8<span data-level="3"> + 9.6</span> = <span class="multi-money" id="multiBetCalc">36.4</span>
+              </div>
+              <div class="flow-node calc total">
+                <b>本期总佣金</b>
+                <span id="multiFlowTotal">200 + 38 + 36.4 = <span class="multi-money">274.4</span></span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <article class="multi-copy">
+          <p id="multiIntro">多奖励模式包含三个部分：首充佣金、充值佣金、有效投注佣金。只要满足其中任何一个条件，均对推荐代理对应的佣金类型贡献佣金。</p>
+          <p id="multiRelationText">A 发展了 B1、B2、B3；B1 开发了 C1，B2 开发了 C2，B3 开发了 C3；C1、C2、C3 分别开发了 D1、D2、D3。</p>
+          <table>
+            <tbody>
+              <tr><th colspan="4">假设多奖励佣金对照表如下：</th></tr>
+              <tr data-reward-table="首充佣金"><td rowspan="4">首次充值佣金</td><td>等级</td><td>首充人数</td><td>佣金</td></tr>
+              <tr data-reward-table="首充佣金"><td rowspan="3">一级佣金（直属）</td><td>1</td><td>50</td></tr>
+              <tr data-reward-table="首充佣金"><td>2</td><td>100</td></tr>
+              <tr data-reward-table="首充佣金"><td>3</td><td>200</td></tr>
+              <tr data-reward-table="充值佣金"><td rowspan="4">充值佣金</td><td>等级</td><td>充值金额</td><td>佣金</td></tr>
+              <tr data-reward-table="充值佣金"><td>一级（直属）</td><td>100</td><td>2（2%）</td></tr>
+              <tr data-reward-table="充值佣金"><td>二级（其他）</td><td>100</td><td>1（1%）</td></tr>
+              <tr data-reward-table="充值佣金" data-level="3"><td>三级（其他）</td><td>100</td><td>0.5（0.5%）</td></tr>
+              <tr data-reward-table="投注佣金"><td rowspan="4">投注佣金</td><td>等级</td><td>投注金额</td><td>佣金</td></tr>
+              <tr data-reward-table="投注佣金"><td>一级（直属）</td><td>1000</td><td>10（1%）</td></tr>
+              <tr data-reward-table="投注佣金"><td>二级（其他）</td><td>1000</td><td>8（0.8%）</td></tr>
+              <tr data-reward-table="投注佣金" data-level="3"><td>三级（其他）</td><td>100</td><td>0.4（0.4%）</td></tr>
+            </tbody>
+          </table>
+          <p><b>A 的收入计算如下：</b></p>
+          <p data-reward-text="首充佣金">1、A 伞下共完成 3 个首充会员，首充佣金为 <span class="orange">200</span>。</p>
+          <p data-reward-text="充值佣金">2、充值佣金：一级 <span class="orange">22</span>，二级 <span class="orange">11</span><span data-level="3">，三级 <span class="orange">5</span></span>，合计 <span class="orange" id="rechargeTotalText">38</span>。</p>
+          <p data-reward-text="投注佣金">3、投注佣金：一级 <span class="orange">14</span>，二级 <span class="orange">12.8</span><span data-level="3">，三级 <span class="orange">9.6</span></span>，合计 <span class="orange" id="betTotalText">36.4</span>。</p>
+          <p id="multiTotalText">4、本期佣金 = 首充佣金 + 充值佣金 + 有效投注佣金 = <span class="orange">200 + 38 + 36.4 = 274.4</span>。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===== 有效投注教程面板 ===== -->
+    <section class="page-panel active" id="page-tutorial">
+      <div class="section-head">
+        <h2>代理教程</h2>
+      </div>
+
+      <!-- 只算一级专属视图（隐藏 tabs） -->
+      <section id="one-level-canvas" style="display:none;padding:0 var(--pad) 20px;">
+        <section class="tutorial-canvas" style="margin:0 0 14px;">
+          <section class="commission">
+            <div class="summary">
+              <div class="person">🧔<span class="badge">A</span></div>
+              <div class="summary-lines">
+                <div>直属业绩=120000+40000+20000=<span class="orange">180000</span></div>
+                <div>直属佣金=180000×30/10000=<span class="orange">540</span></div>
+                <div>其他佣金=<span class="orange">0</span>（只算一级，不计算间接下级）</div>
+                <div>本期佣金=<span class="orange">540</span></div>
+              </div>
+            </div>
+            <div class="tree bet-flowchart" style="min-height:auto;position:relative;">
+              <div class="bet-flow-section">
+                <div class="bet-flow-section-title">代理层级结构（只算一级）</div>
+                <div class="bet-flow-grid triple-grid">
+                  <div class="flow-node b1">
+                    <b>直属下级 B1</b>
+                    有效投注 120000<br>返佣比例 30/10000<br>贡献A佣金 <span class="orange">360</span>
+                  </div>
+                  <div class="flow-node b2">
+                    <b>直属下级 B2</b>
+                    有效投注 40000<br>返佣比例 30/10000<br>贡献A佣金 <span class="orange">120</span>
+                  </div>
+                  <div class="flow-node b3">
+                    <b>直属下级 B3</b>
+                    有效投注 20000<br>返佣比例 30/10000<br>贡献A佣金 <span class="orange">60</span>
+                  </div>
+                </div>
+                <div class="flow-arrow-row triple"><span>↓</span><span>↓</span><span>↓</span></div>
+                <div class="bet-flow-grid">
+                  <div class="flow-node c1">
+                    <b>间接下级 C1</b>
+                    有效投注 100000<br>只算一级<br>贡献A佣金 <span class="orange">0</span>
+                  </div>
+                  <div class="flow-node c2">
+                    <b>间接下级 C2</b>
+                    有效投注 30000<br>只算一级<br>贡献A佣金 <span class="orange">0</span>
+                  </div>
+                  <div class="flow-node c3">
+                    <b>间接下级 C3</b>
+                    有效投注 3000000<br>只算一级<br>贡献A佣金 <span class="orange">0</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flow-dashed"></div>
+
+              <div class="bet-flow-section">
+                <div class="bet-flow-section-title">佣金计算</div>
+                <div class="flow-calc-grid">
+                  <div class="flow-node calc">
+                    <b>直属业绩</b>
+                    120000 + 40000 + 20000 = <span class="orange">180000</span>
+                  </div>
+                  <div class="flow-node calc">
+                    <b>直属佣金</b>
+                    180000 × 30/10000 = <span class="orange">540</span>
+                  </div>
+                  <div class="flow-node calc">
+                    <b>其他佣金</b>
+                    只算一级 = <span class="orange">0</span>
+                  </div>
+                  <div class="flow-node calc total">
+                    <b>本期总佣金</b>
+                    540 + 0 = <span class="orange">540</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </section>
+
+        <article class="guide" style="margin-top:14px;">
+          <h3>举例说明如下：</h3>
+          <p>当前模式为只算一级，A 只获得直属下级 B1、B2、B3 的有效投注返佣；C1、C2、C3 属于间接下级，不参与 A 本期佣金计算。</p>
+          <p><strong>直属业绩：</strong>B1 有效投注 120000，B2 有效投注 40000，B3 有效投注 20000，合计 <span class="orange">180000</span>。</p>
+          <p><strong>佣金计算：</strong>直属佣金 = 180000 × 30/10000 = <span class="orange">540</span>；其他佣金 = <span class="orange">0</span>；本期佣金 = <span class="orange">540</span>。</p>
+          <p><strong>说明：</strong>只算一级时，下级继续发展的会员仍可展示层级关系，但不会给 A 产生极差佣金。</p>
+        </article>
+      </section>
+
+      <!-- 多级视图（含 tabs） -->
+      <div class="tabs" id="multi-level-tabs">
+        <button class="tab active" data-tab="a">A 的佣金</button>
+        <button class="tab" data-tab="b1">B1 的佣金</button>
+        <button class="tab" data-tab="b2">B2 的佣金</button>
+      </div>
+
+      <section class="tutorial-canvas" id="multi-level-canvas">
+        <!-- A 视角 -->
+        <section class="commission" id="pane-a">
+          <div class="summary">
+            <div class="person">🧔<span class="badge">A</span></div>
+            <div class="summary-lines">
+              <div>直属业绩=500+3000=3500</div>
+              <div>直属佣金=3500×3%=<span class="orange">105</span></div>
+              <div>其他佣金=<span class="orange">20</span>+<span class="orange">40</span>=<span class="orange">60</span></div>
+              <div>本期佣金=<span class="orange">105</span>+<span class="orange">60</span>=<span class="orange">165</span></div>
+            </div>
+          </div>
+          <div class="tree tree-a bet-flowchart" style="min-height:auto;position:relative;">
+            <div class="bet-flow-section">
+              <div class="bet-flow-section-title">代理层级结构（最多5级，下级越多越好）</div>
+              <div class="bet-flow-grid">
+                <div class="flow-node b1">
+                  <b>直属下级 B1</b>
+                  有效投注 500<br>佣金比例 3%<br>贡献A佣金 <span class="orange">15</span>
+                </div>
+                <div class="flow-node b2">
+                  <b>直属下级 B2</b>
+                  有效投注 3000<br>佣金比例 3%<br>贡献A佣金 <span class="orange">90</span>
+                </div>
+              </div>
+              <div class="flow-arrow-row triple"><span>↓</span><span>↓</span><span>↓</span></div>
+              <div class="bet-flow-grid">
+                <div class="flow-node c1">
+                  <b>间接下级 C1</b>
+                  有效投注 1000<br>佣金比例 2%<br>贡献A佣金 <span class="orange">20</span>
+                </div>
+                <div class="flow-node c2">
+                  <b>间接下级 C2</b>
+                  有效投注 2000<br>佣金比例 2%<br>贡献A佣金 <span class="orange">40</span>
+                </div>
+                <div class="flow-node c3">
+                  <b>间接下级 C3</b>
+                  有效投注 20000<br>佣金比例 0%<br>贡献A佣金 <span class="orange">0</span>
+                </div>
+              </div>
+              <div class="flow-arrow-row"><span>↓</span></div>
+              <div class="bet-flow-grid">
+                <div class="flow-node n">
+                  <b>N 级下级</b>
+                  可继续向下发展下级，最多5级或无数级时均按配置层数参与业绩汇总与极差返佣计算
+                </div>
+              </div>
+            </div>
+
+            <div class="flow-dashed"></div>
+
+            <div class="bet-flow-section">
+              <div class="bet-flow-section-title">佣金计算</div>
+              <div class="flow-calc-grid">
+                <div class="flow-node calc">
+                  <b>直属业绩</b>
+                  500 + 3000 = <span class="orange">3500</span>
+                </div>
+                <div class="flow-node calc">
+                  <b>直属佣金</b>
+                  3500 × 3% = <span class="orange">105</span>
+                </div>
+                <div class="flow-node calc">
+                  <b>其他佣金</b>
+                  20（C1）+ 40（C2）= <span class="orange">60</span>
+                </div>
+                <div class="flow-node calc total">
+                  <b>本期总佣金</b>
+                  105 + 60 = <span class="orange">165</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- B1 视角 -->
+        <section class="commission hidden" id="pane-b1">
+          <div class="summary">
+            <div class="person">🧔<span class="badge">B1</span></div>
+            <div class="summary-lines">
+              <div>直属业绩=1000+2000=3000</div>
+              <div>直属佣金=3000×1%=<span class="orange">30</span></div>
+              <div>其他佣金=<span class="orange">0</span></div>
+              <div>本期佣金=<span class="orange">30</span>+<span class="orange">0</span>=<span class="orange">30</span></div>
+            </div>
+          </div>
+          <div class="tree tree-b1 bet-flowchart" style="min-height:auto;position:relative;">
+            <div class="bet-flow-section">
+              <div class="bet-flow-section-title">代理层级结构</div>
+              <div class="bet-flow-grid">
+                <div class="flow-node c1">
+                  <b>直属下级 C1</b>
+                  有效投注 1000<br>佣金比例 1%<br>贡献B1佣金 <span class="orange">10</span>
+                </div>
+                <div class="flow-node c3">
+                  <b>直属下级 C2</b>
+                  有效投注 2000<br>佣金比例 1%<br>贡献B1佣金 <span class="orange">20</span>
+                </div>
+              </div>
+              <div class="flow-arrow-row"><span>↓</span></div>
+              <div class="bet-flow-grid">
+                <div class="flow-node n">
+                  <b>N 级下级</b>
+                  可继续向下发展下级，按配置层数参与 B1 的业绩汇总与佣金计算
+                </div>
+              </div>
+            </div>
+            <div class="flow-dashed"></div>
+            <div class="bet-flow-section">
+              <div class="bet-flow-section-title">佣金计算</div>
+              <div class="flow-calc-grid">
+                <div class="flow-node calc">
+                  <b>直属业绩</b>
+                  1000 + 2000 = <span class="orange">3000</span>
+                </div>
+                <div class="flow-node calc">
+                  <b>直属佣金</b>
+                  3000 × 1% = <span class="orange">30</span>
+                </div>
+                <div class="flow-node calc">
+                  <b>其他佣金</b>
+                  暂无更深层级 = <span class="orange">0</span>
+                </div>
+                <div class="flow-node calc total">
+                  <b>本期总佣金</b>
+                  30 + 0 = <span class="orange">30</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- B2 视角 -->
+        <section class="commission hidden" id="pane-b2">
+          <div class="summary">
+            <div class="person">🧔<span class="badge">B2</span></div>
+            <div class="summary-lines">
+              <div>直属业绩=20000</div>
+              <div>直属佣金=20000×3%=<span class="orange">600</span></div>
+              <div>其他佣金=<span class="orange">0</span></div>
+              <div>本期佣金=<span class="orange">600</span>+<span class="orange">0</span>=<span class="orange">600</span></div>
+            </div>
+          </div>
+          <div class="tree tree-b2 bet-flowchart" style="min-height:auto;position:relative;">
+            <div class="bet-flow-section">
+              <div class="bet-flow-section-title">代理层级结构</div>
+              <div class="bet-flow-grid">
+                <div class="flow-node n">
+                  <b>直属下级 C3</b>
+                  有效投注 20000<br>佣金比例 3%<br>贡献B2佣金 <span class="orange">600</span>
+                </div>
+              </div>
+              <div class="flow-arrow-row"><span>↓</span></div>
+              <div class="bet-flow-grid">
+                <div class="flow-node n">
+                  <b>N 级下级</b>
+                  可继续向下发展下级，按配置层数参与 B2 的业绩汇总与佣金计算
+                </div>
+              </div>
+            </div>
+            <div class="flow-dashed"></div>
+            <div class="bet-flow-section">
+              <div class="bet-flow-section-title">佣金计算</div>
+              <div class="flow-calc-grid">
+                <div class="flow-node calc">
+                  <b>直属业绩</b>
+                  20000
+                </div>
+                <div class="flow-node calc">
+                  <b>直属佣金</b>
+                  20000 × 3% = <span class="orange">600</span>
+                </div>
+                <div class="flow-node calc">
+                  <b>其他佣金</b>
+                  暂无更深层级 = <span class="orange">0</span>
+                </div>
+                <div class="flow-node calc total">
+                  <b>本期总佣金</b>
+                  600 + 0 = <span class="orange">600</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <article class="guide" id="guide">
+        <h3>举例说明如下：</h3>
+        <p id="betLayerText">当前按有效投注完整示例展示：A 可获得直属下级佣金，并按层级范围计算其他下级极差佣金。</p>
+
+        <!-- 多级说明 -->
+        <div id="guide-multi-level">
+          <div data-copy="a">
+            <p>假设有效投注&lt;10000 返佣 1%，≥10000 返佣 3%。A 发展了 B1、B2，B1 发展了 C1、C2，B2 发展了 C3。B1 投注 500，B2 投注 3000，C1 投注 1000，C2 投注 2000，C3 投注 20000。</p>
+            <p><strong>1、极差佣金计算：</strong>总佣金 = 直属佣金 + 其他佣金 = 直属业绩×返佣比例 + 各直属下级总业绩×极差返佣比例</p>
+            <p><strong>2、极差返佣比：</strong>当前代理的返佣比例与直属下级的返佣比例之差。A 总业绩 26500 对应 3%，B1 总业绩 3000 对应 1%，极差 = 3%−1% = 2%；B2 总业绩 20000 对应 3%，极差 = 0%。</p>
+            <p><strong>3、A 的计算：</strong>直属佣金 = 3500×3% = <span class="orange">105</span>；其他佣金 = 3000×2% + 20000×0% = <span class="orange">60</span>；本期佣金 = <span class="orange">105</span>+<span class="orange">60</span> = <span class="orange">165</span>。</p>
+          </div>
+          <div data-copy="b1" class="hidden">
+            <p>B1 发展 C1、C2，C1 投注 1000，C2 投注 2000，C1/C2 均无下级。</p>
+            <p><strong>B1 的计算：</strong>直属佣金 = 3000×1% = <span class="orange">30</span>；其他佣金 = <span class="orange">0</span>；本期佣金 = <span class="orange">30</span>。</p>
+          </div>
+          <div data-copy="b2" class="hidden">
+            <p>B2 发展 C3，C3 投注 20000，C3 无下级。</p>
+            <p><strong>B2 的计算：</strong>直属佣金 = 20000×3% = <span class="orange">600</span>；其他佣金 = <span class="orange">0</span>；本期佣金 = <span class="orange">600</span>。</p>
+          </div>
+          <p><strong>4、补充：</strong>无限极差代理可横向 + 纵向无限发展，本例只取 2 层结构作为示意。</p>
+        </div>
+      </article>
+    </section>
+
+    <!-- ===== 净盈利面板 ===== -->
+    <section class="page-panel profit-panel" id="page-profit">
+      <div class="section-head">
+        <h2>净盈利教程</h2>
+      </div>
+      <section class="profit-canvas">
+        <div class="commission" style="padding-bottom:0;">
+          <div class="profit-card">
+            <div class="profit-summary">
+              <div class="person">🧔<span class="badge">A</span></div>
+              <div class="profit-lines">
+                <div>直属净盈利=8000+12000=<span class="orange">20000</span></div>
+                <div>直属佣金=20000×5%=<span class="orange">1000</span></div>
+                <div class="profit-depth-2">其他佣金=40000×(5%−3%)=<span class="orange">800</span></div>
+                <div class="profit-level-3">三级极差=18000×(5%−2%)=<span class="orange">540</span></div>
+                <div id="profitTotalLine">本期佣金=<span class="orange">2340</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tree profit-flow bet-flowchart" style="min-height:auto;position:relative;">
+            <div class="bet-flow-section">
+              <div class="bet-flow-section-title">代理层级结构</div>
+              <div class="bet-flow-grid">
+                <div class="flow-node b1">
+                  <b>直属下级 B1</b>
+                  净盈利 8000<br>佣金比例 5%<br>贡献A直属佣金 <span class="orange">400</span>
+                </div>
+                <div class="flow-node b2">
+                  <b>直属下级 B2</b>
+                  净盈利 12000<br>佣金比例 5%<br>贡献A直属佣金 <span class="orange">600</span>
+                </div>
+              </div>
+              <div class="flow-arrow-row triple profit-depth-2"><span>↓</span><span>↓</span><span>↓</span></div>
+              <div class="bet-flow-grid profit-depth-2">
+                <div class="flow-node c1">
+                  <b>间接下级 C1</b>
+                  净盈利 22000<br>极差比例 2%<br>贡献A极差佣金 <span class="orange">440</span>
+                </div>
+                <div class="flow-node c2">
+                  <b>间接下级 C2</b>
+                  净盈利 18000<br>极差比例 2%<br>贡献A极差佣金 <span class="orange">360</span>
+                </div>
+                <div class="flow-node c3">
+                  <b>间接下级 C3</b>
+                  净盈利 18000<br>极差比例 3%<br>贡献A极差佣金 <span class="orange">540</span>
+                </div>
+              </div>
+              <div class="flow-arrow-row profit-level-3"><span>↓</span></div>
+              <div class="bet-flow-grid profit-level-3">
+                <div class="flow-node n">
+                  <b>N 级下级</b>
+                  <span id="profitLayerHint">无数级时，可继续向下计算范围内的净盈利极差佣金。</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flow-dashed"></div>
+
+            <div class="bet-flow-section">
+              <div class="bet-flow-section-title">佣金计算</div>
+              <div class="flow-calc-grid">
+                <div class="flow-node calc">
+                  <b>净盈利公式</b>
+                  总输额 − 总赢额 − 优惠 − 成本
+                </div>
+                <div class="flow-node calc">
+                  <b>直属佣金</b>
+                  20000 × 5% = <span class="orange">1000</span>
+                </div>
+                <div class="flow-node calc profit-depth-2">
+                  <b>其他佣金</b>
+                  40000 × (5%−3%) = <span class="orange">800</span>
+                </div>
+                <div class="flow-node calc profit-level-3">
+                  <b>三级极差</b>
+                  18000 × (5%−2%) = <span class="orange">540</span>
+                </div>
+                <div class="flow-node calc total wide">
+                  <b>本期总佣金</b>
+                  <span id="profitFlowTotal">1000 + 800 + 540 = <span class="orange">2340</span></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <article class="guide" id="profitGuide">
+        <h3>净盈利模式说明</h3>
+        <p>净盈利 = 会员总输额 − 会员总赢额 − 优惠奖励 − 平台成本。代理按下级在结算周期内产生的净盈利作为业绩。</p>
+        <p id="profitLayerText">当前按三级示例展示：A 可获得直属 B 层的直属佣金，也可获得 C 层产生的极差佣金。</p>
+        <p><strong>示例：</strong>A 的直属下级 B1、B2 产生净盈利 20000，A 返佣比例 5%，直属佣金 1000。</p>
+        <p class="profit-depth-2"><strong>二级极差：</strong>B 层下级总净盈利 40000，比例差 2%，其他佣金 800。</p>
+        <p class="profit-level-3"><strong>三级极差：</strong>第三级净盈利 18000，比例差 3%，极差佣金 540。</p>
+        <p id="profitTotalText"><strong>本期佣金：</strong>1000 + 800 + 540 = <span class="orange">2340</span>。</p>
+      </article>
+    </section>
+
+    <!-- ===== 占位面板 ===== -->
+    <section class="page-panel" id="page-all-data">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">📊</div>
+        <h2>全部数据</h2>
+        <p>展示代理推广相关的整体数据概览，保留原页面入口内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-my-data">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">📈</div>
+        <h2>我的数据</h2>
+        <p>展示当前代理本人维度的数据统计，保留原页面入口内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-performance">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">🏅</div>
+        <h2>我的表现</h2>
+        <p>展示当前代理的业绩表现与达标情况，保留原页面入口内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-my-commission">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">💰</div>
+        <h2>我的佣金</h2>
+        <p>展示当前代理本期及历史佣金数据，保留原页面入口内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-direct-data">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">👥</div>
+        <h2>直属数据</h2>
+        <p>保留原有推广页入口，点击导航后展示对应图标和原页面内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-bets">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">🎯</div>
+        <h2>下级的赌注</h2>
+        <p>保留原有推广页入口，点击导航后展示对应图标和原页面内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-finance">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">💳</div>
+        <h2>直属财务</h2>
+        <p>保留原有推广页入口，点击导航后展示对应图标和原页面内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-receive">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">🧾</div>
+        <h2>直属领取</h2>
+        <p>保留原有推广页入口，点击导航后展示对应图标和原页面内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-overview">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">🧩</div>
+        <h2>下级总览</h2>
+        <p>保留原有推广页入口，点击导航后展示对应图标和原页面内容。</p>
+      </div>
+    </section>
+    <section class="page-panel" id="page-ratio">
+      <div class="ratio-page" id="ratioPage">
+        <div class="ratio-content" id="ratioContent"></div>
+      </div>
+    </section>
+    <section class="page-panel" id="page-open">
+      <div class="nav-placeholder">
+        <div class="placeholder-icon">👥</div>
+        <h2>直属开户</h2>
+        <p>保留原有推广页入口，点击导航后展示对应图标和原页面内容。</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== 调试面板 ===== -->
+  <aside class="front-debug" aria-label="调试控制面板">
+    <h3>调试控制面板</h3>
+    <div class="debug-row">
+      <label for="debugMode">教程模式</label>
+      <select id="debugMode">
+        <option value="bet">有效投注</option>
+        <option value="multi">多奖励模式</option>
+        <option value="profit">净盈利模式</option>
+      </select>
+    </div>
+
+    <div class="debug-field" data-debug-field="bet">
+      <div class="debug-row">
+        <label for="debugBetLayer">计算层数</label>
+        <select id="debugBetLayer" data-custom="debugBetCustom">
+          <option>只算一级</option>
+          <option>最多两级</option>
+          <option>最多三级</option>
+          <option>最多四级</option>
+          <option>最多五级</option>
+          <option>无数级</option>
+          <option>自定义层数</option>
+        </select>
+      </div>
+      <input class="debug-input hidden" id="debugBetCustom" type="number" min="6" max="998" placeholder="自定义层数 6-998" />
+    </div>
+
+    <div class="debug-field hidden" data-debug-field="multi">
+      <div class="debug-row">
+        <label for="debugMultiLayer">计算层数</label>
+        <select id="debugMultiLayer">
+          <option>最多两级</option>
+          <option selected>最多三级</option>
+        </select>
+      </div>
+      <span class="debug-field-title">佣金赠送维度</span>
+      <div class="debug-checks">
+        <label><input class="debug-reward" type="checkbox" value="首充佣金" checked>首充佣金</label>
+        <label><input class="debug-reward" type="checkbox" value="充值佣金" checked>充值佣金</label>
+        <label><input class="debug-reward" type="checkbox" value="投注佣金" checked>投注佣金</label>
+      </div>
+      <div class="debug-warning" id="debugRewardWarn">至少保留一个佣金维度</div>
+    </div>
+
+    <div class="debug-field hidden" data-debug-field="profit">
+      <div class="debug-row">
+        <label for="debugProfitLayer">计算层数</label>
+        <select id="debugProfitLayer" data-custom="debugProfitCustom">
+          <option>只算一级</option>
+          <option>最多两级</option>
+          <option>最多三级</option>
+          <option>最多四级</option>
+          <option>最多五级</option>
+          <option>无数级</option>
+          <option>自定义层数</option>
+        </select>
+      </div>
+      <input class="debug-input hidden" id="debugProfitCustom" type="number" min="6" max="998" placeholder="自定义层数 6-998" />
+    </div>
+
+    <div class="debug-summary" id="debugSummary">当前：有效投注 / 只算一级</div>
+  </aside>
+
+  <script>
+    const navButtons   = document.querySelectorAll(".nav button");
+    const pagePanels   = document.querySelectorAll(".page-panel");
+    const debugMode    = document.getElementById("debugMode");
+    const debugSummary = document.getElementById("debugSummary");
+    const debugRewardWarn = document.getElementById("debugRewardWarn");
+    const tabs  = document.querySelectorAll(".tab");
+    const panes = {
+      a:  document.getElementById("pane-a"),
+      b1: document.getElementById("pane-b1"),
+      b2: document.getElementById("pane-b2"),
+    };
+    const copyBlocks = document.querySelectorAll("[data-copy]");
+
+    tabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const key = tab.dataset.tab;
+        tabs.forEach(t => t.classList.toggle("active", t === tab));
+        Object.entries(panes).forEach(([name, pane]) => pane.classList.toggle("hidden", name !== key));
+        copyBlocks.forEach(block => block.classList.toggle("hidden", block.dataset.copy !== key));
+      });
+    });
+
+    navButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const page = button.dataset.page;
+        navButtons.forEach(b => b.classList.toggle("active", b === button));
+        if (page === "tutorial") { renderDebugTutorial(); return; }
+        if (page === "ratio") { renderRatioPage(); }
+        const phone = document.querySelector(".phone");
+        phone?.classList.toggle("ratio-active", page === "ratio");
+        phone?.classList.toggle("hide-promo", page !== "tutorial");
+        pagePanels.forEach(panel => panel.classList.toggle("active", panel.id === `page-${page}`));
+      });
+    });
+
+    function showPanel(id) {
+      pagePanels.forEach(panel => panel.classList.toggle("active", panel.id === id));
+      const phone = document.querySelector(".phone");
+      phone?.classList.toggle("ratio-active", id === "page-ratio");
+      phone?.classList.toggle("hide-promo", id !== "page-tutorial" && id !== "page-multi" && id !== "page-profit");
+      const page = id.replace(/^page-/, "");
+      const navPage = page === "multi" || page === "profit" ? "tutorial" : page;
+      navButtons.forEach(button => button.classList.toggle("active", button.dataset.page === navPage));
+    }
+
+    function syncCustomLayer(select) {
+      const target = document.getElementById(select.dataset.custom);
+      if (!target) return;
+      target.classList.toggle("hidden", select.value !== "自定义层数");
+    }
+
+    function selectedRewards() {
+      return [...document.querySelectorAll(".debug-reward")].filter(item => item.checked);
+    }
+
+    function formatAmount(value) {
+      return Number.isInteger(value) ? String(value) : value.toFixed(1);
+    }
+
+    const ratioState = { reward: "投注佣金" };
+    const venueRows = [
+      ["1", "100 +", "0.12 (0.12%)"],
+      ["2", "200 +", "0.40 (0.20%)"],
+      ["3", "300 +", "0.90 (0.30%)"],
+      ["4", "400 +", "1.60 (0.40%)"],
+      ["5", "500 +", "2.50 (0.50%)"],
+    ];
+    const profitRatioRows = [
+      ["1", "100 +", "2.00%"],
+      ["2", "10000 +", "5.00%"],
+      ["3", "50000 +", "8.00%"],
+      ["4", "100000 +", "10.00%"],
+      ["5", "300000 +", "12.00%"],
+    ];
+    const rewardRatioRows = {
+      "首充佣金": {
+        title: "首次充值佣金对照表",
+        headers: ["首充人数", "一级首充佣金"],
+        rows: [["1", "50"], ["2", "100"], ["3", "200"]],
+      },
+      "充值佣金": {
+        title: "充值返佣金额对照表",
+        headers: ["充值金额", "一级充值返佣", "二级充值返佣", "三级充值返佣"],
+        rows: [["100", "2.00%", "1.00%", "0.50%"], ["1000", "3.00%", "1.50%", "0.80%"], ["5000", "5.00%", "2.00%", "1.00%"]],
+      },
+      "投注佣金": {
+        title: "投注返佣金额对照表",
+        headers: ["有效投注", "一级投注返佣", "二级投注返佣", "三级投注返佣"],
+        rows: [["1", "15.00%", "5.00%", "2.00%"], ["200", "25.00%", "10.00%", "4.00%"], ["300", "35.00%", "15.00%", "6.00%"]],
+      },
+    };
+
+    function renderRatioPage() {
+      const ratioPage = document.getElementById("ratioPage");
+      const ratioContent = document.getElementById("ratioContent");
+      if (!ratioPage || !ratioContent) return;
+      const mode = debugMode.value;
+
+      if (mode === "multi") {
+        const rewards = selectedRewards().map(item => item.value);
+        const isTwoLevel = document.getElementById("debugMultiLayer")?.value === "最多两级";
+        if (!rewards.includes(ratioState.reward)) ratioState.reward = rewards.includes("投注佣金") ? "投注佣金" : rewards[0];
+        ratioPage.classList.add("dark");
+        const tabsHtml = rewards.map(reward => `<button class="ratio-reward-tab${reward === ratioState.reward ? " active" : ""}" type="button" data-ratio-reward="${reward}">${reward === "首充佣金" ? "首次充值佣金" : reward}</button>`).join("");
+        const current = rewardRatioRows[ratioState.reward];
+        const headers = current && isTwoLevel && ratioState.reward !== "首充佣金" ? current.headers.slice(0, 3) : current?.headers;
+        const rows = current && isTwoLevel && ratioState.reward !== "首充佣金" ? current.rows.map(row => row.slice(0, 3)) : current?.rows;
+        const tableHtml = current
+          ? `<div class="ratio-reward-card">
+              <h3 class="ratio-reward-title">${current.title}</h3>
+              <table class="ratio-reward-table">
+                <thead><tr>${headers.map(head => `<th>${head}</th>`).join("")}</tr></thead>
+                <tbody>${rows.map(row => `<tr>${row.map((cell, index) => `<td class="${index > 0 ? "yellow" : ""}">${cell}</td>`).join("")}</tr>`).join("")}</tbody>
+              </table>
+            </div>`
+          : `<div class="ratio-empty">请选择至少一个佣金赠送维度</div>`;
+        ratioContent.innerHTML = `
+          <div class="ratio-reward-tabs">${tabsHtml}</div>
+          <div class="ratio-dark-card">
+            <h3>代理佣金规则解释</h3>
+            <p>1、佣金按配置的赠送维度分别计算，当前仅展示调试面板已勾选的维度。</p>
+            <p>2、充值佣金、投注佣金按层级比例计算；选择最多两级时，不展示三级返佣列。</p>
+          </div>
+          ${tableHtml}`;
+        ratioContent.querySelectorAll("[data-ratio-reward]").forEach(button => {
+          button.addEventListener("click", () => {
+            ratioState.reward = button.dataset.ratioReward;
+            renderRatioPage();
+          });
+        });
+        return;
+      }
+
+      ratioPage.classList.remove("dark");
+      const isProfit = mode === "profit";
+      const rows = isProfit ? profitRatioRows : venueRows;
+      const tableTitle = isProfit ? "总净盈利" : "有效投注 (¥)";
+      ratioContent.innerHTML = `
+        <div class="ratio-layout">
+          ${isProfit ? "" : `<div class="ratio-venues">
+            <div class="ratio-venue"><span class="ratio-venue-icon">🐟</span><span>捕鱼</span></div>
+            <div class="ratio-venue"><span class="ratio-venue-icon">🧑</span><span>真人</span></div>
+            <div class="ratio-venue active"><span class="ratio-venue-icon">777</span><span>电子</span></div>
+            <div class="ratio-venue"><span class="ratio-venue-icon">🐓</span><span>斗鸡</span></div>
+            <div class="ratio-venue"><span class="ratio-venue-icon">🃏</span><span>棋牌</span></div>
+            <div class="ratio-venue"><span class="ratio-venue-icon">⚽</span><span>体育</span></div>
+            <div class="ratio-venue"><span class="ratio-venue-icon">✺</span><span>彩票</span></div>
+          </div>`}
+          <div class="ratio-card" style="${isProfit ? "grid-column:1 / -1;" : ""}">
+            <table class="ratio-table">
+              <thead><tr><th>等级</th><th>${tableTitle}</th><th>佣金</th></tr></thead>
+              <tbody>${rows.map(row => `<tr><td>${row[0]}</td><td>${row[1]}</td><td class="ratio-commission">${row[2]}</td></tr>`).join("")}</tbody>
+            </table>
+          </div>
+        </div>`;
+    }
+
+    function syncMultiRewardTutorial(rewards, layer) {
+      const isTwoLevel = layer === "最多两级";
+      const multiPanel = document.getElementById("page-multi");
+      multiPanel.classList.toggle("two-level", isTwoLevel);
+
+      // 旧结构 data-reward-block（保持兼容）
+      document.querySelectorAll("[data-reward-block]").forEach(block => {
+        block.classList.toggle("hidden", !rewards.includes(block.dataset.rewardBlock));
+      });
+      document.querySelectorAll("[data-reward-table]").forEach(row => {
+        const rewardHidden = !rewards.includes(row.dataset.rewardTable);
+        const levelHidden  = isTwoLevel && row.dataset.level === "3";
+        row.classList.toggle("hidden", rewardHidden || levelHidden);
+      });
+      document.querySelectorAll("[data-reward-text]").forEach(text => {
+        text.classList.toggle("hidden", !rewards.includes(text.dataset.rewardText));
+      });
+      document.querySelectorAll("[data-level='3']").forEach(item => {
+        item.classList.toggle("hidden", isTwoLevel);
+      });
+
+      // 佣金汇总卡保留一级、二级；选择最多两级时仅隐藏三级。
+      document.querySelectorAll(".multi-reward-item[data-level='2']").forEach(item => {
+        item.classList.remove("hidden");
+      });
+      document.querySelectorAll(".multi-reward-item[data-level='3']").forEach(item => {
+        item.classList.toggle("hidden", isTwoLevel);
+      });
+
+      // 新树结构：根据 rewards 控制 .mt-node 内各数据行可见性
+      document.querySelectorAll(".mt-node [data-reward-block]").forEach(el => {
+        el.classList.toggle("hidden", !rewards.includes(el.dataset.rewardBlock));
+      });
+      // 若 B 节点所有数据行都隐藏（只有首充佣金 b 标签也在 data-reward-block 里），
+      // 节点本身保持显示（始终显示节点框），只隐藏数值行
+
+      // 三级列整体
+      document.querySelectorAll(".mt-level-3").forEach(el => {
+        el.classList.toggle("hidden", isTwoLevel);
+      });
+
+      const amounts = {
+        "首充佣金": 200,
+        "充值佣金": isTwoLevel ? 33 : 38,
+        "投注佣金": isTwoLevel ? 26.8 : 36.4,
+      };
+      const parts   = rewards.map(reward => ({ name: reward, value: amounts[reward] }));
+      const total   = parts.reduce((sum, item) => sum + item.value, 0);
+      const formula = parts.map(item => formatAmount(item.value)).join("+") || "0";
+      const rewardNames = rewards.join("、");
+
+      const intro         = document.getElementById("multiIntro");
+      const relation      = document.getElementById("multiRelationText");
+      const totalLine     = document.getElementById("multiTotalLine");
+      const totalText     = document.getElementById("multiTotalText");
+      const rechargeTotal = document.getElementById("rechargeTotalText");
+      const betTotal      = document.getElementById("betTotalText");
+      const summaryRechargeLevel2 = document.getElementById("summaryRechargeLevel2");
+      const summaryRechargeLevel3 = document.getElementById("summaryRechargeLevel3");
+      const summaryBetLevel2      = document.getElementById("summaryBetLevel2");
+      const summaryBetLevel3      = document.getElementById("summaryBetLevel3");
+      const multiRechargeCalc     = document.getElementById("multiRechargeCalc");
+      const multiBetCalc          = document.getElementById("multiBetCalc");
+      const multiFlowTotal        = document.getElementById("multiFlowTotal");
+
+      if (intro)         intro.textContent = `多奖励模式当前启用：${rewardNames}。只要满足启用维度中的任意条件，都会按对应层级给上级贡献佣金。`;
+      if (relation)      relation.textContent = isTwoLevel
+        ? "当前调试为最多两级：A 发展 B1、B2、B3，B1/B2/B3 再发展 C1、C2、C3；D 级不参与本次佣金计算。"
+        : "当前调试为最多三级：A 发展 B1、B2、B3；B1/B2/B3 再发展 C1、C2、C3；C1/C2/C3 分别发展 D1、D2、D3。";
+      if (rechargeTotal) rechargeTotal.textContent = formatAmount(amounts["充值佣金"]);
+      if (betTotal)      betTotal.textContent = formatAmount(amounts["投注佣金"]);
+      if (summaryRechargeLevel2) summaryRechargeLevel2.textContent = "11.00";
+      if (summaryRechargeLevel3) summaryRechargeLevel3.textContent = isTwoLevel ? "0.00" : "5.00";
+      if (summaryBetLevel2)      summaryBetLevel2.textContent = "12.80";
+      if (summaryBetLevel3)      summaryBetLevel3.textContent = isTwoLevel ? "0.00" : "9.60";
+      if (multiRechargeCalc)     multiRechargeCalc.textContent = formatAmount(amounts["充值佣金"]);
+      if (multiBetCalc)          multiBetCalc.textContent = formatAmount(amounts["投注佣金"]);
+      if (multiFlowTotal)        multiFlowTotal.innerHTML = `${formula}=<span class="multi-money">${formatAmount(total)}</span>`;
+      if (totalLine)     totalLine.innerHTML  = `本期佣金=${formula}=<span class="multi-money">${formatAmount(total)}</span>`;
+      if (totalText)     totalText.innerHTML  = `4、本期佣金 = ${parts.map(item => item.name).join(" + ")} = <span class="orange">${formula} = ${formatAmount(total)}</span>。`;
+    }
+
+    function syncProfitTutorial(layer, customValue) {
+      const panel    = document.getElementById("page-profit");
+      const oneLevel = layer === "只算一级";
+      const twoLevel = layer === "最多两级";
+      panel.classList.toggle("one-level", oneLevel);
+      panel.classList.toggle("two-level", twoLevel);
+
+      const totals = oneLevel
+        ? { total: 1000, formula: "直属佣金 1000", text: "当前按只算一级展示：A 只获得直属下级 B1、B2 产生的净盈利返佣，不计算 C 层及更深层级。" }
+        : twoLevel
+          ? { total: 1800, formula: "直属佣金 1000 + 二级极差 800", text: "当前按最多两级展示：A 获得直属佣金，并计算 B 层下一级产生的极差佣金。" }
+          : { total: 2340, formula: "直属佣金 1000 + 二级极差 800 + 三级极差 540", text: `${layer === "自定义层数" && customValue ? `当前按自定义 ${customValue} 层展示` : `当前按${layer}展示`}：A 可获得层级范围内的净盈利直属佣金与极差佣金。` };
+
+      const totalLine = document.getElementById("profitTotalLine");
+      const layerText = document.getElementById("profitLayerText");
+      const totalText = document.getElementById("profitTotalText");
+      const flowTotal = document.getElementById("profitFlowTotal");
+      const hint      = document.getElementById("profitLayerHint");
+      // 动态流程树高度
+      if (totalLine) totalLine.innerHTML = `本期佣金=<span class="orange">${totals.total}</span>`;
+      if (layerText) layerText.textContent = totals.text;
+      if (totalText) totalText.innerHTML  = `<strong>本期佣金：</strong>${totals.formula} = <span class="orange">${totals.total}</span>。`;
+      if (flowTotal) flowTotal.innerHTML  = `${totals.formula.replaceAll("直属佣金 ", "").replaceAll("二级极差 ", "").replaceAll("三级极差 ", "")} = <span class="orange">${totals.total}</span>`;
+      if (hint)      hint.textContent = layer === "自定义层数" && customValue
+        ? `当前自定义为 ${customValue} 层，超过该层级的净盈利不参与本次佣金计算。`
+        : `${layer}时，系统按配置层级计算净盈利极差佣金。`;
+    }
+
+    function syncBetTutorial(layer, customValue) {
+      const panel    = document.getElementById("page-tutorial");
+      const oneLevel = layer === "只算一级";
+      const twoLevel = layer === "最多两级";
+      panel.classList.toggle("bet-one", oneLevel);
+      panel.classList.toggle("bet-two", twoLevel);
+
+      // 切换视图：一级用专属视图，其他用多级 tabs 视图
+      const oneLevelCanvas   = document.getElementById("one-level-canvas");
+      const multiLevelTabs   = document.getElementById("multi-level-tabs");
+      const multiLevelCanvas = document.getElementById("multi-level-canvas");
+      const guideEl          = document.getElementById("guide");
+      if (oneLevelCanvas)   oneLevelCanvas.style.display   = oneLevel ? "block" : "none";
+      if (multiLevelTabs)   multiLevelTabs.style.display   = oneLevel ? "none"  : "flex";
+      if (multiLevelCanvas) multiLevelCanvas.style.display = oneLevel ? "none"  : "block";
+      if (guideEl)          guideEl.style.display          = oneLevel ? "none"  : "block";
+
+      // 多级视图树高度
+      if (!oneLevel) {
+        const treeA  = document.querySelector(".tree-a");
+        const treeBs = document.querySelectorAll(".tree-b1, .tree-b2");
+        if (treeA && !treeA.classList.contains("bet-flowchart")) treeA.style.minHeight = twoLevel ? "380px" : "540px";
+        treeBs.forEach(t => t.style.minHeight = "360px");
+        if (multiLevelCanvas) multiLevelCanvas.style.minHeight = twoLevel ? "520px" : "680px";
+      }
+
+      document.querySelectorAll("#pane-a .green-note").forEach(el => {
+        el.classList.toggle("hidden", twoLevel);
+      });
+
+      // 多级视图汇总行（A视角）
+      const summary = document.querySelector("#pane-a .summary-lines");
+      if (summary && !oneLevel) {
+        summary.innerHTML = `<div>直属业绩=500+3000=3500</div><div>直属佣金=3500×3%=<span class="orange">105</span></div><div>其他佣金=<span class="orange">20</span>+<span class="orange">40</span>=<span class="orange">60</span></div><div>本期佣金=<span class="orange">105</span>+<span class="orange">60</span>=<span class="orange">165</span></div>`;
+      }
+
+      // 层级说明文字
+      const layerText = document.getElementById("betLayerText");
+      if (layerText) {
+        if (oneLevel) {
+          layerText.textContent = "当前按只算一级展示：A 只获得直属下级 B1、B2 产生的有效投注佣金，不计算 C 层及更深层级。";
+        } else if (twoLevel) {
+          layerText.textContent = "当前按最多两级展示：A 获得直属 B 层佣金，并计算 C 层产生的极差佣金，不继续向下计算更深层级。";
+        } else if (layer === "自定义层数" && customValue) {
+          layerText.textContent = `当前按自定义 ${customValue} 层展示：系统只计算配置层级范围内的有效投注佣金。`;
+        } else {
+          layerText.textContent = `当前按${layer}展示：A 可获得层级范围内的直属佣金与极差佣金。`;
+        }
+      }
+    }
+
+    function renderDebugTutorial() {
+      const mode = debugMode.value;
+      const activePage = document.querySelector(".page-panel.active")?.id;
+      document.querySelectorAll("[data-debug-field]").forEach(field => {
+        field.classList.toggle("hidden", field.dataset.debugField !== mode);
+      });
+
+      if (mode === "multi") {
+        const selected = selectedRewards();
+        if (selected.length === 0) {
+          const first = document.querySelector(".debug-reward");
+          if (first) first.checked = true;
+        }
+        const rewards = selectedRewards().map(item => item.value);
+        const layer   = document.getElementById("debugMultiLayer").value;
+        syncMultiRewardTutorial(rewards, layer);
+        renderRatioPage();
+        if (activePage === "page-ratio") {
+          showPanel("page-ratio");
+          debugSummary.textContent = `当前：多奖励模式 / ${layer} / ${rewards.join("、")}`;
+          debugRewardWarn.classList.remove("show");
+          return;
+        }
+        showPanel("page-multi");
+        debugSummary.textContent = `当前：多奖励模式 / ${layer} / ${rewards.join("、")}`;
+        debugRewardWarn.classList.remove("show");
+        return;
+      }
+
+      const isProfit   = mode === "profit";
+      const layerSelect = document.getElementById(isProfit ? "debugProfitLayer" : "debugBetLayer");
+      syncCustomLayer(layerSelect);
+      const customInput = document.getElementById(isProfit ? "debugProfitCustom" : "debugBetCustom");
+      const customText  = layerSelect.value === "自定义层数" && customInput?.value ? `（${customInput.value}层）` : "";
+
+      if (isProfit) {
+        syncProfitTutorial(layerSelect.value, customInput?.value || "");
+        renderRatioPage();
+        if (activePage === "page-ratio") {
+          showPanel("page-ratio");
+          debugSummary.textContent = `当前：净盈利模式 / ${layerSelect.value}${customText}`;
+          return;
+        }
+        showPanel("page-profit");
+        debugSummary.textContent = `当前：净盈利模式 / ${layerSelect.value}${customText}`;
+        return;
+      }
+      syncBetTutorial(layerSelect.value, customInput?.value || "");
+      renderRatioPage();
+      if (activePage === "page-ratio") {
+        showPanel("page-ratio");
+        debugSummary.textContent = `当前：有效投注 / ${layerSelect.value}${customText}`;
+        return;
+      }
+      showPanel("page-tutorial");
+      const title = document.querySelector("#page-tutorial .section-head h2");
+      if (title) title.textContent = "代理教程";
+      debugSummary.textContent = `当前：有效投注 / ${layerSelect.value}${customText}`;
+    }
+
+    document.querySelectorAll("#debugBetLayer, #debugProfitLayer").forEach(select => {
+      select.addEventListener("change", renderDebugTutorial);
+    });
+    document.getElementById("debugMultiLayer").addEventListener("change", renderDebugTutorial);
+    document.querySelectorAll("#debugBetCustom, #debugProfitCustom").forEach(input => {
+      input.addEventListener("input", renderDebugTutorial);
+    });
+    debugMode.addEventListener("change", renderDebugTutorial);
+    document.querySelectorAll(".debug-reward").forEach(item => {
+      item.addEventListener("change", () => {
+        if (selectedRewards().length === 0) {
+          item.checked = true;
+          debugRewardWarn.classList.add("show");
+        } else {
+          debugRewardWarn.classList.remove("show");
+        }
+        renderDebugTutorial();
+      });
+    });
+    renderDebugTutorial();
+  </script>
+</body>
+</html>

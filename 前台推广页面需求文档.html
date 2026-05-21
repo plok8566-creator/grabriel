@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>前台推广页面需求文档</title>
+  <style>
+    :root {
+      --brand: #0052d9;
+      --brand-hover: #366ef4;
+      --text-1: rgba(0, 0, 0, .9);
+      --text-2: rgba(0, 0, 0, .62);
+      --border: #e7edf5;
+      --bg: #f5f7fb;
+      --card: #fff;
+      --warn: #ed7b2f;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding-top: 54px;
+      background: var(--bg);
+      color: var(--text-1);
+      font: 14px/1.75 "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+    .global-links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(15, 40, 80, .08);
+      backdrop-filter: blur(8px);
+    }
+    .global-links a {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid #cfd7e3;
+      border-radius: 6px;
+      color: var(--brand);
+      background: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .global-links a:hover {
+      border-color: var(--brand-hover);
+      background: #f8fbff;
+      color: var(--brand-hover);
+    }
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+    .hero, .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 26px rgba(15, 40, 80, .06);
+    }
+    .hero {
+      padding: 26px 28px;
+      margin-bottom: 16px;
+    }
+    .section {
+      padding: 24px 28px;
+      margin-top: 16px;
+    }
+    h1, h2, h3 { line-height: 1.35; color: var(--text-1); }
+    h1 { margin: 0 0 10px; font-size: 28px; }
+    h2 { margin: 0 0 16px; font-size: 22px; }
+    h3 { margin: 22px 0 10px; font-size: 17px; }
+    p { margin: 0 0 10px; }
+    .muted { color: var(--text-2); }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .tag {
+      padding: 4px 10px;
+      border: 1px solid #c8d8ff;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--brand);
+      font-weight: 500;
+    }
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+      padding: 18px 20px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .toc a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 18px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #f3f7ff;
+      color: var(--brand);
+      font-weight: 600;
+    }
+    ul, ol {
+      margin: 0 0 12px 22px;
+      padding: 0;
+    }
+    li { margin: 4px 0; }
+    .note {
+      padding: 12px 14px;
+      border-left: 4px solid var(--warn);
+      background: #fff7ed;
+      color: #7a3b10;
+      border-radius: 6px;
+    }
+    code {
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: #f1f4f8;
+      color: #1f2d3d;
+      font-family: Menlo, Consolas, monospace;
+    }
+  </style>
+</head>
+<body>
+  <nav class="global-links" aria-label="页面关联入口">
+    <a href="代理模式页面.html" target="_blank">代理模式页面</a>
+    <a href="后台代理模式需求文档.html" target="_blank">后台代理模式需求文档</a>
+    <a href="../后台其他页面.html" target="_blank">后台关联页面</a>
+    <a href="前台关联页面.html" target="_blank">前台关联页面（作废）</a>
+    <a href="前台推广原型页面.html" target="_blank">前台推广原型</a>
+    <a href="前台推广页面需求文档.html" target="_blank">前台推广页面需求文档</a>
+    <a href="佣金计算工具.html" target="_blank">佣金计算工具</a>
+  </nav>
+
+  <main class="page">
+    <section class="hero">
+      <h1>前台推广页面需求文档</h1>
+      <p class="muted">用于说明前台“推广赚钱”页面的导航、推广分享、代理教程、返佣比例与调试联动规则。</p>
+      <div class="meta">
+        <span class="tag">版本：V1.0</span>
+        <span class="tag">日期：2026-05-20</span>
+        <span class="tag">状态：原型需求</span>
+      </div>
+    </section>
+
+    <section class="toc" aria-label="目录">
+      <a href="#overview">1. 功能概述</a>
+      <a href="#bet">2. 有效投注模式</a>
+      <a href="#multi">3. 多奖励模式改造</a>
+      <a href="#profit">4. 净盈利模式新增</a>
+      <a href="#ratio">5. 返佣比例展示</a>
+      <a href="#rules">6. 显示与交互规则</a>
+      <a href="#acceptance">7. 验收标准</a>
+    </section>
+
+    <section class="section" id="overview">
+      <h2>1. 功能概述</h2>
+      <p>本需求文档仅描述前台推广页面中与代理模式新增/改造相关的内容，重点覆盖代理教程与返佣比例展示。</p>
+      <p>本次前台改造重点为：保留有效投注一级原功能；改造多奖励模式教程与返佣比例；新增净盈利模式教程与返佣比例展示。</p>
+      <table>
+        <thead>
+          <tr><th>模块</th><th>处理方式</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>有效投注模式</td><td>一级为原功能，不需要处理</td><td>最多两级及以上可参考现有极差返佣教程展示，前台保持有效投注口径。</td></tr>
+          <tr><td>多奖励模式</td><td>需要改造</td><td>根据后台佣金赠送维度和计算层数，动态展示教程、表格、文字和返佣比例。</td></tr>
+          <tr><td>净盈利模式</td><td>新增，需要改造</td><td>新增净盈利口径教程、净盈利公式说明、佣金计算示例和返佣比例表。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="bet">
+      <h2>2. 有效投注模式</h2>
+      <h3>2.1 处理范围</h3>
+      <p>有效投注模式中的“只算一级”为原有功能，本次前台需求不需要对一级功能做业务改造。页面如需展示一级示例，仅用于保持原有说明完整性，不改变原计算口径。</p>
+      <h3>2.2 多级展示说明</h3>
+      <table>
+        <thead>
+          <tr><th>内容</th><th>展示要求</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>层级关系</td><td>展示 A 发展 B1、B2，B1/B2 继续发展 C 级下级，并支持 N 级说明。</td></tr>
+          <tr><td>业绩字段</td><td>统一使用“有效投注”口径，不出现净盈利、充值金额等混用字段。</td></tr>
+          <tr><td>佣金构成</td><td>展示直属佣金、其他佣金、本期佣金。</td></tr>
+          <tr><td>极差说明</td><td>说明当前代理返佣比例与直属下级返佣比例的差值，即极差返佣比例。</td></tr>
+        </tbody>
+      </table>
+      <h3>2.3 示例文案要求</h3>
+      <ul>
+        <li>文案需说明“直属业绩 = 直属下级本人有效投注之和”。</li>
+        <li>文案需说明“其他佣金 = 直属下级总业绩 × 极差返佣比例”。</li>
+        <li>只算一级时，间接下级不参与当前代理佣金计算。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="multi">
+      <h2>3. 多奖励模式改造</h2>
+      <h3>3.1 改造目标</h3>
+      <p>多奖励模式前台需根据后台配置的佣金赠送维度和佣金计算层数，动态展示对应教程内容。该模式不包含净盈利佣金。</p>
+      <table>
+        <thead>
+          <tr><th>配置项</th><th>支持值</th><th>前台影响</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>佣金计算层数</td><td>最多两级、最多三级</td><td>最多两级时隐藏三级节点、三级表格列、三级说明文案。</td></tr>
+          <tr><td>佣金赠送维度</td><td>首充佣金、充值佣金、投注佣金</td><td>前台仅展示已启用维度对应的教程、表格和返佣比例。</td></tr>
+        </tbody>
+      </table>
+      <h3>3.2 教程区域</h3>
+      <table>
+        <thead>
+          <tr><th>模块</th><th>展示要求</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>顶部佣金汇总</td><td>按已启用维度展示首充佣金、充值佣金、投注佣金及本期佣金合计。</td></tr>
+          <tr><td>层级流程图</td><td>最多三级时展示 B/C/D 三层；最多两级时展示 B/C 两层。</td></tr>
+          <tr><td>节点信息</td><td>每个节点仅展示已启用维度的佣金信息，未启用维度不展示。</td></tr>
+          <tr><td>佣金计算</td><td>按启用维度分别展示计算结果，并汇总本期总佣金。</td></tr>
+          <tr><td>说明文案</td><td>文案需动态说明当前启用的佣金维度和层级范围。</td></tr>
+        </tbody>
+      </table>
+      <h3>3.3 返佣比例区域</h3>
+      <ul>
+        <li>返佣比例页面顶部展示已启用维度按钮，如“首次充值佣金、充值佣金、投注佣金”。</li>
+        <li>切换按钮后展示对应维度的返佣比例表。</li>
+        <li>选择最多两级时，充值佣金和投注佣金表格不展示三级返佣列。</li>
+        <li>至少保留一个佣金维度；如果后台未返回任何维度，前台需给出兜底提示。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="profit">
+      <h2>4. 净盈利模式新增</h2>
+      <h3>4.1 新增目标</h3>
+      <p>新增净盈利模式前台教程和返佣比例展示。净盈利模式需完全使用净盈利口径，不得复用有效投注字段文案。</p>
+      <h3>4.2 净盈利定义</h3>
+      <p>净盈利指会员在结算周期内产生的：<code>总输额 - 总赢额 - 优惠金额 - 平台成本</code>。</p>
+      <table>
+        <thead>
+          <tr><th>字段</th><th>说明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>总输额</td><td>会员周期内游戏下注输掉的金额。</td></tr>
+          <tr><td>总赢额</td><td>会员周期内游戏赢得的金额。</td></tr>
+          <tr><td>优惠金额</td><td>会员获得的返水、红包、彩金、活动奖励等。</td></tr>
+          <tr><td>平台成本</td><td>平台按配置分摊的成本，默认为 0。</td></tr>
+        </tbody>
+      </table>
+      <h3>4.3 教程区域</h3>
+      <table>
+        <thead>
+          <tr><th>模块</th><th>展示要求</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>模式说明</td><td>说明当前代理模式按净盈利计算佣金，并展示净盈利公式。</td></tr>
+          <tr><td>层级关系</td><td>展示 A、B、C、N 级代理关系，结构参考有效投注多级教程。</td></tr>
+          <tr><td>业绩字段</td><td>节点内展示“净盈利”贡献金额，不展示有效投注字段。</td></tr>
+          <tr><td>返佣比例</td><td>根据代理总净盈利命中对应返佣比例。</td></tr>
+          <tr><td>佣金计算</td><td>展示直属佣金、其他佣金、本期佣金。</td></tr>
+          <tr><td>异常说明</td><td>净盈利为负会降低上级总净盈利；代理总净盈利为负时按最低档或 0% 处理，不倒扣。</td></tr>
+        </tbody>
+      </table>
+      <h3>4.4 返佣比例区域</h3>
+      <ul>
+        <li>净盈利返佣比例表不展示场馆分类。</li>
+        <li>表格字段为：等级、总净盈利、佣金。</li>
+        <li>展示样式参考有效投注返佣比例表，但字段文案需替换为净盈利口径。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="ratio">
+      <h2>5. 返佣比例展示</h2>
+      <p>返佣比例页面只描述本次新增/改造模式相关展示，不改变其他已有页面入口。</p>
+      <table>
+        <thead>
+          <tr><th>模式</th><th>是否处理</th><th>展示要求</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>有效投注</td><td>原功能保留</td><td>按原有效投注场馆分类和返佣比例表展示。</td></tr>
+          <tr><td>多奖励模式</td><td>需要改造</td><td>按启用维度动态展示首充、充值、投注返佣比例。</td></tr>
+          <tr><td>净盈利模式</td><td>新增</td><td>展示净盈利返佣比例，不展示场馆分类。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="section" id="rules">
+      <h2>6. 显示与交互规则</h2>
+      <ol>
+        <li>页面主容器宽度使用手机尺寸，当前原型为 <code>390px</code>，小屏时自适应 <code>100vw</code>。</li>
+        <li>教程中的流程图、表格、说明文案需与当前代理模式一致。</li>
+        <li>多奖励模式根据后台启用维度动态展示，不展示未启用维度。</li>
+        <li>净盈利模式所有字段和说明统一使用净盈利口径。</li>
+        <li>页面文字需避免翻译腔，公式和示例要与当前模式一致。</li>
+      </ol>
+      <div class="note">说明：当前文档聚焦代理教程与返佣比例的前台展示要求，正式接入时需以后端代理模式配置为准。</div>
+    </section>
+
+    <section class="section" id="acceptance">
+      <h2>7. 验收标准</h2>
+      <ul>
+        <li>有效投注一级保持原功能，不因本次需求改变计算逻辑。</li>
+        <li>多奖励模式可根据佣金维度和层数展示对应教程内容和返佣比例。</li>
+        <li>净盈利模式可展示净盈利公式、层级关系、佣金计算和返佣比例。</li>
+        <li>多奖励模式不出现净盈利佣金维度。</li>
+        <li>净盈利模式不出现有效投注口径混用。</li>
+        <li>移动端宽度下页面无明显横向溢出，表格和卡片内容可读。</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>

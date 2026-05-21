@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>代理佣金模拟器 · 多奖励维度可配置</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f1f5f9;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: calc(54px + 1.5rem) 1.5rem 1.5rem;
+            color: #0f172a;
+        }
+
+        .global-links {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 300;
+            height: 54px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 18px;
+            overflow-x: auto;
+            background: rgba(255, 255, 255, .96);
+            border-bottom: 1px solid #e7edf5;
+            box-shadow: 0 4px 14px rgba(15, 40, 80, .08);
+            backdrop-filter: blur(8px);
+        }
+        .global-links a {
+            display: inline-flex;
+            align-items: center;
+            height: 32px;
+            padding: 0 12px;
+            border: 1px solid #cfd7e3;
+            border-radius: 6px;
+            color: #0052d9;
+            background: #fff;
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .global-links a:hover {
+            border-color: #366ef4;
+            background: #f8fbff;
+            color: #366ef4;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #1e293b, #2c5282);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .sub {
+            text-align: center;
+            color: #475569;
+            margin-bottom: 2rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(520px, 1fr));
+            gap: 1.8rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 1.8rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            border: 1px solid #e2edff;
+            transition: 0.2s;
+        }
+
+        .card-header {
+            padding: 1rem 1.5rem;
+            background: #fefefe;
+            border-bottom: 2px solid #eef2ff;
+        }
+
+        .card-header h2 {
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+        }
+
+        .mode-badge {
+            background: #eef2ff;
+            padding: 0.2rem 0.8rem;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1e40af;
+        }
+
+        .card-content {
+            padding: 1.2rem 1.5rem 1.5rem;
+        }
+
+        .control-group {
+            background: #f8fafc;
+            border-radius: 1rem;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1.2rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            margin-bottom: 0.8rem;
+        }
+
+        .field {
+            flex: 1;
+            min-width: 110px;
+        }
+
+        .field label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            display: block;
+            color: #334155;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.4rem 0.6rem;
+            border-radius: 0.7rem;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-size: 0.8rem;
+        }
+        input[readonly] {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 1.2rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 6px;
+        }
+        .checkbox-group label {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        button.small {
+            background: #e2e8f0;
+            border: none;
+            padding: 0.2rem 0.7rem;
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        .rule-table {
+            width: 100%;
+            font-size: 0.7rem;
+            border-collapse: collapse;
+            margin: 0.5rem 0;
+        }
+
+        .rule-table th, .rule-table td {
+            border: 1px solid #cbd5e6;
+            padding: 0.3rem;
+            text-align: center;
+        }
+
+        .result-box {
+            background: #0f172a;
+            color: #e2e8f0;
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .result-money {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #facc15;
+        }
+
+        .process-detail {
+            font-size: 0.7rem;
+            font-family: monospace;
+            margin-top: 0.5rem;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 220px;
+            overflow-y: auto;
+            border-top: 1px solid #334155;
+            padding-top: 0.5rem;
+        }
+
+        hr {
+            margin: 0.5rem 0;
+            border-color: #e2e8f0;
+        }
+
+        .add-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.2rem 0.7rem;
+            border-radius: 1rem;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-top: 6px;
+        }
+
+        /* 可视化树样式 */
+        .tree-node {
+            margin-left: 0;
+            margin-bottom: 8px;
+            border-left: 2px solid #94a3b8;
+            padding-left: 12px;
+        }
+        .tree-node-content {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+        .node-name {
+            font-weight: 700;
+            background: #eef2ff;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
+        .node-field {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.7rem;
+        }
+        .node-field input {
+            width: 100px;
+            padding: 0.2rem 0.4rem;
+        }
+        .node-field input.name-input {
+            width: 72px;
+        }
+        .node-field input.compact-input {
+            width: 82px;
+        }
+        .node-result {
+            display: inline-flex;
+            align-items: center;
+            min-height: 24px;
+            padding: 0 8px;
+            border-radius: 16px;
+            background: #f8fafc;
+            border: 1px solid #dbe4ef;
+            color: #0f766e;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .toggle-children {
+            cursor: pointer;
+            background: #e2e8f0;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            padding: 2px 8px;
+        }
+        .tree-add, .tree-delete {
+            cursor: pointer;
+            border: none;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            padding: 3px 9px;
+            white-space: nowrap;
+        }
+        .tree-add {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        .tree-delete {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+        .tree-root {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+        }
+        .tree-muted {
+            opacity: 0.55;
+        }
+        .children-wrapper {
+            margin-left: 24px;
+            transition: 0.1s;
+        }
+        .children-wrapper.collapsed {
+            display: none;
+        }
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.7rem;
+            color: #6c7a91;
+        }
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: 1fr; }
+            body { padding: calc(54px + 1rem) 1rem 1rem; }
+            .tree-node-content { flex-wrap: wrap; }
+        }
+        .helper {
+            font-size: 0.65rem;
+            color: #5b6e8c;
+            margin-top: 4px;
+        }
+        .formula-box {
+            margin: 0.8rem 0 1.2rem;
+            padding: 0.75rem 0.9rem;
+            border: 1px solid #dbeafe;
+            border-radius: 14px;
+            background: #f8fbff;
+            color: #334155;
+            font-size: 0.72rem;
+            line-height: 1.7;
+        }
+        .formula-box strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: #1e40af;
+            font-size: 0.78rem;
+        }
+        .formula-box code {
+            display: block;
+            padding: 2px 0;
+            color: #0f172a;
+            white-space: normal;
+        }
+    </style>
+</head>
+<body>
+<nav class="global-links" aria-label="页面关联入口">
+    <a href="代理模式页面.html" target="_blank">代理模式页面</a>
+    <a href="后台代理模式需求文档.html" target="_blank">后台代理模式需求文档</a>
+    <a href="../后台其他页面.html" target="_blank">后台关联页面</a>
+    <a href="前台关联页面.html" target="_blank">前台关联页面（作废）</a>
+    <a href="前台推广原型页面.html" target="_blank">前台推广原型</a>
+    <a href="前台推广页面需求文档.html" target="_blank">前台推广页面需求文档</a>
+    <a href="佣金计算工具.html" target="_blank">佣金计算工具</a>
+</nav>
+<div class="container">
+    <h1>⚙️ 全能佣金模拟器 · 多奖励维度可配置</h1>
+    <div class="sub">多奖励 (首充/充值/投注 独立开关) + 有效投注/净盈利 可视化树 | 阶梯门槛自定义</div>
+    <div class="grid">
+
+        <!-- ================= 多奖励模式 (增强：可配置维度开关) ================= -->
+        <div class="card">
+            <div class="card-header">
+                <h2>🎁 多奖励模式 <span class="mode-badge">二级/三级 · 维度独立开关</span></h2>
+            </div>
+            <div class="card-content">
+                <div class="control-group">
+                    <div class="flex-row">
+                        <div class="field"><label>📐 奖励层级深度</label><select id="multiLevel"><option value="2">最多二级</option><option value="3" selected>最多三级</option></select></div>
+                    </div>
+                    <!-- 维度开关区域 -->
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="enableFirstDeposit" checked> 启用首充佣金</label>
+                        <label><input type="checkbox" id="enableRechargeComm" checked> 启用充值佣金</label>
+                        <label><input type="checkbox" id="enableBetComm" checked> 启用投注佣金</label>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <div class="flex-row">
+                        <div class="field"><label>🎯 首充人数（团队树自动汇总）</label><input type="number" id="multiFirstCount" value="3" readonly></div>
+                        <div class="field"><label>🏆 首充档位(人数:金额)</label><input type="text" id="multiFirstRule" value="1:50,2:100,3:200"></div>
+                    </div>
+                    <div><label>📊 充值佣金比例 (%)</label>
+                        <div class="flex-row"><div class="field"><label>一级%</label><input type="number" id="multiRechargeL1" value="2" step="0.5"></div><div class="field"><label>二级%</label><input type="number" id="multiRechargeL2" value="1" step="0.5"></div><div class="field" id="multiRechargeL3Div"><label>三级%</label><input type="number" id="multiRechargeL3" value="0.5" step="0.5"></div></div>
+                    </div>
+                    <div><label>🎲 投注佣金比例 (%)</label>
+                        <div class="flex-row"><div class="field"><label>一级%</label><input type="number" id="multiBetL1" value="1" step="0.5"></div><div class="field"><label>二级%</label><input type="number" id="multiBetL2" value="0.8" step="0.5"></div><div class="field" id="multiBetL3Div"><label>三级%</label><input type="number" id="multiBetL3" value="0.5" step="0.5"></div></div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <strong>计算公式</strong>
+                    <code>首充佣金 = 命中首充人数档位对应金额</code>
+                    <code>充值佣金 = 一级充值 × 一级比例 + 二级充值 × 二级比例 + 三级充值 × 三级比例</code>
+                    <code>投注佣金 = 一级投注 × 一级比例 + 二级投注 × 二级比例 + 三级投注 × 三级比例</code>
+                    <code>总佣金 = 启用的首充佣金 + 启用的充值佣金 + 启用的投注佣金</code>
+                </div>
+                <div class="control-group">
+                    <label>🌳 团队树配置（首充 / 充值 / 投注）</label>
+                    <div id="multiTreeContainer" style="max-height: 360px; overflow-y: auto; background: #fff7ed; border-radius: 16px; padding: 10px; margin-top: 8px;"></div>
+                    <div class="helper">* 勾选“首充”会计入首充人数；最多二级时只统计 B、C 层，三级时继续统计 D 层。</div>
+                </div>
+                <div class="result-box"><div>💰 总佣金 = <span class="result-money" id="multiTotal">0.00</span></div><div class="process-detail" id="multiProcess"></div></div>
+                <div class="helper">✔ 通过上方复选框可独立启用/停用「首充、充值、投注」三种佣金来源，停用的维度将不计入总佣金。</div>
+            </div>
+        </div>
+
+        <!-- ================= 有效投注模式（可视化树+门槛阶梯） ================= -->
+        <div class="card">
+            <div class="card-header">
+                <h2>🎯 有效投注模式 <span class="mode-badge">极差返佣 · 可视化树</span></h2>
+            </div>
+            <div class="card-content">
+                <div class="control-group">
+                    <div class="flex-row">
+                        <div class="field"><label>🔢 层级深度</label><select id="betLevelType"><option value="1">只算一级</option><option value="2" selected>最多两级</option><option value="3">最多三级</option><option value="4">最多四级</option><option value="5">最多五级</option><option value="inf">无数级</option><option value="custom">自定义层数</option></select></div>
+                        <div class="field" id="betCustomLevelDiv" style="display:none;"><label>自定义层数</label><input type="number" id="betCustomLevel" value="3"></div>
+                        <div class="field"><label>当前命中返佣比例</label><input type="text" id="betCurrentRate" value="-" readonly></div>
+                    </div>
+                    <div><label>📈 有效投注返佣设置 (有效投注 ≥ 门槛 → 返佣比例%)</label>
+                        <div id="betRuleContainer"></div>
+                        <button type="button" class="add-btn" id="addBetRule">+ 添加阶梯</button>
+                        <div class="helper">* 示例规则：有效投注 &lt; 10000 返佣 1%，有效投注 ≥ 10000 返佣 3%。</div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <strong>计算公式</strong>
+                    <code>A总业绩 = 层级范围内所有下级自身有效投注之和（不含A本人）</code>
+                    <code>A返佣比例 = A总业绩命中的阶梯返佣率</code>
+                    <code>直属佣金 = 直属下级本人有效投注 × A返佣比例</code>
+                    <code>其他佣金 = 直属下级下级总业绩 × max(A返佣比例 - 直属下级返佣比例, 0)</code>
+                    <code>A本期佣金 = 直属佣金 + 其他佣金</code>
+                    <div class="helper" id="betConfigFormula">当前配置：-</div>
+                </div>
+                <div class="control-group">
+                    <label>🌳 团队树 (可新增/删除下级 · 编辑自身投注额)</label>
+                    <div id="betTreeContainer" style="max-height: 320px; overflow-y: auto; background: #fefce8; border-radius: 16px; padding: 10px; margin-top: 8px;"></div>
+                </div>
+                <div class="result-box"><div>💰 总佣金 = <span class="result-money" id="betTotal">0.00</span></div><div class="process-detail" id="betProcess"></div></div>
+            </div>
+        </div>
+
+        <!-- ================= 净盈利模式（可视化树+门槛阶梯） ================= -->
+        <div class="card">
+            <div class="card-header">
+                <h2>📉 净盈利模式 <span class="mode-badge">极差返佣 · 可视化树</span></h2>
+            </div>
+            <div class="card-content">
+                <div class="control-group">
+                    <div class="flex-row">
+                        <div class="field"><label>🔢 层级深度</label><select id="netLevelType"><option value="1">只算一级</option><option value="2">最多两级</option><option value="3" selected>最多三级</option><option value="4">最多四级</option><option value="5">最多五级</option><option value="inf">无数级</option><option value="custom">自定义层数</option></select></div>
+                        <div class="field" id="netCustomLevelDiv" style="display:none;"><label>自定义层数</label><input type="number" id="netCustomLevel" value="3"></div>
+                    </div>
+                    <div><label>📊 净盈利阶梯规则 (净盈利 ≥ 门槛 → 返佣率%)</label>
+                        <div id="netRuleContainer"></div>
+                        <button type="button" class="add-btn" id="addNetRule">+ 添加阶梯</button>
+                        <div class="helper">* 净盈利 = 总输额 - 总赢额 - 优惠金额 - 平台成本；负数会降低上级总净盈利，佣金不倒扣。</div>
+                    </div>
+                    <div class="flex-row">
+                        <div class="field"><label>直属下级单期返佣上限（0不限制）</label><input type="number" id="netDirectCap" value="0" step="100"></div>
+                    </div>
+                </div>
+                <div class="formula-box">
+                    <strong>计算公式</strong>
+                    <code>适用场景：佣金计算依据为“净盈利”时。</code>
+                    <code>单个会员净盈利 = 会员总输额 - 会员总赢额 - 会员获得的总优惠金额 - 平台分摊成本</code>
+                    <code>A总净盈利业绩 = 层级范围内所有下级自身净盈利之和（不含A本人）</code>
+                    <code>直属佣金 = max(直属下级本人净盈利, 0) × A返佣比例</code>
+                    <code>其他佣金 = max(直属下级总净盈利业绩, 0) × max(A返佣比例 - 直属下级返佣比例, 0)</code>
+                    <code>直属下级贡献佣金 C = 来自该下级的直属佣金 + 来自该下级的极差佣金</code>
+                    <code>若 C 超过返佣上限 L，只计入 L；优先截断其他佣金，再截断直属佣金</code>
+                    <code>A本期佣金 = 截断后的直属佣金 + 截断后的其他佣金；净盈利为负时降低总业绩，但佣金不倒扣</code>
+                    <div class="helper" id="netConfigFormula">当前配置：-</div>
+                </div>
+                <div class="control-group">
+                    <label>🌳 团队树（可新增/删除下级 · 总输额 / 总赢额 / 优惠 / 成本 自动计算净盈利）</label>
+                    <div id="netTreeContainer" style="max-height: 320px; overflow-y: auto; background: #f1f0ff; border-radius: 16px; padding: 10px; margin-top: 8px;"></div>
+                </div>
+                <div class="result-box"><div>💰 总佣金 = <span class="result-money" id="netTotal">0.00</span></div><div class="process-detail" id="netProcess"></div></div>
+            </div>
+        </div>
+    </div>
+    <footer>✅ 多奖励模式现已支持独立配置「首充佣金、充值佣金、投注佣金」开关，自由组合佣金维度。</footer>
+</div>
+
+<script>
+    // ========== 1. 多奖励模式 (支持维度开关 + 团队树配置) ==========
+    let multiNodeSeq = 10;
+    let multiNameSeq = { 1: 3, 2: 3, 3: 3 };
+    let multiTreeData = {
+        id: 'multi_A', name: 'A', firstDeposit: false, recharge: 0, bet: 0, children: [
+            { id: 'multi_B1', name: 'B1', firstDeposit: true, recharge: 500, bet: 600, children: [
+                { id: 'multi_C1', name: 'C1', firstDeposit: false, recharge: 300, bet: 800, children: [
+                    { id: 'multi_D1', name: 'D1', firstDeposit: false, recharge: 200, bet: 300, children: [] }
+                ] }
+            ] },
+            { id: 'multi_B2', name: 'B2', firstDeposit: true, recharge: 400, bet: 700, children: [
+                { id: 'multi_C2', name: 'C2', firstDeposit: false, recharge: 300, bet: 500, children: [
+                    { id: 'multi_D2', name: 'D2', firstDeposit: false, recharge: 300, bet: 400, children: [] }
+                ] }
+            ] },
+            { id: 'multi_B3', name: 'B3', firstDeposit: true, recharge: 200, bet: 100, children: [
+                { id: 'multi_C3', name: 'C3', firstDeposit: false, recharge: 500, bet: 300, children: [
+                    { id: 'multi_D3', name: 'D3', firstDeposit: false, recharge: 300, bet: 300, children: [] }
+                ] }
+            ] }
+        ]
+    };
+
+    function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, (char) => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[char]));
+    }
+
+    function parseFirstRule(ruleStr, count) {
+        let parts = ruleStr.split(',');
+        let best = 0;
+        for(let p of parts) {
+            let [num, amt] = p.split(':');
+            if(num && amt && parseInt(num) <= count) best = Math.max(best, parseFloat(amt));
+        }
+        return best;
+    }
+
+    function findMultiNode(node, id, depth = 0, parent = null) {
+        if(node.id === id) return { node, depth, parent };
+        for(let child of node.children || []) {
+            let result = findMultiNode(child, id, depth + 1, node);
+            if(result) return result;
+        }
+        return null;
+    }
+
+    function createMultiChild(depth) {
+        let prefix = depth === 1 ? 'B' : depth === 2 ? 'C' : 'D';
+        multiNameSeq[depth] = (multiNameSeq[depth] || 0) + 1;
+        return {
+            id: `multi_${Date.now()}_${multiNodeSeq++}`,
+            name: `${prefix}${multiNameSeq[depth]}`,
+            firstDeposit: false,
+            recharge: 0,
+            bet: 0,
+            children: []
+        };
+    }
+
+    function renderMultiTree(node, depth = 0) {
+        const isRoot = depth === 0;
+        const currentLevel = parseInt(document.getElementById('multiLevel')?.value || '3');
+        const outOfScope = depth > 0 && depth > currentLevel;
+        const hasChildren = node.children && node.children.length > 0;
+        const childrenId = `multi_children_${node.id}`;
+        let html = `<div class="tree-node ${outOfScope ? 'tree-muted' : ''}" style="margin-left: ${depth * 18}px;">`;
+        html += `<div class="tree-node-content ${isRoot ? 'tree-root' : ''}">`;
+        html += `<span class="node-name">${escapeHtml(node.name)}</span>`;
+        if(isRoot) {
+            html += `<span class="helper">上级 A，用于汇总下级团队</span>`;
+        } else {
+            html += `<div class="node-field">名称 <input class="multi-node-input" data-id="${node.id}" data-field="name" value="${escapeHtml(node.name)}" style="width:72px;"></div>`;
+            html += `<label class="node-field"><input class="multi-node-input" data-id="${node.id}" data-field="firstDeposit" type="checkbox" ${node.firstDeposit ? 'checked' : ''} style="width:auto;">首充</label>`;
+            html += `<div class="node-field">充值 <input class="multi-node-input" data-id="${node.id}" data-field="recharge" type="number" value="${node.recharge}" step="100"></div>`;
+            html += `<div class="node-field">投注 <input class="multi-node-input" data-id="${node.id}" data-field="bet" type="number" value="${node.bet}" step="100"></div>`;
+            if(outOfScope) html += `<span class="helper">当前层级不计入</span>`;
+        }
+        if(depth < 3) html += `<button type="button" class="tree-add" data-id="${node.id}">+ 下级</button>`;
+        if(!isRoot) html += `<button type="button" class="tree-delete" data-id="${node.id}">删除</button>`;
+        if(hasChildren) html += `<button type="button" class="toggle-children" data-target="${childrenId}">▼ 收起</button>`;
+        html += `</div>`;
+        if(hasChildren) {
+            html += `<div id="${childrenId}" class="children-wrapper">`;
+            for(let child of node.children) html += renderMultiTree(child, depth + 1);
+            html += `</div>`;
+        }
+        html += `</div>`;
+        return html;
+    }
+
+    function syncMultiNodeInput(input) {
+        const found = findMultiNode(multiTreeData, input.dataset.id);
+        if(!found) return;
+        const field = input.dataset.field;
+        if(field === 'name') found.node.name = input.value || found.node.name;
+        if(field === 'firstDeposit') found.node.firstDeposit = input.checked;
+        if(field === 'recharge') found.node.recharge = parseFloat(input.value) || 0;
+        if(field === 'bet') found.node.bet = parseFloat(input.value) || 0;
+    }
+
+    function collectMultiStats(node, maxLevel, depth = 0, stats = null) {
+        if(!stats) {
+            stats = {
+                firstCount: 0,
+                firstByLevel: { 1: 0, 2: 0, 3: 0 },
+                recharge: { 1: 0, 2: 0, 3: 0 },
+                bet: { 1: 0, 2: 0, 3: 0 },
+                countedNodes: []
+            };
+        }
+        if(depth > 0 && depth <= maxLevel) {
+            if(node.firstDeposit) {
+                stats.firstCount += 1;
+                stats.firstByLevel[depth] += 1;
+            }
+            stats.recharge[depth] += parseFloat(node.recharge) || 0;
+            stats.bet[depth] += parseFloat(node.bet) || 0;
+            stats.countedNodes.push({ depth, name: node.name, firstDeposit: !!node.firstDeposit, recharge: node.recharge || 0, bet: node.bet || 0 });
+        }
+        for(let child of node.children || []) collectMultiStats(child, maxLevel, depth + 1, stats);
+        return stats;
+    }
+
+    function bindMultiTree() {
+        const container = document.getElementById('multiTreeContainer');
+        if(!container) return;
+        container.innerHTML = renderMultiTree(multiTreeData);
+        container.querySelectorAll('.multi-node-input').forEach(input => {
+            input.addEventListener(input.type === 'checkbox' ? 'change' : 'input', () => {
+                syncMultiNodeInput(input);
+                refreshMulti();
+            });
+        });
+        container.querySelectorAll('.tree-add').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const found = findMultiNode(multiTreeData, btn.dataset.id);
+                if(!found || found.depth >= 3) return;
+                if(!found.node.children) found.node.children = [];
+                found.node.children.push(createMultiChild(found.depth + 1));
+                bindMultiTree();
+                refreshMulti();
+            });
+        });
+        container.querySelectorAll('.tree-delete').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const found = findMultiNode(multiTreeData, btn.dataset.id);
+                if(!found || !found.parent) return;
+                found.parent.children = found.parent.children.filter(child => child.id !== found.node.id);
+                bindMultiTree();
+                refreshMulti();
+            });
+        });
+        container.querySelectorAll('#multiTreeContainer .toggle-children, .toggle-children').forEach(btn => {
+            const targetId = btn.getAttribute('data-target');
+            const targetDiv = document.getElementById(targetId);
+            if(targetDiv) {
+                btn.addEventListener('click', () => {
+                    targetDiv.classList.toggle('collapsed');
+                    btn.innerText = targetDiv.classList.contains('collapsed') ? '▶ 展开' : '▼ 收起';
+                });
+            }
+        });
+    }
+
+    function refreshMulti() {
+        let level = parseInt(document.getElementById('multiLevel').value);
+        let showL3 = (level>=3);
+        document.getElementById('multiRechargeL3Div').style.display = showL3 ? 'block' : 'none';
+        document.getElementById('multiBetL3Div').style.display = showL3 ? 'block' : 'none';
+        
+        // 读取开关状态
+        let enableFirst = document.getElementById('enableFirstDeposit').checked;
+        let enableRecharge = document.getElementById('enableRechargeComm').checked;
+        let enableBet = document.getElementById('enableBetComm').checked;
+        
+        const stats = collectMultiStats(multiTreeData, level);
+        let fc = stats.firstCount;
+        document.getElementById('multiFirstCount').value = fc;
+        let firstBonus = enableFirst ? parseFirstRule(document.getElementById('multiFirstRule').value, fc) : 0;
+        
+        let r1 = (parseFloat(document.getElementById('multiRechargeL1').value)||0)/100;
+        let r2 = (parseFloat(document.getElementById('multiRechargeL2').value)||0)/100;
+        let r3 = (parseFloat(document.getElementById('multiRechargeL3').value)||0)/100;
+        let b1 = (parseFloat(document.getElementById('multiBetL1').value)||0)/100;
+        let b2 = (parseFloat(document.getElementById('multiBetL2').value)||0)/100;
+        let b3 = (parseFloat(document.getElementById('multiBetL3').value)||0)/100;
+        
+        let amtR1 = stats.recharge[1] || 0;
+        let amtR2 = stats.recharge[2] || 0;
+        let amtR3 = showL3 ? (stats.recharge[3] || 0) : 0;
+        let amtB1 = stats.bet[1] || 0;
+        let amtB2 = stats.bet[2] || 0;
+        let amtB3 = showL3 ? (stats.bet[3] || 0) : 0;
+        
+        let rechargeComm = enableRecharge ? (amtR1*r1 + amtR2*r2 + amtR3*r3) : 0;
+        let betComm = enableBet ? (amtB1*b1 + amtB2*b2 + amtB3*b3) : 0;
+        let total = firstBonus + rechargeComm + betComm;
+        
+        const levelRows = [1, 2, 3].filter(item => item <= level).map(item => {
+            const label = item === 1 ? '一级' : item === 2 ? '二级' : '三级';
+            return `${label}：首充 ${stats.firstByLevel[item]} 人，充值 ${stats.recharge[item].toFixed(2)}，投注 ${stats.bet[item].toFixed(2)}`;
+        }).join('<br>');
+        let detail = `🌳团队树汇总:<br>${levelRows}<br>`;
+        detail += `🔹首充佣金: ${enableFirst ? `首充人数${fc} → ${firstBonus.toFixed(2)}` : '已禁用'}<br>`;
+        if(enableRecharge) detail += `💰充值佣金: ${amtR1}×${(r1*100).toFixed(1)}% + ${amtR2}×${(r2*100).toFixed(1)}% ${showL3?`+ ${amtR3}×${(r3*100).toFixed(1)}%` : ''} = ${rechargeComm.toFixed(2)}<br>`;
+        else detail += `💰充值佣金: 已禁用<br>`;
+        if(enableBet) detail += `🎲投注佣金: ${amtB1}×${(b1*100).toFixed(1)}% + ${amtB2}×${(b2*100).toFixed(1)}% ${showL3?`+ ${amtB3}×${(b3*100).toFixed(1)}%` : ''} = ${betComm.toFixed(2)}<br>`;
+        else detail += `🎲投注佣金: 已禁用<br>`;
+        detail += `<strong>✅ 总佣金 = ${total.toFixed(2)}</strong>`;
+        document.getElementById('multiTotal').innerText = total.toFixed(2);
+        document.getElementById('multiProcess').innerHTML = detail;
+    }
+    function bindMultiEvents() {
+        bindMultiTree();
+        let ids = ['multiLevel','multiFirstRule','multiRechargeL1','multiRechargeL2','multiRechargeL3','multiBetL1','multiBetL2','multiBetL3','enableFirstDeposit','enableRechargeComm','enableBetComm'];
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            el?.addEventListener('input', refreshMulti);
+            el?.addEventListener('change', refreshMulti);
+        });
+        document.getElementById('multiLevel')?.addEventListener('change', () => {
+            bindMultiTree();
+            refreshMulti();
+        });
+        refreshMulti();
+    }
+
+    // ========== 通用: 阶梯规则管理（门槛数组: [{threshold, rate}] 取最高满足门槛）==========
+    let betThresholds = [{ threshold: 0, rate: 1 }, { threshold: 10000, rate: 3 }];
+    let netThresholds = [{ threshold: 0, rate: 2 }, { threshold: 10000, rate: 5 }];
+    const TREE_EDIT_DEPTH_LIMIT = 20;
+    function renderThresholdRules(containerId, rulesArray, onUpdate) {
+        let container = document.getElementById(containerId);
+        const metricLabel = containerId === 'betRuleContainer' ? '有效投注 ≥ (门槛)' : '净盈利 ≥ (门槛)';
+        container.innerHTML = `<table class="rule-table"><thead><tr><th>${metricLabel}</th><th>返佣比例 (%)</th><th></th></tr></thead><tbody id="${containerId}Tbody"></tbody></table>`;
+        let tbody = document.getElementById(`${containerId}Tbody`);
+        rulesArray.forEach((r, idx) => {
+            let row = tbody.insertRow();
+            row.insertCell(0).innerHTML = `<input type="number" class="threshVal" value="${r.threshold}" step="100" style="width:100px;">`;
+            row.insertCell(1).innerHTML = `<input type="number" class="rateVal" value="${r.rate}" step="0.5" style="width:80px;">`;
+            let delBtn = document.createElement('button');
+            delBtn.innerText = '删除';
+            delBtn.className = 'small';
+            delBtn.onclick = () => { if(rulesArray.length>1) { rulesArray.splice(idx,1); renderThresholdRules(containerId, rulesArray, onUpdate); onUpdate(); } };
+            row.insertCell(2).appendChild(delBtn);
+        });
+        document.querySelectorAll(`#${containerId} .threshVal, #${containerId} .rateVal`).forEach(el => {
+            el.addEventListener('change', function() {
+                let rows = document.querySelectorAll(`#${containerId}Tbody tr`);
+                let newArr = [];
+                for(let i=0;i<rows.length;i++) {
+                    let thresh = parseFloat(rows[i].querySelector('.threshVal').value) || 0;
+                    let rate = parseFloat(rows[i].querySelector('.rateVal').value) || 0;
+                    newArr.push({ threshold: thresh, rate: rate });
+                }
+                newArr.sort((a,b)=>a.threshold - b.threshold);
+                rulesArray.length = 0;
+                rulesArray.push(...newArr);
+                onUpdate();
+            });
+        });
+    }
+    function getRateByThreshold(amount, thresholds) {
+        let bestRate = 0;
+        for(let t of thresholds) {
+            if(amount >= t.threshold) bestRate = Math.max(bestRate, t.rate);
+        }
+        return bestRate / 100;
+    }
+    function formatLevelLabel(levelType, customId) {
+        const labels = {
+            '1': '只算一级',
+            '2': '最多两级',
+            '3': '最多三级',
+            '4': '最多四级',
+            '5': '最多五级',
+            'inf': `无数级（汇总当前树内全部下级，可模拟至${TREE_EDIT_DEPTH_LIMIT}层）`
+        };
+        if(levelType === 'custom') return `自定义${parseInt(document.getElementById(customId)?.value) || 3}层`;
+        return labels[levelType] || `${levelType}层`;
+    }
+    function formatThresholdRules(rulesArray, unitLabel) {
+        return [...rulesArray]
+            .sort((a, b) => a.threshold - b.threshold)
+            .map(item => `${unitLabel}≥${item.threshold}，返佣${item.rate}%`)
+            .join('；');
+    }
+    function getMaxCalcLevel(levelType, customId) {
+        if(levelType === 'inf') return Number.POSITIVE_INFINITY;
+        if(levelType === 'custom') return Math.max(1, parseInt(document.getElementById(customId)?.value) || 3);
+        return Math.max(1, parseInt(levelType) || 1);
+    }
+
+    // ========== 有效投注 可视化树 ==========
+    let betNodeSeq = 10;
+    let betNameSeq = { 1: 2, 2: 3, 3: 0, 4: 0, 5: 0 };
+    let betTreeData = {
+        id: 'bet_A', name: 'A', selfBet: 0, children: [
+            { id: 'bet_B1', name: 'B1', selfBet: 500, children: [{ id: 'bet_C1', name: 'C1', selfBet: 1000, children: [] }, { id: 'bet_C2', name: 'C2', selfBet: 2000, children: [] }] },
+            { id: 'bet_B2', name: 'B2', selfBet: 3000, children: [{ id: 'bet_C3', name: 'C3', selfBet: 20000, children: [] }] }
+        ]
+    };
+    function findTreeNode(node, id, depth = 0, parent = null) {
+        if(node.id === id) return { node, depth, parent };
+        for(let child of node.children || []) {
+            const found = findTreeNode(child, id, depth + 1, node);
+            if(found) return found;
+        }
+        return null;
+    }
+    function createChildNode(prefix, depth, defaults = {}) {
+        const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const namePrefix = letters[Math.min(depth, letters.length - 1)];
+        const seqMap = prefix === 'bet' ? betNameSeq : netNameSeq;
+        seqMap[depth] = (seqMap[depth] || 0) + 1;
+        return {
+            id: `${prefix}_${Date.now()}_${prefix === 'bet' ? betNodeSeq++ : netNodeSeq++}`,
+            name: `${namePrefix}${seqMap[depth]}`,
+            children: [],
+            ...defaults
+        };
+    }
+    function maxEditableDepth(levelType, customId) {
+        if(levelType === 'inf') return TREE_EDIT_DEPTH_LIMIT;
+        if(levelType === 'custom') return Math.max(1, Math.min(parseInt(document.getElementById(customId)?.value) || 3, TREE_EDIT_DEPTH_LIMIT));
+        return Math.max(1, parseInt(levelType) || 1);
+    }
+    function renderBetTree(node, level = 0) {
+        let hasChildren = node.children && node.children.length > 0;
+        const isRoot = level === 0;
+        const maxDepth = maxEditableDepth(document.getElementById('betLevelType')?.value || '2', 'betCustomLevel');
+        const outOfScope = level > 0 && level > maxDepth;
+        let childrenContainerId = `bet_children_${node.id}`;
+        let html = `<div class="tree-node" style="margin-left: ${level*20}px;">`;
+        html += `<div class="tree-node-content ${isRoot ? 'tree-root' : ''} ${outOfScope ? 'tree-muted' : ''}">`;
+        html += `<span class="node-name">${escapeHtml(node.name)}</span>`;
+        html += `<div class="node-field">名称 <input class="bet-node-input name-input" data-id="${node.id}" data-field="name" value="${escapeHtml(node.name)}" ${isRoot ? 'readonly' : ''}></div>`;
+        html += `<div class="node-field">自身投注 <input class="bet-node-input compact-input" data-id="${node.id}" data-field="selfBet" type="number" value="${node.selfBet || 0}" step="100"></div>`;
+        if(outOfScope) html += `<span class="helper">当前层级不计入</span>`;
+        if(level < TREE_EDIT_DEPTH_LIMIT) html += `<button type="button" class="tree-add" data-id="${node.id}">+ 下级</button>`;
+        if(!isRoot) html += `<button type="button" class="tree-delete" data-id="${node.id}">删除</button>`;
+        if(hasChildren) html += `<button type="button" class="toggle-children" data-target="${childrenContainerId}">▼ 收起</button>`;
+        html += `</div>`;
+        if(hasChildren) {
+            html += `<div id="${childrenContainerId}" class="children-wrapper">`;
+            for(let child of node.children) html += renderBetTree(child, level+1);
+            html += `</div>`;
+        }
+        html += `</div>`;
+        return html;
+    }
+    function getBetSelf(node) {
+        return parseFloat(node.selfBet) || 0;
+    }
+    function sumBetDescendants(node, remainingDepth) {
+        if(remainingDepth <= 0) return 0;
+        let total = 0;
+        for(let child of node.children || []) {
+            total += getBetSelf(child);
+            total += sumBetDescendants(child, remainingDepth - 1);
+        }
+        return total;
+    }
+    function refreshBetting() {
+        let levelType = document.getElementById('betLevelType').value;
+        let maxLevel = getMaxCalcLevel(levelType, 'betCustomLevel');
+        const configFormula = document.getElementById('betConfigFormula');
+        if(configFormula) {
+            configFormula.innerText = `当前配置：层级深度 ${formatLevelLabel(levelType, 'betCustomLevel')}；阶梯规则 ${formatThresholdRules(betThresholds, '有效投注')}`;
+        }
+        let aTotal = sumBetDescendants(betTreeData, maxLevel);
+        let aRate = getRateByThreshold(aTotal, betThresholds);
+        const currentRateInput = document.getElementById('betCurrentRate');
+        if(currentRateInput) currentRateInput.value = `${(aRate * 100).toFixed(2)}%`;
+        let directPerformance = 0, otherPerformance = 0, directComm = 0, diffComm = 0;
+        let steps = [
+            `📊 A总业绩 = 层级范围内所有下级自身有效投注 = ${aTotal}`,
+            `📈 A返佣比例 = ${(aRate*100).toFixed(2)}%`
+        ];
+
+        for(let child of betTreeData.children) {
+            let childSelf = getBetSelf(child);
+            let childTeamPerformance = maxLevel > 1 ? sumBetDescendants(child, maxLevel - 1) : 0;
+            let childRate = getRateByThreshold(childTeamPerformance, betThresholds);
+            let directLineComm = childSelf * aRate;
+            let diff = Math.max(0, aRate - childRate);
+            let diffLineComm = childTeamPerformance * diff;
+
+            directPerformance += childSelf;
+            otherPerformance += childTeamPerformance;
+            directComm += directLineComm;
+            diffComm += diffLineComm;
+
+            steps.push(`🔹 直属 ${child.name} 本人有效投注=${childSelf}，给A直属佣金：${childSelf} × ${(aRate*100).toFixed(2)}% = ${directLineComm.toFixed(2)}`);
+            steps.push(`📌 ${child.name}下级总业绩=${childTeamPerformance}，${child.name}返佣比例=${(childRate*100).toFixed(2)}%，A与${child.name}极差=${(diff*100).toFixed(2)}%，其他佣金=${childTeamPerformance} × ${(diff*100).toFixed(2)}% = ${diffLineComm.toFixed(2)}`);
+        }
+
+        let totalComm = directComm + diffComm;
+        document.getElementById('betTotal').innerText = totalComm.toFixed(2);
+        steps.push(`✅ A直属业绩=${directPerformance}，其他业绩=${otherPerformance}，总业绩=${directPerformance + otherPerformance}`);
+        document.getElementById('betProcess').innerHTML = steps.join('<br>') + `<br><strong>✅ A本期佣金 = 直属佣金 ${directComm.toFixed(2)} + 其他佣金 ${diffComm.toFixed(2)} = ${totalComm.toFixed(2)}</strong>`;
+    }
+    function syncBetNodeInput(input) {
+        const found = findTreeNode(betTreeData, input.dataset.id);
+        if(!found) return;
+        if(input.dataset.field === 'name') found.node.name = input.value || found.node.name;
+        if(input.dataset.field === 'selfBet') found.node.selfBet = parseFloat(input.value) || 0;
+    }
+    function initBetTree() {
+        let container = document.getElementById('betTreeContainer');
+        container.innerHTML = renderBetTree(betTreeData);
+        container.querySelectorAll('.toggle-children').forEach(btn => {
+            let targetId = btn.getAttribute('data-target');
+            let targetDiv = document.getElementById(targetId);
+            if(targetDiv) {
+                btn.onclick = () => {
+                    let isCollapsed = targetDiv.classList.contains('collapsed');
+                    if(isCollapsed) {
+                        targetDiv.classList.remove('collapsed');
+                        btn.innerText = '▼ 收起';
+                    } else {
+                        targetDiv.classList.add('collapsed');
+                        btn.innerText = '▶ 展开';
+                    }
+                };
+            }
+        });
+        container.querySelectorAll('.bet-node-input').forEach(inp => inp.addEventListener('input', () => {
+            syncBetNodeInput(inp);
+            refreshBetting();
+        }));
+        container.querySelectorAll('.tree-add').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const found = findTreeNode(betTreeData, btn.dataset.id);
+                if(!found) return;
+                if(!found.node.children) found.node.children = [];
+                found.node.children.push(createChildNode('bet', found.depth + 1, { selfBet: 0 }));
+                initBetTree();
+            });
+        });
+        container.querySelectorAll('.tree-delete').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const found = findTreeNode(betTreeData, btn.dataset.id);
+                if(!found || !found.parent) return;
+                found.parent.children = found.parent.children.filter(child => child.id !== found.node.id);
+                initBetTree();
+            });
+        });
+        refreshBetting();
+    }
+
+    // ========== 净盈利模式 可视化树 ==========
+    let netNodeSeq = 10;
+    let netNameSeq = { 1: 2, 2: 3, 3: 0, 4: 0, 5: 0 };
+    let netTreeData = {
+        id: 'net_A', name: 'A', lose: 0, win: 0, bonus: 0, cost: 0, children: [
+            { id: 'net_B1', name: 'B1', lose: 500, win: 0, bonus: 0, cost: 0, children: [{ id: 'net_C1', name: 'C1', lose: 1000, win: 0, bonus: 0, cost: 0, children: [] }, { id: 'net_C2', name: 'C2', lose: 2000, win: 0, bonus: 0, cost: 0, children: [] }] },
+            { id: 'net_B2', name: 'B2', lose: 3000, win: 0, bonus: 0, cost: 0, children: [{ id: 'net_C3', name: 'C3', lose: 20000, win: 0, bonus: 0, cost: 0, children: [] }] }
+        ]
+    };
+    function calcNetSelf(node) {
+        return (parseFloat(node.lose) || 0) - (parseFloat(node.win) || 0) - (parseFloat(node.bonus) || 0) - (parseFloat(node.cost) || 0);
+    }
+    function renderNetTree(node, level=0) {
+        let hasChildren = node.children && node.children.length > 0;
+        const isRoot = level === 0;
+        const maxDepth = maxEditableDepth(document.getElementById('netLevelType')?.value || '3', 'netCustomLevel');
+        const outOfScope = level > 0 && level > maxDepth;
+        let childrenId = `net_children_${node.id}`;
+        let netValue = calcNetSelf(node);
+        let html = `<div class="tree-node" style="margin-left: ${level*20}px;">`;
+        html += `<div class="tree-node-content ${isRoot ? 'tree-root' : ''} ${outOfScope ? 'tree-muted' : ''}">`;
+        html += `<span class="node-name">${escapeHtml(node.name)}</span>`;
+        html += `<div class="node-field">名称 <input class="net-node-input name-input" data-id="${node.id}" data-field="name" value="${escapeHtml(node.name)}" ${isRoot ? 'readonly' : ''}></div>`;
+        html += `<div class="node-field">总输额 <input class="net-node-input compact-input" data-id="${node.id}" data-field="lose" type="number" value="${node.lose || 0}" step="100"></div>`;
+        html += `<div class="node-field">总赢额 <input class="net-node-input compact-input" data-id="${node.id}" data-field="win" type="number" value="${node.win || 0}" step="100"></div>`;
+        html += `<div class="node-field">优惠 <input class="net-node-input compact-input" data-id="${node.id}" data-field="bonus" type="number" value="${node.bonus || 0}" step="100"></div>`;
+        html += `<div class="node-field">成本 <input class="net-node-input compact-input" data-id="${node.id}" data-field="cost" type="number" value="${node.cost || 0}" step="100"></div>`;
+        html += `<span class="node-result" id="net_result_${node.id}">净盈利 ${netValue.toFixed(2)}</span>`;
+        if(outOfScope) html += `<span class="helper">当前层级不计入</span>`;
+        if(level < TREE_EDIT_DEPTH_LIMIT) html += `<button type="button" class="tree-add" data-id="${node.id}">+ 下级</button>`;
+        if(!isRoot) html += `<button type="button" class="tree-delete" data-id="${node.id}">删除</button>`;
+        if(hasChildren) html += `<button type="button" class="toggle-children" data-target="${childrenId}">▼ 收起</button>`;
+        html += `</div>`;
+        if(hasChildren) {
+            html += `<div id="${childrenId}" class="children-wrapper">`;
+            for(let ch of node.children) html += renderNetTree(ch, level+1);
+            html += `</div>`;
+        }
+        html += `</div>`;
+        return html;
+    }
+    function getNetSelf(node) {
+        return calcNetSelf(node);
+    }
+    function sumNetDescendants(node, remainingDepth) {
+        if(remainingDepth <= 0) return 0;
+        let total = 0;
+        for(let ch of node.children || []) {
+            total += getNetSelf(ch);
+            total += sumNetDescendants(ch, remainingDepth - 1);
+        }
+        return total;
+    }
+    function refreshNet() {
+        let levelType = document.getElementById('netLevelType').value;
+        let maxLevel = getMaxCalcLevel(levelType, 'netCustomLevel');
+        let cap = Math.max(0, parseFloat(document.getElementById('netDirectCap')?.value) || 0);
+        const configFormula = document.getElementById('netConfigFormula');
+        if(configFormula) {
+            configFormula.innerText = `当前配置：层级深度 ${formatLevelLabel(levelType, 'netCustomLevel')}；阶梯规则 ${formatThresholdRules(netThresholds, '净盈利')}；直属下级单期返佣上限 ${cap > 0 ? cap.toFixed(2) : '不限制'}`;
+        }
+        let aTotal = sumNetDescendants(netTreeData, maxLevel);
+        let aRate = getRateByThreshold(aTotal, netThresholds);
+        let directPerformance = 0, otherPerformance = 0, directComm = 0, diffComm = 0;
+        let steps = [
+            `📘 适用场景：代理模式的佣金计算依据为“净盈利”`,
+            `📘 单个会员净盈利 = 会员总输额 - 会员总赢额 - 会员获得的总优惠金额 - 平台分摊成本`,
+            `📘 总输额：下注输掉的金额；总赢额：游戏赢得金额；优惠：返水/红包/彩金/活动奖励等；平台成本：系统配置扣除项`,
+            `📊 A总净盈利业绩 = 层级范围内所有下级自身净盈利 = ${aTotal.toFixed(2)}`,
+            `📈 A返佣比例 = ${(aRate*100).toFixed(2)}%`,
+            `🧾 直属下级单期返佣上限 = ${cap > 0 ? cap.toFixed(2) : '不限制'}`
+        ];
+
+        for(let ch of netTreeData.children) {
+            let childSelf = getNetSelf(ch);
+            let childTeamPerformance = maxLevel > 1 ? sumNetDescendants(ch, maxLevel - 1) : 0;
+            let childRate = getRateByThreshold(childTeamPerformance, netThresholds);
+            let directLineComm = Math.max(0, childSelf) * aRate;
+            let diff = Math.max(0, aRate - childRate);
+            let diffLineComm = Math.max(0, childTeamPerformance) * diff;
+            let cappedDirect = directLineComm;
+            let cappedDiff = diffLineComm;
+            let rawLineComm = directLineComm + diffLineComm;
+            if(cap > 0 && rawLineComm > cap) {
+                if(directLineComm >= cap) {
+                    cappedDirect = cap;
+                    cappedDiff = 0;
+                } else {
+                    cappedDiff = Math.min(diffLineComm, Math.max(0, cap - directLineComm));
+                }
+            }
+
+            directPerformance += childSelf;
+            otherPerformance += childTeamPerformance;
+            directComm += cappedDirect;
+            diffComm += cappedDiff;
+
+            steps.push(`🔹 直属 ${ch.name} 本人净盈利=${childSelf.toFixed(2)}，给A直属佣金：max(${childSelf.toFixed(2)},0) × ${(aRate*100).toFixed(2)}% = ${directLineComm.toFixed(2)}`);
+            steps.push(`📌 ${ch.name}总净盈利业绩=${childTeamPerformance.toFixed(2)}，${ch.name}返佣比例=${(childRate*100).toFixed(2)}%，A与${ch.name}极差返佣比例=${(diff*100).toFixed(2)}%，其他佣金=max(${childTeamPerformance.toFixed(2)},0) × ${(diff*100).toFixed(2)}% = ${diffLineComm.toFixed(2)}`);
+            steps.push(`🧾 ${ch.name}贡献佣金 C = 直属佣金 ${directLineComm.toFixed(2)} + 极差佣金 ${diffLineComm.toFixed(2)} = ${rawLineComm.toFixed(2)}`);
+            if(cap > 0 && rawLineComm > cap) {
+                steps.push(`⚠️ ${ch.name}贡献佣金${rawLineComm.toFixed(2)}超过上限${cap.toFixed(2)}，优先截断其他佣金，实际计入：直属${cappedDirect.toFixed(2)} + 其他${cappedDiff.toFixed(2)}`);
+            }
+        }
+
+        let total = directComm + diffComm;
+        document.getElementById('netTotal').innerText = total.toFixed(2);
+        steps.push(`✅ A直属净盈利=${directPerformance.toFixed(2)}，其他净盈利=${otherPerformance.toFixed(2)}，总净盈利业绩=${(directPerformance + otherPerformance).toFixed(2)}`);
+        steps.push(`ℹ️ 净盈利为负会降低上级总净盈利；代理总净盈利为负时按最低档或0%处理，不倒扣佣金。`);
+        document.getElementById('netProcess').innerHTML = steps.join('<br>') + `<br><strong>✅ 总佣金 = 直属 ${directComm.toFixed(2)} + 其他 ${diffComm.toFixed(2)} = ${total.toFixed(2)}</strong>`;
+    }
+    function syncNetNodeInput(input) {
+        const found = findTreeNode(netTreeData, input.dataset.id);
+        if(!found) return;
+        const field = input.dataset.field;
+        if(field === 'name') found.node.name = input.value || found.node.name;
+        if(['lose', 'win', 'bonus', 'cost'].includes(field)) found.node[field] = parseFloat(input.value) || 0;
+        const resultEl = document.getElementById(`net_result_${found.node.id}`);
+        if(resultEl) resultEl.innerText = `净盈利 ${calcNetSelf(found.node).toFixed(2)}`;
+    }
+    function initNetTree() {
+        let container = document.getElementById('netTreeContainer');
+        container.innerHTML = renderNetTree(netTreeData);
+        container.querySelectorAll('.toggle-children').forEach(btn => {
+            let targetId = btn.getAttribute('data-target');
+            let div = document.getElementById(targetId);
+            if(div) btn.onclick = () => { div.classList.toggle('collapsed'); btn.innerText = div.classList.contains('collapsed') ? '▶ 展开' : '▼ 收起'; };
+        });
+        container.querySelectorAll('.net-node-input').forEach(inp => inp.addEventListener('input', () => {
+            syncNetNodeInput(inp);
+            refreshNet();
+        }));
+        container.querySelectorAll('.tree-add').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const found = findTreeNode(netTreeData, btn.dataset.id);
+                if(!found) return;
+                if(!found.node.children) found.node.children = [];
+                found.node.children.push(createChildNode('net', found.depth + 1, { lose: 0, win: 0, bonus: 0, cost: 0 }));
+                initNetTree();
+            });
+        });
+        container.querySelectorAll('.tree-delete').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const found = findTreeNode(netTreeData, btn.dataset.id);
+                if(!found || !found.parent) return;
+                found.parent.children = found.parent.children.filter(child => child.id !== found.node.id);
+                initNetTree();
+            });
+        });
+        refreshNet();
+    }
+
+    // ========== 最终初始化 ==========
+    function init() {
+        bindMultiEvents();
+        renderThresholdRules('betRuleContainer', betThresholds, refreshBetting);
+        initBetTree();
+        renderThresholdRules('netRuleContainer', netThresholds, refreshNet);
+        initNetTree();
+        document.getElementById('betLevelType').addEventListener('change', function(e){
+            document.getElementById('betCustomLevelDiv').style.display = e.target.value === 'custom' ? 'block' : 'none';
+            initBetTree();
+            refreshBetting();
+        });
+        document.getElementById('betCustomLevel').addEventListener('input', () => {
+            initBetTree();
+            refreshBetting();
+        });
+        document.getElementById('netLevelType').addEventListener('change', function(e){
+            document.getElementById('netCustomLevelDiv').style.display = e.target.value === 'custom' ? 'block' : 'none';
+            initNetTree();
+            refreshNet();
+        });
+        document.getElementById('netCustomLevel').addEventListener('input', () => {
+            initNetTree();
+            refreshNet();
+        });
+        document.getElementById('netDirectCap').addEventListener('input', refreshNet);
+        document.getElementById('addBetRule').onclick = () => { betThresholds.push({ threshold: 50000, rate: 5 }); renderThresholdRules('betRuleContainer', betThresholds, refreshBetting); refreshBetting(); };
+        document.getElementById('addNetRule').onclick = () => { netThresholds.push({ threshold: 50000, rate: 8 }); renderThresholdRules('netRuleContainer', netThresholds, refreshNet); refreshNet(); };
+    }
+    init();
+</script>
+</body>
+</html>

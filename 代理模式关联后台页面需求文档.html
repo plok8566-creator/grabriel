@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>代理模式关联后台页面需求文档</title>
+  <style>
+    :root {
+      --brand: #0052d9;
+      --danger: #e34d59;
+      --text-1: rgba(0, 0, 0, .9);
+      --text-2: rgba(0, 0, 0, .6);
+      --border: #e7edf5;
+      --bg: #f5f7fb;
+      --card: #fff;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding-top: 54px;
+      background: var(--bg);
+      color: var(--text-1);
+      font: 14px/1.7 "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+    .global-links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(15, 40, 80, .08);
+      backdrop-filter: blur(8px);
+    }
+    .global-links a {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid #cfd7e3;
+      border-radius: 6px;
+      color: var(--brand);
+      background: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .global-links a:hover {
+      border-color: var(--brand);
+      background: #f8fbff;
+    }
+    .page {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 20px 48px;
+    }
+    .hero {
+      margin-bottom: 18px;
+      padding: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 26px rgba(15, 40, 80, .06);
+    }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    h2 { margin: 0 0 12px; font-size: 20px; }
+    h3 { margin: 18px 0 8px; font-size: 16px; }
+    p { margin: 0 0 8px; color: var(--text-2); }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .tag {
+      padding: 4px 10px;
+      border: 1px solid #c8d8ff;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--brand);
+      font-weight: 500;
+    }
+    .toc, .section {
+      margin-top: 14px;
+      padding: 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .toc a {
+      display: inline-block;
+      margin: 0 14px 8px 0;
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    ul { margin: 8px 0 0 20px; padding: 0; }
+    li { margin: 4px 0; }
+    .summary-list {
+      display: grid;
+      gap: 8px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    .summary-list li {
+      margin: 0;
+      padding: 9px 12px;
+      border: 1px solid #edf2f8;
+      border-radius: 6px;
+      background: #fbfcff;
+      color: var(--text-2);
+    }
+    .figure-list {
+      display: grid;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    .figure-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .figure-body {
+      display: grid;
+      grid-template-columns: minmax(280px, 34%) minmax(0, 1fr);
+      min-height: 240px;
+    }
+    .figure-copy {
+      padding: 16px;
+      border-right: 1px solid var(--border);
+      background: #fbfcff;
+    }
+    .figure-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 10px;
+      color: var(--text-1);
+      font-size: 15px;
+      font-weight: 600;
+    }
+    .figure-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--danger);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      flex: 0 0 auto;
+    }
+    .figure-copy p {
+      margin-bottom: 10px;
+    }
+    .figure-copy ul {
+      margin-left: 18px;
+    }
+    .figure-copy li {
+      color: var(--text-2);
+    }
+    .figure-shot {
+      min-width: 0;
+      background: #fff;
+    }
+    .shot {
+      position: relative;
+      margin-top: 14px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .figure-shot .shot {
+      height: 100%;
+      min-height: 240px;
+      margin: 0;
+      border: 0;
+      border-radius: 0;
+    }
+    .shot img {
+      display: block;
+      width: 100%;
+      min-width: 780px;
+    }
+    .mark {
+      position: absolute;
+      border: 3px solid var(--danger);
+      border-radius: 8px;
+      background: rgba(227, 77, 89, .06);
+      box-shadow: 0 0 0 2px rgba(255, 255, 255, .9);
+    }
+    .pin {
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--danger);
+      color: #fff;
+      text-align: center;
+      line-height: 28px;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(227, 77, 89, .35);
+    }
+    @media (max-width: 900px) {
+      .figure-body {
+        grid-template-columns: 1fr;
+      }
+      .figure-copy {
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .shot img {
+        min-width: 680px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="global-links" aria-label="页面关联入口">
+    <a href="代理模式页面.html" target="_blank">代理模式页面</a>
+    <a href="后台代理模式需求文档.html" target="_blank">后台代理模式需求文档</a>
+    <a href="../后台其他页面.html" target="_blank">后台关联页面</a>
+    <a href="前台关联页面.html" target="_blank">前台关联页面（作废）</a>
+    <a href="前台推广原型页面.html" target="_blank">前台推广原型</a>
+    <a href="前台推广页面需求文档.html" target="_blank">前台推广页面需求文档</a>
+    <a href="佣金计算工具.html" target="_blank">佣金计算工具</a>
+  </nav>
+  <main class="page">
+    <section class="hero">
+      <h1>代理模式关联后台页面需求文档</h1>
+      <p>目标：代理模式新增或调整后，后台其他相关页面需要统一读取并展示代理模式、结算周期、佣金数据及相关统计，保证不同代理模式的数据口径一致。</p>
+      <div class="meta">
+        <span class="tag">代理模式</span>
+        <span class="tag">后台关联页面</span>
+        <span class="tag">截图标识</span>
+        <span class="tag">需求说明</span>
+      </div>
+    </section>
+
+    <section class="toc">
+      <a href="#agent-list">1. 代理列表</a>
+      <a href="#member-list">2. 会员列表/详情</a>
+      <a href="#commission-record">3. 佣金领取记录</a>
+      <a href="#agent-query">4. 代理数据查询</a>
+      <a href="#settlement">5. 代理结算</a>
+      <a href="#dashboard-report">6. 首页和报表</a>
+    </section>
+
+    <section class="section" id="agent-list">
+      <h2>1. 代理列表</h2>
+      <p>代理列表需要作为代理模式基础数据来源。新增代理模式后，筛选、新增、编辑等使用代理模式名称的下拉项都需要同步展示。</p>
+      <ul class="summary-list">
+        <li>代理模式名称来源：读取“代理模式”页面维护的数据。</li>
+        <li>展示规则：无论模式是否关闭，历史数据关联时均需要可展示。</li>
+        <li>新增模式后，关联页面下拉项需要自动增加。</li>
+      </ul>
+      <div class="figure-list">
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">1</span>代理列表页面</h3>
+              <p>对应截图红色标识 1、2，页面需要同步代理模式数据。</p>
+              <ul>
+                <li>标识 1：筛选区增加或保留“代理模式名称”查询条件，选项读取代理模式配置。</li>
+                <li>标识 2：新增或编辑代理时，代理模式字段需要可选择并显示当前关联模式。</li>
+                <li>历史代理即使关联的模式已停用，也需要保留名称展示，避免数据断档。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u877.png" alt="代理列表截图">
+                <div class="mark" style="left: 6%; top: 12%; width: 34%; height: 11%;"></div>
+                <div class="pin" style="left: 4%; top: 10%;">1</div>
+                <div class="mark" style="left: 58%; top: 31%; width: 22%; height: 18%;"></div>
+                <div class="pin" style="left: 56%; top: 29%;">2</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="member-list">
+      <h2>2. 会员列表 / 会员详情</h2>
+      <p>会员列表和会员详情需要展示会员当前归属代理模式，便于运营核查不同会员对应的返佣规则。</p>
+      <ul class="summary-list">
+        <li>会员列表筛选新增：代理模式。</li>
+        <li>会员列表字段新增：代理模式。</li>
+        <li>导出数据需要包含代理模式字段。</li>
+        <li>会员详情同步展示会员对应代理模式。</li>
+      </ul>
+      <div class="figure-list">
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">1</span>会员列表</h3>
+              <p>对应截图红色标识 1、2，会员列表需要支持代理模式查询、展示和导出。</p>
+              <ul>
+                <li>标识 1：筛选区新增“代理模式”条件，支持按模式快速定位会员。</li>
+                <li>标识 2：列表增加“代理模式”列，展示会员当前归属模式名称。</li>
+                <li>导出时同步带出代理模式字段，字段名称与列表一致。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u885.png" alt="会员列表截图">
+                <div class="mark" style="left: 8%; top: 12%; width: 46%; height: 12%;"></div>
+                <div class="pin" style="left: 6%; top: 10%;">1</div>
+                <div class="mark" style="left: 46%; top: 43%; width: 18%; height: 17%;"></div>
+                <div class="pin" style="left: 44%; top: 41%;">2</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">2</span>会员详情</h3>
+              <p>对应截图红色标识 3，详情页需要与会员列表使用同一代理模式口径。</p>
+              <ul>
+                <li>标识 3：基础信息区域展示“代理模式”字段。</li>
+                <li>字段值与会员列表保持一致，变更后实时同步。</li>
+                <li>用于客服、运营核查会员当前适用的返佣规则。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u922.png" alt="会员详情截图">
+                <div class="mark" style="left: 12%; top: 19%; width: 38%; height: 18%;"></div>
+                <div class="pin" style="left: 10%; top: 17%;">3</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="commission-record">
+      <h2>3. 佣金领取记录</h2>
+      <p>所有代理模式产生的佣金领取记录均需兼容，查询、展示、导出应能按代理模式追溯。</p>
+      <ul class="summary-list">
+        <li>支持不同佣金计算依据：有效投注、多奖励模式、净盈利。</li>
+        <li>记录需要保留代理模式名称、结算周期、佣金计算依据。</li>
+        <li>导出字段与页面显示保持一致。</li>
+      </ul>
+      <div class="figure-list">
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">1</span>佣金领取记录</h3>
+              <p>对应截图红色标识 1、2，记录页需要能按代理模式追溯佣金来源。</p>
+              <ul>
+                <li>标识 1：查询条件增加代理模式、结算周期等筛选维度。</li>
+                <li>标识 2：列表展示代理模式名称、佣金计算依据、结算周期。</li>
+                <li>导出字段与列表一致，便于财务复核不同模式的佣金数据。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u889.png" alt="佣金领取记录截图">
+                <div class="mark" style="left: 6%; top: 14%; width: 42%; height: 12%;"></div>
+                <div class="pin" style="left: 4%; top: 12%;">1</div>
+                <div class="mark" style="left: 48%; top: 43%; width: 30%; height: 15%;"></div>
+                <div class="pin" style="left: 46%; top: 41%;">2</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="agent-query">
+      <h2>4. 代理数据查询</h2>
+      <p>代理数据查询需要兼容所有模式产生的数据，筛选条件、统计数据、明细口径保持一致。</p>
+      <ul class="summary-list">
+        <li>筛选支持代理模式和结算周期。</li>
+        <li>统计指标按代理模式规则计算。</li>
+        <li>切换代理模式后，汇总和明细口径同步变化。</li>
+      </ul>
+      <div class="figure-list">
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">1</span>代理数据查询</h3>
+              <p>对应截图红色标识 1、2，查询页需要按代理模式切换统计口径。</p>
+              <ul>
+                <li>标识 1：筛选条件支持代理模式、结算周期。</li>
+                <li>标识 2：汇总指标和明细表格按所选模式计算。</li>
+                <li>选择净盈利模式时，业绩、佣金字段使用净盈利相关计算结果。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u893.png" alt="代理数据查询截图">
+                <div class="mark" style="left: 7%; top: 12%; width: 48%; height: 12%;"></div>
+                <div class="pin" style="left: 5%; top: 10%;">1</div>
+                <div class="mark" style="left: 9%; top: 38%; width: 66%; height: 16%;"></div>
+                <div class="pin" style="left: 7%; top: 36%;">2</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="settlement">
+      <h2>5. 代理结算</h2>
+      <p>代理总结算、代理总明细、直属会员明细、其他会员明细均需兼容代理模式和结算周期。</p>
+      <div class="figure-list">
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">1</span>代理总结算</h3>
+              <p>对应截图红色标识 1，总结算页用于查看代理单期结算结果。</p>
+              <ul>
+                <li>筛选和列表需展示代理模式、结算周期、结算金额、领取状态。</li>
+                <li>不同模式产生的结算单需要可统一查询。</li>
+                <li>导出时包含代理模式和佣金计算依据。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u906.png" alt="代理总结算截图">
+                <div class="mark" style="left: 8%; top: 12%; width: 50%; height: 12%;"></div>
+                <div class="pin" style="left: 6%; top: 10%;">1</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">2</span>代理总明细</h3>
+              <p>对应截图红色标识 2，总明细需要呈现代理维度的佣金拆分。</p>
+              <ul>
+                <li>明细口径按代理模式的计算规则展示。</li>
+                <li>有效投注、净盈利、多奖励模式字段需要按模式区分。</li>
+                <li>金额、比例、层级等字段需要与结算结果一致。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u907.png" alt="代理总明细截图">
+                <div class="mark" style="left: 8%; top: 39%; width: 70%; height: 15%;"></div>
+                <div class="pin" style="left: 6%; top: 37%;">2</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">3</span>直属会员明细</h3>
+              <p>对应截图红色标识 3，直属会员明细用于核查直属会员贡献。</p>
+              <ul>
+                <li>展示直属会员业绩、直属佣金、适用代理模式。</li>
+                <li>净盈利模式下展示净盈利相关业绩字段。</li>
+                <li>返佣上限触发时，需要能定位被限制的佣金来源。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u908.png" alt="直属会员明细截图">
+                <div class="mark" style="left: 8%; top: 39%; width: 70%; height: 15%;"></div>
+                <div class="pin" style="left: 6%; top: 37%;">3</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">4</span>其他会员明细</h3>
+              <p>对应截图红色标识 4，其他会员明细用于查看跨级或下级会员贡献。</p>
+              <ul>
+                <li>展示会员层级、所属代理、业绩口径、极差佣金。</li>
+                <li>层级展示需要与代理模式的佣金计算层数一致。</li>
+                <li>导出明细需保留代理模式名称和结算周期。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u909.png" alt="其他会员明细截图">
+                <div class="mark" style="left: 8%; top: 39%; width: 70%; height: 15%;"></div>
+                <div class="pin" style="left: 6%; top: 37%;">4</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="dashboard-report">
+      <h2>6. 首页和报表</h2>
+      <p>首页代理佣金数据、运营统计平台报表、会员报表、代理报表均需要兼容所有代理模式产生的数据。</p>
+      <ul class="summary-list">
+        <li>首页：代理佣金数据统计包含所有代理模式。</li>
+        <li>平台报表、会员报表：与代理佣金相关数据口径同步。</li>
+        <li>代理报表：支持代理模式维度查看和统计。</li>
+      </ul>
+      <div class="figure-list">
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">1</span>后台首页</h3>
+              <p>对应截图红色标识 1，首页代理佣金统计需包含新增代理模式数据。</p>
+              <ul>
+                <li>统计范围包含有效投注、净盈利、多奖励模式产生的佣金。</li>
+                <li>首页指标与结算结果保持一致。</li>
+                <li>需要避免新增模式后首页数据漏计。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u898.png" alt="首页截图">
+                <div class="mark" style="left: 8%; top: 20%; width: 36%; height: 16%;"></div>
+                <div class="pin" style="left: 6%; top: 18%;">1</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">2</span>平台报表</h3>
+              <p>对应截图红色标识 2，平台报表需要同步代理佣金统计口径。</p>
+              <ul>
+                <li>平台佣金相关字段包含所有代理模式。</li>
+                <li>按日期、渠道、代理等维度汇总时，代理模式口径保持一致。</li>
+                <li>导出报表与页面展示一致。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u899.png" alt="平台报表截图">
+                <div class="mark" style="left: 7%; top: 15%; width: 42%; height: 13%;"></div>
+                <div class="pin" style="left: 5%; top: 13%;">2</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">3</span>会员报表</h3>
+              <p>对应截图红色标识 3，会员报表需补齐代理模式相关统计口径。</p>
+              <ul>
+                <li>会员维度统计需要能追溯对应代理模式。</li>
+                <li>涉及佣金、业绩、净盈利字段时，按会员当期归属模式计算。</li>
+                <li>导出数据需支持后续对账。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u900.png" alt="会员报表截图">
+                <div class="mark" style="left: 7%; top: 15%; width: 42%; height: 13%;"></div>
+                <div class="pin" style="left: 5%; top: 13%;">3</div>
+              </div>
+            </div>
+          </div>
+        </article>
+        <article class="figure-card">
+          <div class="figure-body">
+            <div class="figure-copy">
+              <h3 class="figure-title"><span class="figure-index">4</span>代理报表</h3>
+              <p>对应截图红色标识 4，代理报表需要支持按代理模式查看和统计。</p>
+              <ul>
+                <li>筛选条件增加代理模式。</li>
+                <li>统计列展示代理模式、结算周期、业绩口径、佣金金额。</li>
+                <li>净盈利模式下，需要能单独查看净盈利相关报表数据。</li>
+              </ul>
+            </div>
+            <div class="figure-shot">
+              <div class="shot">
+                <img src="../images/后台其他页面/u901.png" alt="代理报表截图">
+                <div class="mark" style="left: 7%; top: 15%; width: 42%; height: 13%;"></div>
+                <div class="pin" style="left: 5%; top: 13%;">4</div>
+              </div>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

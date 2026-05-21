@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>代理相关文档</title>
+  <style>
+    :root {
+      --brand: #0052d9;
+      --border: #e7edf5;
+      --bg: #f5f7fb;
+      --card: #fff;
+      --text-1: rgba(0, 0, 0, .9);
+      --text-2: rgba(0, 0, 0, .6);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding-top: 54px;
+      background: var(--bg);
+      color: var(--text-1);
+      font: 14px/1.7 "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+    .global-links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(15, 40, 80, .08);
+      backdrop-filter: blur(8px);
+    }
+    .global-links a {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid #cfd7e3;
+      border-radius: 6px;
+      color: var(--brand);
+      background: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .global-links a:hover {
+      border-color: var(--brand);
+      background: #f8fbff;
+    }
+    .page {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .hero, .doc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 26px rgba(15, 40, 80, .06);
+    }
+    .hero {
+      padding: 24px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+    p {
+      margin: 0;
+      color: var(--text-2);
+    }
+    .doc-list {
+      display: grid;
+      gap: 12px;
+    }
+    .doc-card {
+      display: block;
+      padding: 18px 20px;
+      color: inherit;
+      text-decoration: none;
+    }
+    .doc-card:hover {
+      border-color: var(--brand);
+      background: #f8fbff;
+    }
+    .doc-card strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--brand);
+      font-size: 17px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="global-links" aria-label="页面关联入口">
+    <a href="代理模式页面.html" target="_blank">代理模式页面</a>
+    <a href="后台代理模式需求文档.html" target="_blank">后台代理模式需求文档</a>
+    <a href="../后台其他页面.html" target="_blank">后台关联页面</a>
+    <a href="前台关联页面.html" target="_blank">前台关联页面（作废）</a>
+    <a href="前台推广原型页面.html" target="_blank">前台推广原型</a>
+    <a href="前台推广页面需求文档.html" target="_blank">前台推广页面需求文档</a>
+    <a href="佣金计算工具.html" target="_blank">佣金计算工具</a>
+  </nav>
+  <main class="page">
+    <section class="hero">
+      <h1>代理相关文档</h1>
+      <p>集中存放代理模式、后台关联页面等需求文档。</p>
+    </section>
+    <section class="doc-list" aria-label="代理相关文档列表">
+      <a class="doc-card" href="代理模式页面.html">
+        <strong>代理模式页面</strong>
+        <span>后台代理模式管理页面，可查看列表、新增/修改代理模式、配置返佣设置。</span>
+      </a>
+      <a class="doc-card" href="后台代理模式需求文档.html">
+        <strong>后台代理模式需求文档</strong>
+        <span>代理模式新增、修改、公共设置、佣金计算逻辑和前台教程说明。</span>
+      </a>
+      <a class="doc-card" href="代理模式关联后台页面需求文档.html">
+        <strong>代理模式关联后台页面需求文档</strong>
+        <span>后台关联页面的截图标识和对应需求说明。</span>
+      </a>
+      <a class="doc-card" href="前台关联页面.html">
+        <strong>前台关联页面（作废）</strong>
+        <span>前台代理教程和代理佣金展示相关页面。</span>
+      </a>
+      <a class="doc-card" href="前台推广原型页面.html">
+        <strong>前台推广原型页面</strong>
+        <span>按截图还原的移动端推广分享与代理教程原型。</span>
+      </a>
+      <a class="doc-card" href="前台推广页面需求文档.html">
+        <strong>前台推广页面需求文档</strong>
+        <span>前台推广赚钱页面的导航、教程、返佣比例和调试联动需求说明。</span>
+      </a>
+      <a class="doc-card" href="佣金计算工具.html">
+        <strong>佣金计算工具</strong>
+        <span>用于快速验证有效投注、多奖励模式、净盈利模式的佣金计算结果。</span>
+      </a>
+    </section>
+  </main>
+</body>
+</html>

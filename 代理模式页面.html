@@ -1,0 +1,2324 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>代理模式</title>
+  <style>
+    :root {
+      --td-brand: #0052d9;
+      --td-brand-hover: #366ef4;
+      --td-success: #00a870;
+      --td-danger: #e34d59;
+      --td-warning: #ed7b2f;
+      --td-text-1: rgba(0, 0, 0, .9);
+      --td-text-2: rgba(0, 0, 0, .6);
+      --td-text-3: rgba(0, 0, 0, .4);
+      --td-border: #cfd7e3;
+      --td-border-2: #e7edf5;
+      --td-bg: #f5f7fb;
+      --td-card: #fff;
+      --td-card-soft: #fbfcfe;
+      --td-radius: 8px;
+      --td-radius-sm: 6px;
+      --td-shadow: 0 8px 26px rgba(15, 40, 80, .06);
+      --td-shadow-modal: 0 20px 48px rgba(15, 40, 80, .16);
+      --td-focus: 0 0 0 2px rgba(0, 82, 217, .2);
+    }
+
+    * { box-sizing: border-box; }
+    html { width: 100%; overflow-x: hidden; }
+    body {
+      margin: 0;
+      width: 100%;
+      padding-top: 54px;
+      overflow-x: hidden;
+      font: 14px/1.5 "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      color: var(--td-text-1);
+      background: var(--td-bg);
+    }
+    .global-links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--td-border-2);
+      box-shadow: 0 4px 14px rgba(15, 40, 80, .08);
+      backdrop-filter: blur(8px);
+    }
+    .global-links a {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid var(--td-border);
+      border-radius: var(--td-radius-sm);
+      color: var(--td-brand);
+      background: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .global-links a:hover {
+      border-color: var(--td-brand-hover);
+      background: #f8fbff;
+      color: var(--td-brand-hover);
+    }
+
+    .app {
+      min-height: 100vh;
+      width: 100%;
+      max-width: 100vw;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      overflow-x: hidden;
+    }
+
+    .side {
+      background: #fff;
+      border-right: 1px solid var(--td-border-2);
+      color: #e7eef7;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      box-shadow: 1px 0 0 rgba(15, 40, 80, .02);
+    }
+
+    .logo {
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--td-brand);
+      border-bottom: 1px solid var(--td-border-2);
+      letter-spacing: 0;
+    }
+    .logo::before {
+      content: "";
+      width: 28px;
+      height: 28px;
+      margin-right: 10px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, var(--td-brand) 0%, #00a870 100%);
+      box-shadow: 0 6px 14px rgba(0, 82, 217, .18);
+    }
+    .menu {
+      padding: 12px 10px;
+    }
+
+    .menu a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #4b5565;
+      text-decoration: none;
+      padding: 11px 12px;
+      margin-bottom: 4px;
+      border-radius: var(--td-radius-sm);
+      transition: background-color .18s ease, color .18s ease;
+      border-left: 0;
+      font-weight: 500;
+    }
+    .menu a::before {
+      content: attr(data-icon);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: #f2f5fb;
+      color: #6b778c;
+      font-size: 13px;
+    }
+    .menu a:hover { background: #f4f7fc; color: var(--td-brand); }
+    .menu a.active {
+      background: #eef4ff;
+      color: var(--td-brand);
+    }
+    .menu a.active::before {
+      background: var(--td-brand);
+      color: #fff;
+    }
+
+    .main {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    .topbar {
+      height: 60px;
+      background: var(--td-card);
+      border-bottom: 1px solid var(--td-border-2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      font-size: 14px;
+      box-shadow: 0 1px 0 rgba(15, 40, 80, .02);
+      min-width: 0;
+      max-width: 100%;
+      overflow: hidden;
+    }
+    .topbar > div {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .container {
+      padding: 16px;
+      min-width: 0;
+      max-width: 100%;
+      overflow-x: hidden;
+    }
+
+    .card {
+      background: var(--td-card);
+      border: 1px solid var(--td-border-2);
+      border-radius: var(--td-radius);
+      box-shadow: var(--td-shadow);
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    .chip-row { display: none; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--td-border);
+      background: #f7f9fc;
+      color: var(--td-text-2);
+      padding: 6px 12px;
+      border-radius: 999px;
+      margin-right: 8px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      transition: .18s ease;
+    }
+    .chip.active { border-color: #aac4ff; background: #eef4ff; color: var(--td-brand); }
+
+    .toolbar {
+      padding: 16px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .toolbar-head {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 12px;
+      align-items: center;
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+    }
+    .filter-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .filter-label {
+      flex: 0 0 auto;
+      color: var(--td-text-1);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .filter-field .ctl {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      width: 100%;
+      flex-wrap: wrap;
+      min-width: 0;
+      max-width: 100%;
+      padding-top: 14px;
+      border-top: 1px solid var(--td-border-2);
+    }
+    .toolbar-actions .btn {
+      min-width: 120px;
+    }
+
+    .ctl {
+      height: 38px;
+      border: 1px solid var(--td-border);
+      border-radius: var(--td-radius-sm);
+      background: #fff;
+      color: var(--td-text-1);
+      padding: 0 12px;
+      width: 100%;
+      transition: border-color .2s, box-shadow .2s, background-color .2s;
+    }
+    .ctl:hover { border-color: #b7c4d7; }
+    .ctl:focus {
+      outline: none;
+      border-color: var(--td-brand);
+      box-shadow: var(--td-focus);
+    }
+    .ctl.invalid {
+      border-color: var(--td-danger);
+      box-shadow: 0 0 0 2px rgba(227, 77, 89, .12);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 38px;
+      min-width: 72px;
+      border: 1px solid var(--td-border);
+      border-radius: var(--td-radius-sm);
+      background: #fff;
+      color: var(--td-text-1);
+      padding: 0 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 1;
+      text-decoration: none;
+      transition: .18s ease;
+    }
+    .btn:hover {
+      border-color: var(--td-brand-hover);
+      color: var(--td-brand-hover);
+      background: #f8fbff;
+    }
+    .btn.primary { background: var(--td-brand); color: #fff; border-color: var(--td-brand); }
+    .btn.primary:hover { background: var(--td-brand-hover); border-color: var(--td-brand-hover); color: #fff; }
+    .btn.danger { background: #fff; color: var(--td-danger); border-color: #f3b3b8; }
+    .btn.danger:hover { background: #fff1f2; color: #c9353f; border-color: #e34d59; }
+    .btn.danger-fill { background: #e34d59; color: #fff; border-color: #e34d59; }
+    .btn.danger-fill:hover { background: #c9353f; border-color: #c9353f; color: #fff; }
+
+    .table-card {
+      padding: 14px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      min-width: 0;
+      max-width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+    .actions-top { display: none; }
+
+    table {
+      border-collapse: separate;
+      border-spacing: 0;
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
+      overflow: hidden;
+      background: #fff;
+      border: 1px solid var(--td-border-2);
+      border-radius: var(--td-radius);
+    }
+    .table-card > table {
+      width: max-content;
+      min-width: 100%;
+      table-layout: auto;
+    }
+    th, td {
+      height: 56px;
+      border: 0;
+      border-right: 1px solid var(--td-border-2);
+      border-bottom: 1px solid var(--td-border-2);
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 13px;
+      vertical-align: middle;
+      color: #4b5565;
+      background: #fff;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .table-card tbody td {
+      height: 56px;
+      max-height: 56px;
+    }
+    .table-card th,
+    .table-card td {
+      white-space: nowrap;
+      word-break: keep-all;
+    }
+    .table-card tbody td:nth-child(10) {
+      padding-top: 8px;
+      padding-bottom: 8px;
+    }
+    .table-card th:nth-child(1), .table-card td:nth-child(1) { min-width: 96px; }
+    .table-card th:nth-child(2), .table-card td:nth-child(2) { min-width: 112px; }
+    .table-card th:nth-child(3), .table-card td:nth-child(3) { min-width: 96px; }
+    .table-card th:nth-child(4), .table-card td:nth-child(4) { min-width: 112px; }
+    .table-card th:nth-child(5), .table-card td:nth-child(5) { min-width: 88px; }
+    .table-card th:nth-child(6), .table-card td:nth-child(6) { min-width: 116px; }
+    .table-card th:nth-child(7), .table-card td:nth-child(7) { min-width: 96px; }
+    .table-card th:nth-child(8), .table-card td:nth-child(8) { min-width: 90px; }
+    .table-card th:nth-child(9), .table-card td:nth-child(9) { min-width: 96px; }
+    .table-card th:nth-child(10), .table-card td:nth-child(10) {
+      width: 220px;
+      min-width: 220px;
+      max-width: 220px;
+    }
+    .table-card th:nth-child(11), .table-card td:nth-child(11) { min-width: 150px; }
+    .table-card th:nth-child(12), .table-card td:nth-child(12) { min-width: 92px; }
+    .table-card th:nth-child(13), .table-card td:nth-child(13) { min-width: 168px; }
+    .text-clamp-2 {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 20px;
+      max-height: 40px;
+    }
+    .table-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    th {
+      background: #f7f9fc;
+      color: #2f3b4d;
+      font-weight: 600;
+    }
+    th:last-child, td:last-child { border-right: 0; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:nth-child(even) td { background: #fcfdff; }
+    tbody tr:hover td { background: #f5f8ff; }
+    th .help {
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .link {
+      color: var(--td-brand);
+      text-decoration: none;
+      cursor: pointer;
+      margin-right: 8px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .link.danger { color: var(--td-danger); }
+
+    .switch {
+      width: 42px;
+      height: 24px;
+      border: 0;
+      border-radius: 12px;
+      background: #bfc4cc;
+      position: relative;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .switch::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      background: #fff;
+      transition: .2s;
+    }
+    .switch.on { background: #2f7cff; }
+    .switch.on::after { left: 20px; }
+    .switch.switch-text {
+      width: 58px;
+      color: #777;
+      font-size: 13px;
+      line-height: 24px;
+      padding-left: 24px;
+      text-align: center;
+    }
+    .switch.switch-text::before { content: attr(data-off); }
+    .switch.switch-text.on {
+      color: #fff;
+      padding-left: 0;
+      padding-right: 24px;
+      background: var(--td-success);
+    }
+    .switch.switch-text.on::before { content: attr(data-on); }
+    .switch.switch-text.on::after { left: 36px; }
+
+    .pager {
+      margin-top: 12px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--td-text-2);
+    }
+
+    .mask {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, .35);
+      z-index: 1200;
+      padding: 16px;
+    }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      z-index: 1300;
+      transform: translate(-50%, -12px);
+      min-width: 260px;
+      max-width: min(560px, calc(100vw - 32px));
+      padding: 12px 16px;
+      border: 1px solid #ffd8d8;
+      border-radius: var(--td-radius-sm);
+      background: #fff5f5;
+      color: var(--td-danger);
+      box-shadow: 0 10px 28px rgba(31, 45, 61, .14);
+      font-size: 14px;
+      line-height: 1.6;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease, transform .18s ease;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .guide-grid {
+      display: grid;
+      gap: 14px;
+    }
+    .guide-card {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid var(--td-border-2);
+      border-radius: 12px;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+      padding: 18px;
+      box-shadow: 0 8px 24px rgba(15, 40, 80, .06);
+    }
+    .guide-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: var(--td-brand);
+    }
+    .guide-card.multi::before { background: var(--td-warning); }
+    .guide-card.profit::before { background: var(--td-success); }
+    .guide-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .guide-card h3 {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-size: 17px;
+      color: var(--td-brand);
+    }
+    .guide-card.multi h3 { color: #b65d00; }
+    .guide-card.profit h3 { color: #07805b; }
+    .guide-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--td-brand);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .guide-card.multi .guide-badge {
+      background: #fff4e5;
+      color: #b65d00;
+    }
+    .guide-card.profit .guide-badge {
+      background: #e8fff5;
+      color: #07805b;
+    }
+    .guide-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: flex-end;
+    }
+    .guide-tag {
+      display: inline-flex;
+      align-items: center;
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #f2f5fb;
+      color: var(--td-text-2);
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .guide-card p {
+      margin: 0 0 8px;
+      color: var(--td-text-2);
+      line-height: 1.7;
+    }
+    .guide-section-title {
+      margin: 12px 0 8px;
+      color: var(--td-text-1);
+      font-weight: 700;
+    }
+    .formula-flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+      margin: 10px 0;
+    }
+    .formula-step {
+      min-height: 74px;
+      padding: 10px;
+      border: 1px solid #d9e5ff;
+      border-radius: 8px;
+      background: #f7faff;
+    }
+    .formula-step b {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--td-brand);
+    }
+    .formula-step span {
+      color: var(--td-text-2);
+      line-height: 1.55;
+    }
+    .formula-box {
+      margin: 10px 0;
+      padding: 10px 12px;
+      border: 1px solid #c8d8ff;
+      border-radius: var(--td-radius-sm);
+      background: #f6f9ff;
+      color: var(--td-text-1);
+      font-weight: 600;
+      line-height: 1.7;
+    }
+    .example-box {
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-left: 4px solid var(--td-success);
+      border-radius: 6px;
+      background: #f0fff8;
+      color: var(--td-text-1);
+      line-height: 1.7;
+    }
+    .example-result {
+      display: inline-flex;
+      align-items: center;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e8fff5;
+      color: #07805b;
+      font-weight: 700;
+    }
+
+    .modal {
+      width: min(1020px, calc(100vw - 32px));
+      max-height: calc(100vh - 28px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid var(--td-border-2);
+      border-radius: 8px;
+      box-shadow: var(--td-shadow-modal);
+    }
+
+    .mh {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+      border-bottom: 1px solid var(--td-border-2);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .close {
+      border: 0;
+      background: transparent;
+      color: #7a8799;
+      font-size: 30px;
+      cursor: pointer;
+      line-height: 1;
+      transition: color .18s ease;
+    }
+    .close:hover { color: #2f405d; }
+
+    .mb {
+      padding: 22px 24px;
+      overflow-y: auto;
+      overflow-x: auto;
+      flex: 1 1 auto;
+      min-height: 0;
+      max-width: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+    .mb table {
+      min-width: 0;
+      width: 100%;
+    }
+    .mb .profit-table {
+      min-width: 860px;
+    }
+    .frm {
+      display: grid;
+      grid-template-columns: 190px 1fr;
+      gap: 16px 14px;
+      align-items: center;
+      font-size: 14px;
+      min-width: 0;
+    }
+    .frm > * { min-width: 0; }
+    .lb { text-align: right; color: #5d6b82; line-height: 22px; font-weight: 500; }
+    .req { color: var(--td-danger); margin-right: 2px; }
+    .inp, .sel {
+      width: 100%;
+      height: 40px;
+      border: 1px solid var(--td-border);
+      border-radius: var(--td-radius-sm);
+      padding: 0 12px;
+      font-size: 14px;
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .inp:disabled, .sel:disabled {
+      background: #f5f7fa;
+      color: #9aa3b2;
+      cursor: not-allowed;
+    }
+    .radio.disabled {
+      color: #9aa3b2;
+      cursor: not-allowed;
+    }
+    .radio.disabled input {
+      cursor: not-allowed;
+    }
+    .inp:hover, .sel:hover { border-color: #b7c4d7; }
+    .inp:focus, .sel:focus {
+      outline: none;
+      border-color: var(--td-brand);
+      box-shadow: var(--td-focus);
+    }
+    .inp.invalid {
+      border-color: var(--td-danger);
+      box-shadow: 0 0 0 2px rgba(227, 77, 89, .12);
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      min-height: 40px;
+      min-width: 0;
+    }
+    .row > * { min-width: 0; }
+    .row span { overflow-wrap: anywhere; }
+
+    .radio, .check {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      color: var(--td-text-1);
+      font-size: 14px;
+    }
+
+    .radio input, .check input { accent-color: var(--td-brand); cursor: pointer; }
+
+    .percent { display: flex; max-width: 260px; }
+    .percent .inp { border-radius: 6px 0 0 6px; border-right: 0; }
+    .addon {
+      min-width: 44px;
+      text-align: center;
+      border: 1px solid var(--td-border);
+      border-radius: 0 var(--td-radius-sm) var(--td-radius-sm) 0;
+      line-height: 36px;
+      background: #f7f9fc;
+      color: #66758c;
+    }
+
+    .help {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--td-brand);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: default;
+      position: relative;
+      flex: 0 0 auto;
+      box-shadow: 0 4px 12px rgba(0, 82, 217, .18);
+    }
+    .help::before {
+      content: attr(data-tip);
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 14px);
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: min(560px, 72vw);
+      padding: 14px 18px;
+      border: 1px solid #dce2ee;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(31, 45, 61, .12);
+      color: #5f636b;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.7;
+      white-space: normal;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 120;
+      transition: opacity .16s ease, visibility .16s ease;
+    }
+    .help::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 5px);
+      transform: translateX(-50%) rotate(45deg);
+      width: 16px;
+      height: 16px;
+      border-right: 1px solid #dce2ee;
+      border-bottom: 1px solid #dce2ee;
+      background: #fff;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      z-index: 121;
+      transition: opacity .16s ease, visibility .16s ease;
+    }
+    .help:hover::before,
+    .help:hover::after,
+    .help:focus-visible::before,
+    .help:focus-visible::after {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .editor {
+      min-height: 140px;
+      border: 1px solid var(--td-border);
+      border-radius: var(--td-radius-sm);
+      padding: 12px;
+      color: #7f8ba0;
+      background: #fff;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .editor:focus-within { border-color: var(--td-brand); box-shadow: var(--td-focus); }
+
+    .mf {
+      position: sticky;
+      bottom: 0;
+      z-index: 2;
+      background: linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
+      border-top: 1px solid var(--td-border-2);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 18px;
+      border-bottom: 1px solid var(--td-border-2);
+      margin-bottom: 14px;
+      overflow: auto;
+      white-space: nowrap;
+      max-width: 100%;
+    }
+    .tab {
+      border: 0;
+      background: transparent;
+      padding: 10px 2px;
+      color: #66758c;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      font-size: 15px;
+      font-weight: 500;
+    }
+    .tab.active {
+      color: var(--td-brand);
+      border-bottom-color: var(--td-brand);
+      font-weight: 600;
+    }
+    .tab:hover { color: var(--td-brand-hover); }
+
+    .tiny {
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
+    }
+    .tiny th, .tiny td {
+      font-size: 12px;
+      padding: 9px 10px;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .tiny th {
+      background: #f9f9f9;
+      color: var(--td-text-2);
+      font-weight: 600;
+    }
+    .note {
+      color: #d54941;
+      font-size: 13px;
+      line-height: 1.7;
+      background: #fff7f7;
+      border: 1px solid #ffd9d6;
+      border-radius: var(--td-radius-sm);
+      padding: 10px 12px;
+    }
+    .sub-card {
+      border: 1px solid var(--td-border-2);
+      border-radius: var(--td-radius);
+      padding: 14px;
+      background: var(--td-card-soft);
+      margin-top: 8px;
+    }
+    .sub-card.narrow {
+      max-width: 760px;
+      margin: 8px auto 0;
+    }
+    .public-title {
+      text-align: center;
+      font-size: 17px;
+      font-weight: 600;
+      margin: 2px 0 12px;
+      color: #303133;
+    }
+    .public-table { width: 100%; }
+    .public-table {
+      min-width: 0 !important;
+      table-layout: fixed;
+    }
+    .public-table th, .public-table td {
+      padding: 10px 12px;
+      text-align: center;
+      font-size: 14px;
+      word-break: break-word;
+      white-space: normal;
+    }
+    .public-table th { background: #f7f9fc; }
+    .inline-tip {
+      color: #666;
+      font-size: 13px;
+      line-height: 20px;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+    .warn {
+      font-size: 12px;
+      color: #d54941;
+      min-height: 18px;
+      margin-top: 6px;
+    }
+    .rebate-add-grid {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 12px 10px;
+      align-items: center;
+    }
+    .profit-table {
+      min-width: 860px !important;
+      table-layout: fixed;
+    }
+    .profit-table th,
+    .profit-table td {
+      text-align: center;
+      font-size: 14px;
+      padding: 16px 8px;
+    }
+    .unit-input {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+    .unit-input .inp {
+      border-radius: 6px 0 0 6px;
+      border-right: 0;
+      text-align: left;
+    }
+    .unit-input .addon {
+      height: 40px;
+      line-height: 38px;
+      min-width: 46px;
+    }
+    .profit-note {
+      width: 100%;
+      max-width: 920px;
+      margin-top: 28px;
+      border: 1px solid #d8e0ec;
+      border-radius: var(--td-radius);
+      background: #f8fafc;
+      color: #5d6b82;
+      font-size: 14px;
+      line-height: 1.75;
+      padding: 16px 18px;
+    }
+    .profit-note b {
+      display: block;
+      margin-bottom: 4px;
+      color: #555;
+    }
+    .profit-config {
+      margin-top: 18px;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .rebate-config {
+      margin-top: 0;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .rebate-config .tiny,
+    .profit-config .tiny {
+      min-width: 860px;
+    }
+    .rebate-config .tiny th,
+    .rebate-config .tiny td,
+    .profit-config .tiny th,
+    .profit-config .tiny td {
+      text-align: center;
+      padding: 14px 16px;
+      font-size: 14px;
+    }
+    .rebate-config .tiny td:first-child,
+    .rebate-config .tiny th:first-child,
+    .profit-config .tiny td:first-child,
+    .profit-config .tiny th:first-child {
+      text-align: left;
+    }
+    .rebate-config .inp,
+    .profit-config .inp {
+      max-width: 100%;
+    }
+    .rebate-config .unit-input,
+    .profit-config .unit-input {
+      max-width: 370px;
+      margin: 0 auto;
+    }
+    .profit-amount {
+      color: #4b5565;
+      font-size: 15px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .profit-actions {
+      display: inline-flex;
+      gap: 12px;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+    }
+    .profit-options {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .wide-modal { width: min(1180px, calc(100vw - 32px)); }
+    .edit-body { overflow-x: hidden; }
+    .gift-table {
+      min-width: 780px;
+    }
+    .gift-index-col {
+      width: 76px;
+      text-align: center !important;
+    }
+    .gift-index {
+      text-align: center !important;
+      color: #5d6b82;
+      font-weight: 500;
+    }
+    .gift-table td .inp { max-width: 100%; }
+    .gift-table .unit-input { max-width: 100%; }
+    .gift-error {
+      min-height: 20px;
+      margin-top: 8px;
+      color: var(--td-danger);
+      font-size: 13px;
+    }
+    .op-col {
+      width: 140px;
+      text-align: center;
+    }
+    .op-actions {
+      display: inline-flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      white-space: nowrap;
+    }
+    .op-actions .btn {
+      min-width: 92px;
+      height: 38px;
+      font-size: 14px;
+      border-radius: var(--td-radius-sm);
+    }
+    .mini-actions {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .mini-actions .btn {
+      min-width: 72px;
+      height: 32px;
+      border-radius: var(--td-radius-sm);
+      font-size: 13px;
+      padding: 0 10px;
+    }
+
+    .hidden { display: none !important; }
+    .clicked { transform: translateY(1px); }
+
+    @media (max-width: 1280px) {
+      .app { grid-template-columns: 72px 1fr; }
+      .logo { justify-content: center; font-size: 0; padding: 0; }
+      .logo::before { margin-right: 0; }
+      .menu { padding: 10px 8px; }
+      .menu a { justify-content: center; font-size: 0; padding: 10px 0; }
+      .menu a::before { content: attr(data-icon); font-size: 13px; }
+      .filters {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+      .mh { font-size: 22px; }
+      .frm { grid-template-columns: 1fr; }
+      .lb { text-align: left; }
+      .tiny th, .tiny td { font-size: 11px; padding: 6px 8px; }
+    }
+
+    @media (max-width: 768px) {
+      .app { grid-template-columns: 1fr; }
+      .side { display: none; }
+      .topbar { font-size: 13px; height: auto; padding: 10px 12px; align-items: flex-start; gap: 6px; flex-direction: column; }
+      .container { padding: 8px; }
+      .toolbar, .table-card { padding: 8px; }
+      .filters { grid-template-columns: 1fr; }
+      .filter-field { align-items: flex-start; flex-direction: column; gap: 6px; }
+      .toolbar-head { align-items: stretch; gap: 12px; }
+      .toolbar-actions { justify-content: flex-start; padding-top: 12px; }
+      .toolbar-actions .btn { flex: 1 1 150px; }
+      .mask { padding: 8px; }
+      .modal, .wide-modal { width: calc(100vw - 16px); max-height: calc(100vh - 16px); }
+      .mh { padding: 12px 14px; font-size: 17px; }
+      .mb { padding: 14px; }
+      .mf { padding: 10px 12px; flex-wrap: wrap; }
+      .mf .btn { flex: 1 1 120px; }
+      .table-card > table { min-width: 1180px; }
+      .rebate-config .tiny,
+      .profit-config .tiny,
+      .profit-table,
+      .mb .profit-table {
+        min-width: 700px !important;
+      }
+      .rebate-add-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div class="toast" id="toast" role="alert" aria-live="polite"></div>
+<nav class="global-links" aria-label="页面关联入口">
+  <a href="代理模式页面.html" target="_blank">代理模式页面</a>
+  <a href="后台代理模式需求文档.html" target="_blank">后台代理模式需求文档</a>
+  <a href="../后台其他页面.html" target="_blank">后台关联页面</a>
+  <a href="前台关联页面.html" target="_blank">前台关联页面（作废）</a>
+  <a href="前台推广原型页面.html" target="_blank">前台推广原型</a>
+    <a href="前台推广页面需求文档.html" target="_blank">前台推广页面需求文档</a>
+  <a href="佣金计算工具.html" target="_blank">佣金计算工具</a>
+</nav>
+<div class="app">
+  <aside class="side">
+    <div class="logo">YQ.GAME</div>
+    <nav class="menu">
+      <a href="#" data-icon="首">首页</a>
+      <a href="#" data-icon="会">会员管理</a>
+      <a href="#" data-icon="代">代理管理</a>
+      <a href="#" class="active" data-icon="模">代理模式</a>
+      <a href="#" data-icon="佣">返佣设置</a>
+      <a href="#" data-icon="设">代理设置</a>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div>目前在线人数：<span style="color:var(--td-brand)">4 人</span>　编号：1001</div>
+      <div>05-26 04:49:05</div>
+    </header>
+
+    <div class="container">
+      <section class="card chip-row">
+        <button class="chip active">标签</button>
+        <button class="chip">标签</button>
+        <button class="chip">代理模式</button>
+      </section>
+
+      <section class="card toolbar">
+        <div class="toolbar-head">
+          <div class="filters">
+            <div class="filter-field">
+              <span class="filter-label">代理模式名称：</span>
+              <input class="ctl" placeholder="请输入代理模式名称" />
+            </div>
+            <div class="filter-field">
+              <span class="filter-label">模式来源：</span>
+              <select class="ctl">
+                <option>全部</option>
+                <option>系统自带</option>
+                <option>自定义</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <span class="filter-label">启用状态：</span>
+              <select class="ctl">
+                <option>全部</option>
+                <option>启用</option>
+                <option>停用</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <span class="filter-label">渠道：</span>
+              <select class="ctl">
+                <option>全部</option>
+                <option>官方渠道</option>
+                <option>代理渠道</option>
+                <option>自定义渠道</option>
+              </select>
+            </div>
+            <div class="filter-field">
+              <span class="filter-label">结算周期：</span>
+              <select class="ctl">
+                <option>全部</option>
+                <option>日结</option>
+                <option>周结</option>
+                <option>月结</option>
+                <option>自定义结算</option>
+              </select>
+            </div>
+            <button class="btn primary pressable">搜索</button>
+            <button class="btn pressable">重置</button>
+          </div>
+          <div class="toolbar-actions">
+            <button class="btn primary pressable" id="openAdd">新增代理模式</button>
+            <button class="btn primary pressable" id="openPublic">代理公共设置</button>
+            <button class="btn primary pressable" id="openProfit">净盈利设置</button>
+            <button class="btn pressable" id="openGuide">使用说明</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card table-card">
+
+        <table>
+          <thead>
+            <tr>
+              <th>代理模式ID</th><th>模式名称</th><th>模式来源</th><th>佣金计算依据</th><th>结算周期</th><th>佣金计算层数</th><th>申请方式</th><th>启用状态</th><th>已使用人数</th><th>备注</th><th>操作</th><th>操作人</th><th>操作时间</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>10001</td><td>一级代理</td><td>系统自带</td><td>有效投注</td><td>日结</td><td>只算一级</td><td>直接生效</td><td><button class="switch on" aria-label="toggle"></button></td><td><a class="link">201</a></td><td><span class="text-clamp-2">系统默认一级代理模式</span></td><td><span class="table-actions"><a class="link" data-open="edit">修改</a><a class="link" data-open="rebate">返佣设置</a></span></td><td>admin</td><td>2025-03-18 14:39:21</td></tr>
+            <tr><td>10002</td><td>多奖励模式</td><td>系统自带</td><td>多奖励模式</td><td>日结</td><td>最多二级</td><td>直接生效</td><td><button class="switch on" aria-label="toggle"></button></td><td><a class="link">201</a></td><td><span class="text-clamp-2">系统自带多奖励模式（二级）</span></td><td><span class="table-actions"><a class="link" data-open="edit">修改</a></span></td><td>admin</td><td>2025-03-18 14:39:21</td></tr>
+            <tr><td>10006</td><td>多奖励模式2</td><td>系统自带</td><td>多奖励模式</td><td>日结</td><td>最多三级</td><td>直接生效</td><td><button class="switch on" aria-label="toggle"></button></td><td><a class="link">201</a></td><td><span class="text-clamp-2">系统自带多奖励模式（三级）</span></td><td><span class="table-actions"><a class="link" data-open="edit">修改</a></span></td><td>admin</td><td>2025-03-18 14:39:21</td></tr>
+            <tr><td>10003</td><td>一级净盈利</td><td>系统自带</td><td>净盈利</td><td>日结</td><td>只算一级</td><td>直接生效</td><td><button class="switch" aria-label="toggle"></button></td><td><a class="link">0</a></td><td><span class="text-clamp-2">所有会员（综合盈利会员）</span></td><td><span class="table-actions"><a class="link" data-open="edit" data-mode-name="一级净盈利" data-layer="只算一级" data-profit-calc="all">修改</a><a class="link" data-open="profitRebate">返佣设置</a></span></td><td>admin</td><td>-</td></tr>
+            <tr><td>10004</td><td>三级净盈利</td><td>系统自带</td><td>净盈利</td><td>日结</td><td>最多三级</td><td>直接生效</td><td><button class="switch" aria-label="toggle"></button></td><td><a class="link">0</a></td><td><span class="text-clamp-2">比例中的比例（跨级部分站长承担）</span></td><td><span class="table-actions"><a class="link" data-open="edit" data-mode-name="三级净盈利" data-layer="最多三级" data-profit-calc="all">修改</a><a class="link" data-open="profitRebate">返佣设置</a></span></td><td>admin</td><td>-</td></tr>
+            <tr><td>10005</td><td>亏损会员净盈利</td><td>自定义</td><td>净盈利</td><td>周结</td><td>无数级</td><td>直接生效</td><td><button class="switch on" aria-label="toggle"></button></td><td><a class="link">38</a></td><td><span class="text-clamp-2">仅计算亏损会员</span></td><td><span class="table-actions"><a class="link" data-open="edit" data-mode-name="亏损会员净盈利" data-layer="无数级" data-profit-calc="loss">修改</a><a class="link" data-open="profitRebate">返佣设置</a></span></td><td>admin</td><td>2025-03-18 14:39:21</td></tr>
+          </tbody>
+        </table>
+
+        <div class="pager">
+          <span>第1-10条/共计200条</span>
+          <button class="btn pressable">1</button>
+          <select class="ctl" style="max-width:100px;"><option>10条/页</option></select>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="mask" id="guide"><div class="modal wide-modal">
+  <div class="mh">代理模式使用说明<button class="close" data-close>×</button></div>
+  <div class="mb">
+    <div class="guide-grid">
+      <section class="guide-card">
+        <div class="guide-head">
+          <h3><span class="guide-badge">1</span>有效投注模式</h3>
+          <div class="guide-tags"><span class="guide-tag">按投注</span><span class="guide-tag">极差返佣</span><span class="guide-tag">可多级</span></div>
+        </div>
+        <p><b>一句话：</b>下级有效投注越高，代理可拿到的返佣比例越高；上级还能拿自己和直属下级之间的比例差。</p>
+        <div class="guide-section-title">怎么算</div>
+        <div class="formula-flow">
+          <div class="formula-step"><b>直属佣金</b><span>直属下级本人有效投注 × 当前代理返佣比例</span></div>
+          <div class="formula-step"><b>其他佣金</b><span>直属下级总业绩 × 极差返佣比例</span></div>
+          <div class="formula-step"><b>本期佣金</b><span>直属佣金 + 其他佣金</span></div>
+        </div>
+        <div class="example-box">
+          <b>例子：</b>B1 投注 500，B2 投注 3000，A 比例 3%。直属佣金 = (500 + 3000) × 3% = 105。<br>
+          B1 下级总业绩 3000，B1 比例 1%，A 与 B1 的极差为 2%，其他佣金 = 3000 × 2% = 60。<br>
+          <span class="example-result">A 本期佣金 = 105 + 60 = 165</span>
+        </div>
+      </section>
+
+      <section class="guide-card multi">
+        <div class="guide-head">
+          <h3><span class="guide-badge">2</span>多奖励模式</h3>
+          <div class="guide-tags"><span class="guide-tag">首充</span><span class="guide-tag">充值</span><span class="guide-tag">投注</span></div>
+        </div>
+        <p><b>一句话：</b>把首充、充值、投注拆成不同奖励维度，后台勾选什么，前台和返佣表就展示什么。</p>
+        <div class="guide-section-title">怎么算</div>
+        <div class="formula-flow">
+          <div class="formula-step"><b>首充佣金</b><span>达到首充人数门槛后，发对应固定奖励</span></div>
+          <div class="formula-step"><b>充值/投注佣金</b><span>对应层级金额 × 对应层级返佣比例</span></div>
+          <div class="formula-step"><b>本期佣金</b><span>首充佣金 + 充值佣金 + 投注佣金</span></div>
+        </div>
+        <div class="example-box">
+          <b>例子：</b>A 开启首充、充值、投注三个维度。首充达标奖励 200，充值佣金 38，投注佣金 36.4。<br>
+          如果模式只算两级，三级充值/投注返佣不展示也不计算。<br>
+          <span class="example-result">A 本期佣金 = 200 + 38 + 36.4 = 274.4</span>
+        </div>
+      </section>
+
+      <section class="guide-card profit">
+        <div class="guide-head">
+          <h3><span class="guide-badge">3</span>净盈利模式</h3>
+          <div class="guide-tags"><span class="guide-tag">按盈利</span><span class="guide-tag">扣成本</span><span class="guide-tag">可配置项</span></div>
+        </div>
+        <p><b>一句话：</b>按直属会员给平台带来的净盈利计算佣金。公式会根据“净盈利设置”中勾选的计算项自动调整。</p>
+        <div class="guide-section-title">净盈利公式</div>
+        <div class="formula-box">
+          净盈利 = - 直属会员输赢 - 领取优惠 - 充值手续费 - 提现手续费 - 三方游戏统一成本 + 上期结余<br>
+          上期结余 = 上个周期内直属会员输赢总和，值为负数或 0；若大于 0，则转化为佣金
+        </div>
+        <div class="formula-flow">
+          <div class="formula-step"><b>直属佣金</b><span>直属会员净盈利 × 当前代理返佣比例</span></div>
+          <div class="formula-step"><b>其他佣金</b><span>直属下级总净盈利 × 极差返佣比例</span></div>
+          <div class="formula-step"><b>本期佣金</b><span>直属佣金 + 其他佣金</span></div>
+        </div>
+        <div class="example-box">
+          <b>例子：</b>直属会员输赢 -10000，领取优惠 500，充值手续费 100，提现手续费 80，三方成本 300，上期结余 -1000。<br>
+          净盈利 = -(-10000) - 500 - 100 - 80 - 300 + (-1000) = 8020。A 比例 5%。<br>
+          <span class="example-result">直属佣金 = 8020 × 5% = 401</span><br>
+          若“净盈利设置”关闭某个计算项，例如不计算领取优惠，则公式中会去掉该项。
+        </div>
+      </section>
+    </div>
+  </div>
+  <div class="mf"><button class="btn primary pressable" data-close>我知道了</button></div>
+</div></div>
+
+<div class="mask" id="add"><div class="modal">
+  <div class="mh">新增代理模式<button class="close" data-close>×</button></div>
+  <div class="mb"><div class="frm">
+    <div class="lb"><span class="req">*</span>代理模式名称</div><input class="inp" placeholder="请输入代理模式名称" />
+    <div class="lb"><span class="req">*</span>申请方式</div><div class="row"><label class="radio"><input type="radio" name="apply" checked>直接生效</label></div>
+    <div class="lb"><span class="req">*</span>佣金计算层数</div><select class="sel" id="layerSel"><option>只算一级</option><option selected>最多两级</option><option>最多三级</option><option>最多四级</option><option>最多五级</option><option>无数级</option><option>自定义层数</option></select>
+    <div class="lb hidden" id="rowLevelLabel"><span class="req">*</span>设置层数</div><input class="inp hidden" id="rowLevel" placeholder="请输入大于5且小于999的值" />
+    <div class="lb">启用状态</div><div class="row"><label class="radio"><input type="radio" name="status1" checked>启用</label><label class="radio"><input type="radio" name="status1">停用</label></div>
+    <div class="lb">结算周期</div><div class="row"><label class="radio"><input type="radio" name="cycle" checked>日结</label><label class="radio"><input type="radio" name="cycle">周结</label><label class="radio"><input type="radio" name="cycle">月结</label></div>
+    <div class="lb"><span class="req">*</span>佣金计算依据</div><div class="row"><label class="radio"><input type="radio" name="base" value="bet" checked>有效投注</label><span class="help" tabindex="0" data-tip="有效投注：计算所有会员的有效投注">?</span><label class="radio"><input type="radio" name="base" value="profit">净盈利</label><span class="help" tabindex="0" data-tip="净盈利：会员输赢扣除奖励、成本、手续费和上期结余后计算佣金">?</span></div>
+    <div class="lb profit-only hidden"><span class="req">*</span>计算方式</div><div class="row profit-only hidden"><label class="radio"><input type="radio" name="profitCalc" checked>所有会员（综合盈利会员）</label><label class="radio"><input type="radio" name="profitCalc">仅计算亏损会员</label></div>
+    <div class="lb"><span class="req">*</span>业绩计算范围</div><div class="row"><label class="radio"><input type="radio" name="scope" checked>全部计算（含无效）</label><span class="help" tabindex="0" data-tip="无效会员的业绩会计算到上级代理的业绩中">?</span><label class="radio"><input type="radio" name="scope">只计算有效会员业绩</label></div>
+    <div class="lb">教程展示开关</div><button class="switch on" aria-label="toggle"></button>
+    <div class="lb">代理教程设置</div><div class="row"><label class="radio"><input type="radio" name="guide" value="builtin">系统自带</label><label class="radio"><input type="radio" name="guide" value="custom" checked>自定义</label></div>
+    <div class="lb guide-editor-label"></div><div class="editor guide-editor">请输入内容</div>
+    <div class="lb"><span class="req">*</span>推广链接地址打开</div><select class="sel"><option>首页</option><option>试玩页面</option><option>注册页面</option><option>活动页面</option></select>
+    <div class="lb">备注</div><input class="inp" />
+  </div></div>
+  <div class="mf"><button class="btn pressable" data-close>取消</button><button class="btn primary pressable" data-close>确定</button></div>
+</div></div>
+
+<div class="mask" id="public"><div class="modal">
+  <div class="mh">代理公共设置<button class="close" data-close>×</button></div>
+  <div class="mb"><div class="frm">
+    <div class="lb"><span class="req">*</span>默认代理模式设置</div><select class="sel"><option>无限极差</option><option>一级代理</option><option>多奖励模式</option><option>一级净盈利</option><option>三级净盈利</option></select>
+    <div class="lb"></div>
+    <div class="sub-card narrow">
+      <div class="public-title">返佣前端展示格式设置</div>
+      <div class="row" style="justify-content:center; margin-bottom: 12px;">
+        <label class="radio"><input type="radio" name="fmt" value="ratio" checked>展示佣金比例</label>
+        <label class="radio"><input type="radio" name="fmt" value="amount">展示佣金金额</label>
+        <label class="radio"><input type="radio" name="fmt" value="both">展示佣金金额和比例</label>
+      </div>
+      <table class="public-table" id="fmtTable">
+        <thead><tr><th style="width:100px;">序号</th><th>业绩</th><th id="fmtColHead">返佣比例</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>1,000.00</td><td id="fmtRow1">3.00%</td></tr>
+          <tr><td>2</td><td>10,000.00</td><td id="fmtRow2">5.00%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="lb"><span class="req">*</span>直属下级人数</div><button class="switch on" aria-label="toggle"></button>
+    <div class="lb"><span class="req">*</span>有效人数计算 <span class="help" tabindex="0" data-tip="直属下级单个会员在结算周期内达到有效投注和充值金额后计为有效人数，0为不限制">?</span></div><div class="row"><span>直属下级单个会员在结算周期内有效投注≥</span><input class="inp" style="max-width:200px" placeholder="0.00"></div>
+    <div class="lb"></div><div class="row"><span>并且直属下级单个会员在结算周期内充值≥</span><input class="inp" style="max-width:200px" placeholder="0.00"></div>
+    <div class="lb"><span class="req">*</span>直属下级单个会员返佣上限 <span class="help" tabindex="0" data-tip="为直属下级单个会员给上级代理贡献的最高的返佣金额，0为不限制">?</span></div><div class="row"><span>日结模式上限</span><input class="inp" style="max-width:200px" placeholder="0.00"></div>
+    <div class="lb"></div><div class="row"><span>周结模式上限</span><input class="inp" style="max-width:200px" placeholder="0.00"></div>
+    <div class="lb"></div><div class="row"><span>月结模式上限</span><input class="inp" style="max-width:200px" placeholder="0.00"></div>
+  </div></div>
+  <div class="mf"><button class="btn pressable" data-close>取消</button><button class="btn primary pressable" data-close>确定</button></div>
+</div></div>
+
+<div class="mask" id="rebate"><div class="modal">
+  <div class="mh">返佣设置<button class="close" data-close>×</button></div>
+  <div class="mb">
+    <div class="tabs" data-tabs="rebate">
+      <button class="tab active">棋牌</button><button class="tab">彩票</button><button class="tab">电子</button><button class="tab">真人</button><button class="tab">捕鱼</button><button class="tab">电竞</button><button class="tab">斗鸡</button><button class="tab">区块链</button><button class="tab">体育</button>
+    </div>
+    <div class="rebate-config">
+      <table class="tiny">
+        <thead>
+          <tr>
+            <th>有效投注业绩（单位：万）<span class="help" tabindex="0" data-tip="0.01万有效投注=100有效投注，达到对应有效投注档位后按该行每万返佣计算">?</span></th>
+            <th>每万返佣</th>
+            <th>操作人</th>
+            <th>操作时间</th>
+            <th style="width:180px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="rebateConfigBody">
+          <tr>
+            <td><input class="inp rebate-performance" value="0.01"></td>
+            <td><input class="inp rebate-per" value="10"></td>
+            <td>lws01</td>
+            <td>2024-01-10 00:16:25</td>
+            <td><div class="profit-actions"><a class="link rebate-add">新增</a></div></td>
+          </tr>
+          <tr>
+            <td><input class="inp rebate-performance" value="0.02"></td>
+            <td><input class="inp rebate-per" value="60"></td>
+            <td>lws01</td>
+            <td>2024-01-10 00:16:30</td>
+            <td><div class="profit-actions"><a class="link rebate-add">新增</a><a class="link danger rebate-delete">删除</a></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="mf"><button class="btn pressable" data-close>取消</button><button class="btn primary pressable" data-close>确认</button></div>
+</div></div>
+
+<div class="mask" id="rebateAdd"><div class="modal" style="width:min(860px,100%);">
+  <div class="mh">新增<button class="close" data-close>×</button></div>
+  <div class="mb">
+    <div class="rebate-add-grid">
+      <div class="lb"><span class="req">*</span>有效投注业绩≥（单位：万）</div><input class="inp" id="rebatePerf" placeholder="请输入有效投注业绩">
+      <div class="lb"><span class="req">*</span>每万返佣</div><input class="inp" id="rebatePer" placeholder="请输入">
+    </div>
+    <div class="warn" id="rebateAddErr"></div>
+  </div>
+  <div class="mf"><button class="btn pressable" data-close>取消</button><button class="btn primary pressable" id="submitRebateAdd">确定</button></div>
+</div></div>
+
+<div class="mask" id="profit"><div class="modal wide-modal">
+  <div class="mh">净盈利设置<button class="close" data-close>×</button></div>
+  <div class="mb">
+    <table class="tiny profit-table">
+      <thead>
+        <tr>
+          <th style="width:150px;">是否计算所有奖励</th>
+          <th style="width:150px;">是否计算上期结余</th>
+          <th>三方游戏统一成本</th>
+          <th>充值费率</th>
+          <th>充值单笔最低收取</th>
+          <th>提现费率</th>
+          <th>提现单笔最低收取</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><button class="switch switch-text on" data-on="开" data-off="关" aria-label="是否计算所有奖励"></button></td>
+          <td><button class="switch switch-text" data-on="开" data-off="关" aria-label="是否计算上期结余"></button></td>
+          <td><div class="unit-input"><input class="inp" value="0.00"><span class="addon">%</span></div></td>
+          <td><div class="unit-input"><input class="inp" value="0.00"><span class="addon">%</span></div></td>
+          <td><input class="inp" value="0.00"></td>
+          <td><div class="unit-input"><input class="inp" value="0.00"><span class="addon">%</span></div></td>
+          <td><input class="inp" value="0.00"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="profit-note">
+      <b>净盈利排除平台运营成本说明：</b>
+      <div>1、净盈利计算公式：-直属会员输赢 - 领取优惠 - 充值手续费 - 提现手续费 - 三方游戏统一成本 + 上期结余；</div>
+      <div>2、上期结余：上个周期内直属会员输赢的总和，值为负数或0；若大于0，则转化为佣金；</div>
+      <div>3、公式会根据本页勾选项自动调整；关闭某项时，公式中不计算该项；</div>
+      <div>4、三方游戏统一成本、充值(提现)费率、充值(提现)单笔最低收取可以输入为0，0表示不计算；</div>
+      <div>5、充值手续费：为所有充值渠道的手续费；提现手续费同理按提现渠道手续费计算；</div>
+      <div>6、费率和单笔最低收取：在进行计算中，选择最大的值为计算数值。</div>
+    </div>
+
+  </div>
+  <div class="mf"><button class="btn pressable" data-close>取消</button><button class="btn primary pressable" data-close>确认</button></div>
+</div></div>
+
+<div class="mask" id="profitRebate"><div class="modal wide-modal">
+  <div class="mh">净盈利返佣设置<button class="close" data-close>×</button></div>
+  <div class="mb">
+    <div class="profit-config" style="margin-top:0;">
+      <table class="tiny">
+        <thead>
+          <tr>
+            <th>业绩<span class="help" tabindex="0" data-tip="按净盈利业绩分档配置返佣比例，达到对应业绩后按该档位计算">?</span></th>
+            <th>返佣比例</th>
+            <th>返佣金额</th>
+            <th style="width:180px;">操作</th>
+          </tr>
+        </thead>
+        <tbody id="profitConfigBody">
+          <tr>
+            <td><input class="inp profit-performance" value="1.00"></td>
+            <td><div class="unit-input"><input class="inp profit-ratio" value="1.00"><span class="addon">%</span></div></td>
+            <td class="profit-amount">0.01</td>
+            <td><div class="profit-actions"><a class="link profit-add">新增</a></div></td>
+          </tr>
+          <tr>
+            <td><input class="inp profit-performance" value="1000.00"></td>
+            <td><div class="unit-input"><input class="inp profit-ratio" value="5.00"><span class="addon">%</span></div></td>
+            <td class="profit-amount">50.00</td>
+            <td><div class="profit-actions"><a class="link profit-add">新增</a><a class="link danger profit-delete">删除</a></div></td>
+          </tr>
+          <tr>
+            <td><input class="inp profit-performance" value="10000.00"></td>
+            <td><div class="unit-input"><input class="inp profit-ratio" value="10.00"><span class="addon">%</span></div></td>
+            <td class="profit-amount">1,000.00</td>
+            <td><div class="profit-actions"><a class="link profit-add">新增</a><a class="link danger profit-delete">删除</a></div></td>
+          </tr>
+          <tr>
+            <td><input class="inp profit-performance" value="20000.00"></td>
+            <td><div class="unit-input"><input class="inp profit-ratio" value="15.00"><span class="addon">%</span></div></td>
+            <td class="profit-amount">3,000.00</td>
+            <td><div class="profit-actions"><a class="link profit-add">新增</a><a class="link danger profit-delete">删除</a></div></td>
+          </tr>
+          <tr>
+            <td><input class="inp profit-performance" value="50000.00"></td>
+            <td><div class="unit-input"><input class="inp profit-ratio" value="20.00"><span class="addon">%</span></div></td>
+            <td class="profit-amount">10,000.00</td>
+            <td><div class="profit-actions"><a class="link profit-add">新增</a><a class="link danger profit-delete">删除</a></div></td>
+          </tr>
+          <tr>
+            <td><input class="inp profit-performance" value="100000.00"></td>
+            <td><div class="unit-input"><input class="inp profit-ratio" value="25.00"><span class="addon">%</span></div></td>
+            <td class="profit-amount">25,000.00</td>
+            <td><div class="profit-actions"><a class="link profit-add">新增</a><a class="link danger profit-delete">删除</a></div></td>
+          </tr>
+          <tr>
+            <td><input class="inp profit-performance" value="200000.00"></td>
+            <td><div class="unit-input"><input class="inp profit-ratio" value="30.00"><span class="addon">%</span></div></td>
+            <td class="profit-amount">60,000.00</td>
+            <td><div class="profit-actions"><a class="link profit-add">新增</a><a class="link danger profit-delete">删除</a></div></td>
+          </tr>
+          <tr>
+            <td><input class="inp profit-performance" value="500000.00"></td>
+            <td><div class="unit-input"><input class="inp profit-ratio" value="35.00"><span class="addon">%</span></div></td>
+            <td class="profit-amount">175,000.00</td>
+            <td><div class="profit-actions"><a class="link profit-add">新增</a><a class="link danger profit-delete">删除</a></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="mf"><button class="btn pressable" data-close>取消</button><button class="btn primary pressable" data-close>确认</button></div>
+</div></div>
+
+<div class="mask" id="edit"><div class="modal wide-modal">
+  <div class="mh">编辑代理模式<button class="close" data-close>×</button></div>
+  <div class="mb edit-body"><div class="frm">
+    <div class="lb"><span class="req">*</span>代理模式名称</div><input class="inp" id="editModeName" value="一级净盈利" disabled />
+    <div class="lb"><span class="req">*</span>申请方式</div><div class="row"><label class="radio disabled"><input type="radio" name="apply2" checked disabled>直接生效</label></div>
+    <div class="lb"><span class="req">*</span>佣金计算层数</div><select class="sel" id="editLayer" disabled><option>只算一级</option><option>最多两级</option><option>最多三级</option><option>最多四级</option><option>最多五级</option><option>无数级</option><option>自定义层数</option></select>
+    <div class="lb">启用状态</div><div class="row"><label class="radio"><input type="radio" name="st2" checked>启用</label><label class="radio"><input type="radio" name="st2">停用</label></div>
+    <div class="lb">结算周期</div><div class="row"><label class="radio disabled"><input type="radio" name="cycle2" value="日结" checked disabled>日结</label><label class="radio disabled"><input type="radio" name="cycle2" value="周结" disabled>周结</label><label class="radio disabled"><input type="radio" name="cycle2" value="月结" disabled>月结</label><label class="radio disabled"><input type="radio" name="cycle2" value="自定义结算" disabled>自定义结算</label></div>
+    <div class="lb"><span class="req">*</span>佣金计算依据</div><div class="row"><label class="radio disabled"><input type="radio" name="base2" value="有效投注" disabled>有效投注</label><span class="help" tabindex="0" data-tip="有效投注：计算所有会员的有效投注">?</span><label class="radio disabled"><input type="radio" name="base2" value="净盈利" checked disabled>净盈利</label><span class="help" tabindex="0" data-tip="净盈利：会员输赢扣除奖励、成本、手续费和上期结余后计算佣金">?</span><label class="radio disabled"><input type="radio" name="base2" value="多奖励模式" disabled>多奖励模式</label><span class="help" tabindex="0" data-tip="多奖励模式：按首充、充值、投注等维度配置佣金">?</span></div>
+    <div class="lb profit-only-edit"><span class="req">*</span>计算方式</div><div class="row profit-only-edit"><label class="radio"><input type="radio" name="profitCalc2" value="all" checked>所有会员（综合盈利会员）</label><label class="radio"><input type="radio" name="profitCalc2" value="loss">仅计算亏损会员</label></div>
+    <div class="lb"><span class="req">*</span>业绩计算范围</div><div class="row"><label class="radio"><input type="radio" name="sc2" checked>全部计算（含无效）</label><span class="help" tabindex="0" data-tip="无效会员的业绩会计算到上级代理的业绩中">?</span><label class="radio"><input type="radio" name="sc2">只计算有效会员业绩</label></div>
+    <div class="lb gift-only"><span class="req">*</span>佣金赠送维度（可多选）</div>
+    <div class="gift-only">
+      <div class="row">
+        <label class="check"><input type="checkbox" class="gift-check" data-pane="pane-first" checked>首充佣金</label>
+        <label class="check"><input type="checkbox" class="gift-check" data-pane="pane-recharge" checked>充值佣金</label>
+        <label class="check"><input type="checkbox" class="gift-check" data-pane="pane-bet" checked>投注佣金</label>
+      </div>
+      <div class="warn" id="giftWarn"></div>
+    </div>
+    <div class="lb gift-only"></div><div class="gift-only">
+      <div class="tabs" id="giftTabs">
+        <button class="tab active gift-tab" data-pane="pane-first">首充佣金</button>
+        <button class="tab gift-tab" data-pane="pane-recharge">充值佣金</button>
+        <button class="tab gift-tab" data-pane="pane-bet">投注佣金</button>
+      </div>
+
+      <div class="tab-pane active" id="pane-first">
+        <table class="tiny gift-table">
+          <colgroup><col style="width:45%"><col style="width:40%"><col style="width:15%"></colgroup>
+          <thead><tr><th>直属会员首充人数（大于等于）</th><th>首充佣金</th><th class="op-col">操作</th></tr></thead>
+          <tbody>
+            <tr><td><input class="inp" value="1"></td><td><input class="inp" value="30"></td><td class="op-col"><div class="op-actions"><a class="link danger">删除</a></div></td></tr>
+            <tr><td><input class="inp" value="2"></td><td><input class="inp" value="40"></td><td class="op-col"><div class="op-actions"><a class="link danger">删除</a></div></td></tr>
+            <tr><td><input class="inp" value="3"></td><td><input class="inp" value="60"></td><td class="op-col"><div class="op-actions"><a class="link">新增</a><a class="link danger">删除</a></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane" id="pane-recharge">
+        <table class="tiny gift-table">
+          <colgroup><col style="width:33%"><col style="width:25%"><col style="width:25%"><col style="width:17%"></colgroup>
+          <thead><tr><th>充值金额（大于等于）</th><th>1级返佣比例</th><th>2级返佣比例</th><th class="op-col">操作</th></tr></thead>
+          <tbody>
+            <tr><td><input class="inp" value="100"></td><td><div class="percent"><input class="inp" value="5"><span class="addon">%</span></div></td><td><div class="percent"><input class="inp" value="2"><span class="addon">%</span></div></td><td class="op-col"><div class="op-actions"><a class="link danger">删除</a></div></td></tr>
+            <tr><td><input class="inp" value="200"></td><td><div class="percent"><input class="inp" value="6"><span class="addon">%</span></div></td><td><div class="percent"><input class="inp" value="3"><span class="addon">%</span></div></td><td class="op-col"><div class="op-actions"><a class="link danger">删除</a></div></td></tr>
+            <tr><td><input class="inp" value="1000"></td><td><div class="percent"><input class="inp" value="7"><span class="addon">%</span></div></td><td><div class="percent"><input class="inp" value="4"><span class="addon">%</span></div></td><td class="op-col"><div class="op-actions"><a class="link">新增</a><a class="link danger">删除</a></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="tab-pane" id="pane-bet">
+        <p class="note" style="margin-top:0;">温馨提示：累计有效投注如果配置100，返佣比例配置1%，那么100*0.01=1，则代表返佣金额为：1；</p>
+        <table class="tiny gift-table">
+          <colgroup><col style="width:33%"><col style="width:25%"><col style="width:25%"><col style="width:17%"></colgroup>
+          <thead><tr><th>累计有效投注（大于等于）</th><th>1级返佣比例</th><th>2级返佣比例</th><th class="op-col">操作</th></tr></thead>
+          <tbody>
+            <tr><td><input class="inp" value="100"></td><td><div class="percent"><input class="inp" value="5"><span class="addon">%</span></div></td><td><div class="percent"><input class="inp" value="2"><span class="addon">%</span></div></td><td class="op-col"><div class="op-actions"><a class="link danger">删除</a></div></td></tr>
+            <tr><td><input class="inp" value="500"></td><td><div class="percent"><input class="inp" value="6"><span class="addon">%</span></div></td><td><div class="percent"><input class="inp" value="3"><span class="addon">%</span></div></td><td class="op-col"><div class="op-actions"><a class="link danger">删除</a></div></td></tr>
+            <tr><td><input class="inp" value="1000"></td><td><div class="percent"><input class="inp" value="7"><span class="addon">%</span></div></td><td><div class="percent"><input class="inp" value="4"><span class="addon">%</span></div></td><td class="op-col"><div class="op-actions"><a class="link">新增</a><a class="link danger">删除</a></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="lb">教程展示开关</div><button class="switch on" aria-label="toggle"></button>
+    <div class="lb">代理教程设置</div><div class="row"><label class="radio"><input type="radio" name="gd2" value="builtin">系统自带</label><label class="radio"><input type="radio" name="gd2" value="custom" checked>自定义</label></div>
+    <div class="lb guide-editor-label"></div><div class="editor guide-editor">请输入内容</div>
+    <div class="lb"><span class="req">*</span>推广链接地址打开</div><select class="sel"><option>首页</option><option>试玩页面</option><option>注册页面</option><option>活动页面</option></select>
+    <div class="lb">备注</div><input class="inp" placeholder="请输入备注">
+  </div></div>
+  <div class="mf"><button class="btn pressable" data-close>取消</button><button class="btn primary pressable" data-close>确定</button></div>
+</div></div>
+
+<script>
+  const modalIds = ["add", "public", "rebate", "edit", "rebateAdd", "profit", "profitRebate", "guide"];
+
+  function closeAll() {
+    modalIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = "none";
+    });
+  }
+
+  function openModal(id) {
+    closeAll();
+    const el = document.getElementById(id);
+    if (el) el.style.display = "flex";
+  }
+
+  let toastTimer = null;
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    if (!toast || !message) return;
+    toast.textContent = message;
+    toast.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove("show"), 2600);
+  }
+
+  document.getElementById("openAdd").addEventListener("click", () => openModal("add"));
+  document.getElementById("openPublic").addEventListener("click", () => openModal("public"));
+  document.getElementById("openProfit").addEventListener("click", () => openModal("profit"));
+  document.getElementById("openGuide").addEventListener("click", () => openModal("guide"));
+  const openRebateAdd = document.getElementById("openRebateAdd");
+  if (openRebateAdd) openRebateAdd.addEventListener("click", () => openModal("rebateAdd"));
+
+  document.querySelectorAll("[data-open]").forEach((el) => {
+    el.addEventListener("click", (e) => {
+      e.preventDefault();
+      if (el.getAttribute("data-open") === "edit") {
+        const row = el.closest("tr");
+        const cells = row ? [...row.children] : [];
+        const modeName = el.getAttribute("data-mode-name") || cells[1]?.textContent.trim() || "一级净盈利";
+        const basis = el.getAttribute("data-basis") || cells[3]?.textContent.trim() || "净盈利";
+        const cycle = el.getAttribute("data-cycle") || cells[4]?.textContent.trim() || "日结";
+        const layer = el.getAttribute("data-layer") || cells[5]?.textContent.trim() || "只算一级";
+        const profitCalc = el.getAttribute("data-profit-calc") || ((cells[9]?.textContent || "").includes("亏损会员") ? "loss" : "all");
+        const nameInput = document.getElementById("editModeName");
+        const layerSelect = document.getElementById("editLayer");
+        if (nameInput) nameInput.value = modeName;
+        if (layerSelect) {
+          const normalizedLayer = layer === "最多二级" ? "最多两级" : layer;
+          layerSelect.value = normalizedLayer;
+        }
+        document.querySelectorAll('input[name="base2"]').forEach((input) => {
+          input.checked = input.value === basis;
+        });
+        document.querySelectorAll('input[name="cycle2"]').forEach((input) => {
+          input.checked = input.value === cycle;
+        });
+        const calcInput = document.querySelector(`input[name="profitCalc2"][value="${profitCalc}"]`);
+        if (calcInput) calcInput.checked = true;
+        syncEditSections(basis);
+      }
+      openModal(el.getAttribute("data-open"));
+    });
+  });
+
+  document.querySelectorAll("[data-close]").forEach((el) => {
+    el.addEventListener("click", closeAll);
+  });
+
+  document.querySelectorAll(".mask").forEach((mask) => {
+    mask.addEventListener("click", (e) => {
+      if (e.target === mask) closeAll();
+    });
+  });
+
+  document.querySelectorAll(".switch").forEach((sw) => {
+    sw.addEventListener("click", () => sw.classList.toggle("on"));
+  });
+
+  document.querySelectorAll(".tabs").forEach((group) => {
+    const tabs = [...group.querySelectorAll(".tab")];
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+      });
+    });
+  });
+
+  function syncGuideEditors(groupName) {
+    const checked = document.querySelector(`input[name="${groupName}"]:checked`);
+    const isCustom = checked && checked.value === "custom";
+    const scope = groupName === "guide" ? document.getElementById("add") : document.getElementById("edit");
+    if (!scope) return;
+    const editor = scope.querySelector(".guide-editor");
+    const label = scope.querySelector(".guide-editor-label");
+    if (!editor || !label) return;
+    editor.classList.toggle("hidden", !isCustom);
+    label.classList.toggle("hidden", !isCustom);
+  }
+
+  document.querySelectorAll('input[name="guide"]').forEach((el) => {
+    el.addEventListener("change", () => syncGuideEditors("guide"));
+  });
+  document.querySelectorAll('input[name="gd2"]').forEach((el) => {
+    el.addEventListener("change", () => syncGuideEditors("gd2"));
+  });
+
+  function syncProfitSections(groupName, sectionClass, inverseClass) {
+    const checked = document.querySelector(`input[name="${groupName}"]:checked`);
+    const isProfit = checked && checked.value === "profit";
+    document.querySelectorAll(`.${sectionClass}`).forEach((el) => {
+      el.classList.toggle("hidden", !isProfit);
+    });
+    if (inverseClass) {
+      document.querySelectorAll(`.${inverseClass}`).forEach((el) => {
+        el.classList.toggle("hidden", isProfit);
+      });
+    }
+  }
+
+  function syncEditSections(basisValue) {
+    const isProfit = basisValue === "净盈利";
+    const isMultiReward = basisValue === "多奖励模式";
+    document.querySelectorAll('input[name="base2"]').forEach((input) => {
+      const isCurrent = input.value === basisValue;
+      const label = input.closest("label");
+      const help = label ? label.nextElementSibling : null;
+      input.checked = isCurrent;
+      if (label) label.classList.toggle("hidden", !isCurrent);
+      if (help && help.classList.contains("help")) help.classList.toggle("hidden", !isCurrent);
+    });
+    document.querySelectorAll(".profit-only-edit").forEach((el) => {
+      el.classList.toggle("hidden", !isProfit);
+    });
+    document.querySelectorAll(".gift-only").forEach((el) => {
+      el.classList.toggle("hidden", !isMultiReward);
+    });
+    if (isMultiReward) renderGiftTables();
+  }
+
+  document.querySelectorAll('input[name="base"]').forEach((el) => {
+    el.addEventListener("change", () => syncProfitSections("base", "profit-only"));
+  });
+
+  const fmtHead = document.getElementById("fmtColHead");
+  const fmt1 = document.getElementById("fmtRow1");
+  const fmt2 = document.getElementById("fmtRow2");
+  document.querySelectorAll('input[name="fmt"]').forEach((el) => {
+    el.addEventListener("change", () => {
+      const v = document.querySelector('input[name="fmt"]:checked')?.value || "ratio";
+      if (v === "ratio") {
+        fmtHead.textContent = "返佣比例";
+        fmt1.textContent = "3.00%";
+        fmt2.textContent = "5.00%";
+      } else if (v === "amount") {
+        fmtHead.textContent = "返佣金额";
+        fmt1.textContent = "30.00";
+        fmt2.textContent = "500.00";
+      } else {
+        fmtHead.textContent = "返佣金额(比例)";
+        fmt1.textContent = "30.00(3.00%)";
+        fmt2.textContent = "500.00(5.00%)";
+      }
+    });
+  });
+
+  function syncGiftTabs() {
+    const checks = [...document.querySelectorAll(".gift-check")];
+    const warn = document.getElementById("giftWarn");
+    const selected = checks.filter((x) => x.checked);
+    if (selected.length === 0) {
+      checks[0].checked = true;
+      selected.push(checks[0]);
+      warn.textContent = "佣金赠送维度至少选择一个";
+    } else {
+      warn.textContent = "";
+    }
+
+    const selectedPanes = new Set(selected.map((x) => x.dataset.pane));
+    const tabs = [...document.querySelectorAll(".gift-tab")];
+    const panes = [...document.querySelectorAll(".tab-pane")];
+
+    tabs.forEach((tab) => {
+      const pane = tab.dataset.pane;
+      tab.classList.toggle("hidden", !selectedPanes.has(pane));
+    });
+    panes.forEach((pane) => {
+      pane.classList.toggle("hidden", !selectedPanes.has(pane.id));
+      pane.classList.remove("active");
+    });
+
+    const firstVisibleTab = tabs.find((t) => !t.classList.contains("hidden"));
+    tabs.forEach((t) => t.classList.remove("active"));
+    if (firstVisibleTab) {
+      firstVisibleTab.classList.add("active");
+      const pane = document.getElementById(firstVisibleTab.dataset.pane);
+      if (pane) pane.classList.add("active");
+    }
+  }
+
+  document.querySelectorAll(".gift-check").forEach((el) => {
+    el.addEventListener("change", syncGiftTabs);
+  });
+  document.querySelectorAll(".gift-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const paneId = tab.dataset.pane;
+      if (tab.classList.contains("hidden")) return;
+      document.querySelectorAll(".gift-tab").forEach((t) => t.classList.remove("active"));
+      tab.classList.add("active");
+      document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
+      const pane = document.getElementById(paneId);
+      if (pane) pane.classList.add("active");
+    });
+  });
+
+  const giftDefaults = {
+    first: {
+      paneId: "pane-first",
+      metric: "首充人数（大于等于）",
+      headers: ["首充佣金"],
+      rows: [
+        [1, 0.99],
+        [3, 2.99],
+        [5, 4.99],
+        [10, 9.99],
+        [20, 19.99],
+        [50, 49.99],
+        [80, 79.99],
+        [100, 99.99],
+        [200, 199.99],
+        [500, 499.99],
+      ],
+    },
+    recharge: {
+      paneId: "pane-recharge",
+      metric: "累计充值（大于等于）",
+      baseRatios: [
+        [1.50, 0.75, 0.35],
+        [1.60, 0.80, 0.40],
+        [1.70, 0.85, 0.45],
+        [1.80, 0.90, 0.50],
+        [1.90, 0.95, 0.55],
+        [2.00, 1.00, 0.60],
+        [2.10, 1.05, 0.65],
+        [2.20, 1.10, 0.70],
+        [2.30, 1.15, 0.75],
+        [2.40, 1.20, 0.80],
+      ],
+      rows: [100, 500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000],
+    },
+    bet: {
+      paneId: "pane-bet",
+      metric: "累计有效投注（大于等于）",
+      baseRatios: [
+        [1.10, 0.25, 0.10],
+        [1.15, 0.26, 0.11],
+        [1.20, 0.27, 0.12],
+        [1.25, 0.28, 0.13],
+        [1.30, 0.29, 0.14],
+        [1.35, 0.30, 0.15],
+        [1.40, 0.31, 0.16],
+        [1.45, 0.32, 0.17],
+        [1.50, 0.33, 0.18],
+        [1.55, 0.34, 0.19],
+      ],
+      rows: [500, 1000, 5000, 10000, 50000, 100000, 500000, 1000000, 5000000, 10000000],
+    },
+  };
+
+  function getGiftLevelCount() {
+    const layer = document.getElementById("editLayer")?.value || "最多三级";
+    if (layer.includes("一级")) return 1;
+    if (layer.includes("二级") || layer.includes("两级")) return 2;
+    if (layer.includes("三级")) return 3;
+    if (layer.includes("四级")) return 4;
+    if (layer.includes("五级")) return 5;
+    return 3;
+  }
+
+  function formatGiftValue(value, fraction = 2) {
+    return Number(value || 0).toFixed(fraction);
+  }
+
+  function percentInput(value) {
+    return `<div class="unit-input"><input class="inp gift-value" inputmode="decimal" value="${formatGiftValue(value)}"><span class="addon">%</span></div>`;
+  }
+
+  function isPositiveNumberText(value) {
+    return /^(?:[1-9]\d*|0)(?:\.\d{1,2})?$/.test(value) && Number(value) > 0;
+  }
+
+  function isPositiveIntegerText(value) {
+    return /^[1-9]\d*$/.test(value);
+  }
+
+  function sanitizeDecimalInput(input) {
+    let value = input.value.replace(/[^\d.]/g, "");
+    const parts = value.split(".");
+    value = parts[0] + (parts.length > 1 ? `.${parts.slice(1).join("")}` : "");
+    if (value.includes(".")) {
+      const [integer, decimal] = value.split(".");
+      value = `${integer}.${decimal.slice(0, 2)}`;
+    }
+    input.value = value;
+  }
+
+  function sanitizePositiveIntegerInput(input) {
+    const digits = input.value.replace(/\D/g, "");
+    input.value = digits.replace(/^0+(?=\d)/, "");
+  }
+
+  function giftActionHtml(hasAdd = false) {
+    return `<div class="op-actions">${hasAdd ? '<a class="link">新增</a>' : ''}<a class="link danger">删除</a></div>`;
+  }
+
+  function syncGiftActions(table) {
+    if (!table) return;
+    const rows = [...table.querySelectorAll("tbody tr")];
+    rows.forEach((row, idx) => {
+      const indexCell = row.querySelector(".gift-index");
+      if (indexCell) indexCell.textContent = idx + 1;
+      const actions = row.querySelector(".op-actions");
+      if (!actions) return;
+      actions.innerHTML = giftActionHtml(idx === rows.length - 1);
+    });
+  }
+
+  function buildGiftRow(type, threshold, values, levelCount, hasAdd = false) {
+    const valueCells = values.map((value) => {
+      if (type === "first") return `<td><input class="inp gift-value" inputmode="decimal" value="${formatGiftValue(value)}"></td>`;
+      return `<td>${percentInput(value)}</td>`;
+    }).join("");
+    const thresholdMode = type === "first" ? "numeric" : "decimal";
+    return `<tr><td class="gift-index">1</td><td><input class="inp gift-threshold" inputmode="${thresholdMode}" value="${threshold}"></td>${valueCells}<td class="op-col">${giftActionHtml(hasAdd)}</td></tr>`;
+  }
+
+  function renderGiftTable(type, levelCount) {
+    const config = giftDefaults[type];
+    const pane = document.getElementById(config.paneId);
+    if (!pane) return;
+    const valueHeaders = type === "first"
+      ? config.headers.map((name) => `<th>${name}</th>`)
+      : Array.from({ length: levelCount }, (_, idx) => `<th>${idx + 1}级返佣比例</th>`);
+    const valueColCount = type === "first" ? 1 : levelCount;
+    const colPercent = Math.max(18, Math.floor(70 / Math.max(valueColCount, 1)));
+    const cols = `<col style="width:76px"><col style="width:28%">${Array.from({ length: valueColCount }, () => `<col style="width:${colPercent}%">`).join("")}<col style="width:120px">`;
+    const rows = (type === "first" ? config.rows : config.rows.map((threshold, idx) => [threshold, ...config.baseRatios[idx]])).map((row, idx, arr) => {
+      const threshold = row[0];
+      const rawValues = row.slice(1);
+      const values = Array.from({ length: valueColCount }, (_, levelIdx) => rawValues[levelIdx] ?? 0);
+      return buildGiftRow(type, threshold, values, levelCount, idx === arr.length - 1);
+    }).join("");
+    const note = type === "bet" ? '<p class="note" style="margin-top:0;">温馨提示：累计有效投注如果配置100，返佣比例配置1%，那么100*0.01=1，则代表返佣金额为：1；</p>' : "";
+    pane.innerHTML = `
+      ${note}
+      <table class="tiny gift-table" data-gift-type="${type}">
+        <colgroup>${cols}</colgroup>
+        <thead><tr><th class="gift-index-col">梯度</th><th>${config.metric}</th>${valueHeaders.join("")}<th class="op-col">操作</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <div class="gift-error"></div>
+    `;
+    const table = pane.querySelector(".gift-table");
+    syncGiftActions(table);
+    validateGiftTable(table);
+  }
+
+  function renderGiftTables() {
+    const levelCount = getGiftLevelCount();
+    renderGiftTable("first", levelCount);
+    renderGiftTable("recharge", levelCount);
+    renderGiftTable("bet", levelCount);
+  }
+
+  function createGiftRow(sourceRow) {
+    const table = sourceRow.closest(".gift-table");
+    const type = table?.dataset.giftType || "recharge";
+    const levelCount = type === "first" ? 1 : getGiftLevelCount();
+    const threshold = type === "first" ? "请输入首充人数" : "0.00";
+    const tr = document.createElement("tr");
+    tr.innerHTML = buildGiftRow(type, threshold, Array.from({ length: levelCount }, () => 0), levelCount, true).replace(/^<tr>|<\/tr>$/g, "");
+    return tr;
+  }
+
+  function validateGiftTable(table, options = {}) {
+    if (!table) return true;
+    const rows = [...table.querySelectorAll("tbody tr")];
+    const error = table.parentElement?.querySelector(".gift-error");
+    const type = table.dataset.giftType || "recharge";
+    const checkGradient = options.checkGradient ?? !table.closest("#edit");
+    let valid = true;
+    let message = "";
+    let toastMessage = "";
+    rows.forEach((row, idx) => {
+      const levelName = `第 ${idx + 1} 梯度`;
+      const input = row.querySelector(".gift-threshold");
+      const rawValue = (input?.value || "").trim();
+      const value = Number(rawValue);
+      const previousInput = rows[idx - 1]?.querySelector(".gift-threshold");
+      const previousValue = Number(previousInput?.value);
+      const invalidNumber = type === "first" ? !isPositiveIntegerText(rawValue) : !isPositiveNumberText(rawValue);
+      const invalidGradient = checkGradient && idx > 0 && !Number.isNaN(previousValue) && value <= previousValue;
+      input?.classList.toggle("invalid", invalidNumber || invalidGradient);
+      if (invalidNumber && !message) {
+        message = type === "first" ? `${levelName}：首充人数需填写大于 0 的整数` : `${levelName}：梯度门槛需填写大于 0 的数字，最多保留 2 位小数`;
+        toastMessage = message;
+      }
+      if (invalidGradient && !message) {
+        message = `${levelName}：当前门槛必须大于上一梯度`;
+        toastMessage = message;
+      }
+      if (invalidNumber || invalidGradient) valid = false;
+
+      row.querySelectorAll(".gift-value").forEach((valueInput, valueIdx) => {
+        const text = valueInput.value.trim();
+        const number = Number(text);
+        const invalidValue = !isPositiveNumberText(text) || (type !== "first" && number > 100);
+        valueInput.classList.toggle("invalid", invalidValue);
+        if (invalidValue && !message) {
+          const fieldName = type === "first" ? "首充佣金" : `${valueIdx + 1}级返佣比例`;
+          message = type === "first" ? `${levelName}：${fieldName}需填写大于 0 的数字，最多保留 2 位小数` : `${levelName}：${fieldName}需填写 0 到 100 之间的数字，最多保留 2 位小数`;
+          toastMessage = message;
+        }
+        if (invalidValue) valid = false;
+      });
+    });
+    if (error) error.textContent = message;
+    if (!valid && options.toast) showToast(toastMessage || message);
+    return valid;
+  }
+
+  document.getElementById("edit").addEventListener("click", (e) => {
+    const link = e.target.closest(".gift-table .link");
+    if (!link) return;
+    const row = link.closest("tr");
+    const tbody = row ? row.closest("tbody") : null;
+    const table = row ? row.closest(".gift-table") : null;
+    if (!row || !tbody || !table) return;
+    e.preventDefault();
+
+    if (link.textContent.trim() === "新增") {
+      row.after(createGiftRow(row));
+      syncGiftActions(table);
+      validateGiftTable(table);
+      return;
+    }
+
+    if (link.textContent.trim() === "删除") {
+      if (tbody.querySelectorAll("tr").length <= 1) {
+        const error = table.parentElement?.querySelector(".gift-error");
+        if (error) error.textContent = "至少保留一个等级";
+        showToast("至少保留一个等级");
+        return;
+      }
+      row.remove();
+      syncGiftActions(table);
+      validateGiftTable(table);
+    }
+  });
+
+  document.getElementById("edit").addEventListener("input", (e) => {
+    const table = e.target.closest(".gift-table");
+    if (!table) return;
+    if (e.target.classList.contains("gift-threshold")) {
+      if (table.dataset.giftType === "first") sanitizePositiveIntegerInput(e.target);
+      else sanitizeDecimalInput(e.target);
+    }
+    if (e.target.classList.contains("gift-value")) {
+      sanitizeDecimalInput(e.target);
+    }
+    validateGiftTable(table);
+  });
+
+  function shouldUseDecimalSanitize(input) {
+    if (!input.classList.contains("inp") || input.disabled) return false;
+    if (input.closest(".gift-table")) return false;
+    if (input.closest(".unit-input") || input.closest(".percent")) return true;
+    if (input.classList.contains("rebate-performance") || input.classList.contains("rebate-per")) return true;
+    if (input.classList.contains("profit-performance") || input.classList.contains("profit-ratio")) return true;
+    const placeholder = input.getAttribute("placeholder") || "";
+    const value = input.getAttribute("value") || "";
+    return /0\.00|金额|返佣|投注|充值|业绩|比例|费率/.test(placeholder + value);
+  }
+
+  document.addEventListener("input", (e) => {
+    if (e.target.matches("input.inp") && shouldUseDecimalSanitize(e.target)) {
+      sanitizeDecimalInput(e.target);
+    }
+  });
+
+  function validateRequiredInputs(scope) {
+    const inputs = [...scope.querySelectorAll(".req")].map((req) => {
+      const label = req.closest(".lb");
+      let field = label?.nextElementSibling;
+      if (field && !field.matches("input, select, textarea")) field = field.querySelector("input, select, textarea");
+      return field;
+    }).filter((field) => field && !field.disabled && field.offsetParent !== null);
+    let firstInvalid = null;
+    inputs.forEach((input) => {
+      const invalid = input.matches("input, textarea") && !input.value.trim();
+      input.classList.toggle("invalid", invalid);
+      if (invalid && !firstInvalid) firstInvalid = input;
+    });
+    if (firstInvalid) {
+      showToast("请完善必填输入项");
+      firstInvalid.focus();
+      return false;
+    }
+    return true;
+  }
+
+  document.querySelectorAll(".modal .mf .btn.primary").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const modal = btn.closest(".modal");
+      if (modal && !validateRequiredInputs(modal)) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }, true);
+  });
+
+  document.querySelector("#edit .mf .btn.primary")?.addEventListener("click", (e) => {
+    const tables = [...document.querySelectorAll("#edit .tab-pane:not(.hidden) .gift-table")];
+    const invalidTable = tables.find((table) => !validateGiftTable(table));
+    const ok = !invalidTable;
+    if (!ok) {
+      validateGiftTable(invalidTable, { toast: true });
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, true);
+
+  const rebatePerf = document.getElementById("rebatePerf");
+  const rebatePer = document.getElementById("rebatePer");
+  const rebateErr = document.getElementById("rebateAddErr");
+  const rebateTableBody = document.querySelector("#rebate .tiny tbody");
+  const submitRebateAdd = document.getElementById("submitRebateAdd");
+  if (submitRebateAdd) submitRebateAdd.addEventListener("click", () => {
+    const perf = rebatePerf.value.trim();
+    const per = rebatePer.value.trim();
+    if (!perf || !per || Number.isNaN(Number(perf)) || Number.isNaN(Number(per))) {
+      rebateErr.textContent = "请填写有效的数字";
+      return;
+    }
+    rebateErr.textContent = "";
+    const idx = rebateTableBody.querySelectorAll("tr").length + 1;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${idx}</td><td>${perf}</td><td>${per}</td><td>lws01</td><td>${new Date().toISOString().slice(0,19).replace("T"," ")}</td><td><a class="link">修改</a><a class="link danger">删除</a></td>`;
+    rebateTableBody.appendChild(tr);
+    rebatePerf.value = "";
+    rebatePer.value = "";
+    openModal("rebate");
+  });
+
+  const rebateConfigBody = document.getElementById("rebateConfigBody");
+  function bindRebateRow(row) {
+    if (!row) return;
+    const addBtn = row.querySelector(".rebate-add");
+    if (addBtn) {
+      addBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input class="inp rebate-performance" value="0.00"></td>
+          <td><input class="inp rebate-per" value="0"></td>
+          <td>lws01</td>
+          <td>${new Date().toISOString().slice(0,19).replace("T"," ")}</td>
+          <td><div class="profit-actions"><a class="link rebate-add">新增</a><a class="link danger rebate-delete">删除</a></div></td>
+        `;
+        row.after(tr);
+        bindRebateRow(tr);
+      });
+    }
+    const delBtn = row.querySelector(".rebate-delete");
+    if (delBtn) {
+      delBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (rebateConfigBody.querySelectorAll("tr").length > 1) row.remove();
+      });
+    }
+  }
+
+  if (rebateConfigBody) {
+    rebateConfigBody.querySelectorAll("tr").forEach(bindRebateRow);
+  }
+
+  const profitConfigBody = document.getElementById("profitConfigBody");
+  function formatMoney(value) {
+    return Number(value || 0).toLocaleString("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
+  function updateProfitAmount(row) {
+    if (!row) return;
+    const perf = Number(row.querySelector(".profit-performance")?.value || 0);
+    const ratio = Number(row.querySelector(".profit-ratio")?.value || 0);
+    const amountCell = row.querySelector(".profit-amount");
+    if (!amountCell) return;
+    const amount = perf * ratio / 100;
+    amountCell.textContent = formatMoney(amount);
+  }
+
+  function bindProfitRow(row) {
+    if (!row) return;
+    row.querySelectorAll(".profit-performance, .profit-ratio").forEach((input) => {
+      input.addEventListener("input", () => updateProfitAmount(row));
+    });
+    const addBtn = row.querySelector(".profit-add");
+    if (addBtn) {
+      addBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td><input class="inp profit-performance" value="0.00"></td>
+          <td><div class="unit-input"><input class="inp profit-ratio" value="0.00"><span class="addon">%</span></div></td>
+          <td class="profit-amount">0.00</td>
+          <td><div class="profit-actions"><a class="link profit-add">新增</a><a class="link danger profit-delete">删除</a></div></td>
+        `;
+        row.after(tr);
+        bindProfitRow(tr);
+      });
+    }
+    const delBtn = row.querySelector(".profit-delete");
+    if (delBtn) {
+      delBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        if (profitConfigBody.querySelectorAll("tr").length > 1) row.remove();
+      });
+    }
+    updateProfitAmount(row);
+  }
+
+  if (profitConfigBody) {
+    profitConfigBody.querySelectorAll("tr").forEach(bindProfitRow);
+  }
+
+  document.querySelectorAll(".chip").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll(".chip").forEach((x) => x.classList.remove("active"));
+      chip.classList.add("active");
+    });
+  });
+
+  document.querySelectorAll(".pressable").forEach((btn) => {
+    btn.addEventListener("mousedown", () => btn.classList.add("clicked"));
+    btn.addEventListener("mouseup", () => btn.classList.remove("clicked"));
+    btn.addEventListener("mouseleave", () => btn.classList.remove("clicked"));
+  });
+
+  const layerSel = document.getElementById("layerSel");
+  const rowLevel = document.getElementById("rowLevel");
+  const rowLevelLabel = document.getElementById("rowLevelLabel");
+  function syncLayer() {
+    const v = layerSel.value;
+    const isCustom = v === "自定义层数";
+    rowLevel.classList.toggle("hidden", !isCustom);
+    rowLevelLabel.classList.toggle("hidden", !isCustom);
+  }
+
+  layerSel.addEventListener("change", syncLayer);
+  syncLayer();
+  syncGuideEditors("guide");
+  syncGuideEditors("gd2");
+  syncProfitSections("base", "profit-only");
+  syncEditSections("净盈利");
+  syncGiftTabs();
+</script>
+</body>
+</html>

@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>代理系统新增代理模式需求文档（完整版）</title>
+  <style>
+    :root {
+      --brand: #0052d9;
+      --brand-hover: #366ef4;
+      --text-1: rgba(0, 0, 0, .9);
+      --text-2: rgba(0, 0, 0, .62);
+      --border: #e7edf5;
+      --bg: #f5f7fb;
+      --card: #fff;
+      --danger: #e34d59;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding-top: 54px;
+      background: var(--bg);
+      color: var(--text-1);
+      font: 14px/1.75 "Helvetica Neue", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+    .global-links {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 300;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 18px;
+      overflow-x: auto;
+      background: rgba(255, 255, 255, .96);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 14px rgba(15, 40, 80, .08);
+      backdrop-filter: blur(8px);
+    }
+    .global-links a {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid #cfd7e3;
+      border-radius: 6px;
+      color: var(--brand);
+      background: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .global-links a:hover {
+      border-color: var(--brand-hover);
+      background: #f8fbff;
+      color: var(--brand-hover);
+    }
+    .page {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px 20px 56px;
+    }
+    .hero, .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 8px 26px rgba(15, 40, 80, .06);
+    }
+    .hero {
+      padding: 26px 28px;
+      margin-bottom: 16px;
+    }
+    .section {
+      padding: 24px 28px;
+      margin-top: 16px;
+    }
+    h1, h2, h3, h4 { line-height: 1.35; color: var(--text-1); }
+    h1 { margin: 0 0 10px; font-size: 28px; }
+    h2 { margin: 0 0 16px; font-size: 22px; }
+    h3 { margin: 24px 0 12px; font-size: 18px; }
+    h4 { margin: 18px 0 8px; font-size: 15px; }
+    p { margin: 0 0 10px; }
+    .muted { color: var(--text-2); }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .tag {
+      padding: 4px 10px;
+      border: 1px solid #c8d8ff;
+      border-radius: 999px;
+      background: #eef4ff;
+      color: var(--brand);
+      font-weight: 500;
+    }
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+      padding: 18px 20px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+    }
+    .toc a {
+      color: var(--brand);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 18px;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f7f9fc; font-weight: 600; }
+    ul, ol { margin: 8px 0 14px 22px; padding: 0; }
+    li { margin: 4px 0; }
+    .note {
+      margin: 12px 0;
+      padding: 12px 14px;
+      border: 1px solid #ffd8d8;
+      border-radius: 6px;
+      background: #fff5f5;
+      color: #9f2d36;
+    }
+    pre {
+      overflow: auto;
+      padding: 12px 14px;
+      border-radius: 6px;
+      background: #0f172a;
+      color: #e5e7eb;
+      line-height: 1.6;
+    }
+    .table-wrap { overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <nav class="global-links" aria-label="页面关联入口">
+    <a href="代理模式页面.html" target="_blank">代理模式页面</a>
+    <a href="后台代理模式需求文档.html" target="_blank">后台代理模式需求文档</a>
+    <a href="../后台其他页面.html" target="_blank">后台关联页面</a>
+    <a href="前台关联页面.html" target="_blank">前台关联页面（作废）</a>
+    <a href="前台推广原型页面.html" target="_blank">前台推广原型</a>
+    <a href="前台推广页面需求文档.html" target="_blank">前台推广页面需求文档</a>
+    <a href="佣金计算工具.html" target="_blank">佣金计算工具</a>
+  </nav>
+
+  <main class="page">
+    <section class="hero">
+      <h1>代理系统新增代理模式需求文档（完整版）</h1>
+      <p class="muted">整合原始需求文档与净盈利模式补充内容，统一代理模式新增、修改、公共设置及佣金计算逻辑。</p>
+      <div class="meta">
+        <span class="tag">版本：V2.0</span>
+        <span class="tag">日期：2026-05-19</span>
+        <span class="tag">状态：草稿</span>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>修订记录</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>版本号</th><th>修订日期</th><th>修订内容</th><th>修订人</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>V1.0</td><td>2025-03-18</td><td>初始版本创建（有效投注模式、多奖励模式修改、公共设置）</td><td>admin</td></tr>
+            <tr><td>V2.0</td><td>2026-05-19</td><td>整合净盈利模式，增加净盈利定义、计算逻辑及相应配置</td><td>admin</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <nav class="toc">
+      <a href="#overview">1. 功能概述</a>
+      <a href="#detail">2. 核心功能详细设计</a>
+      <a href="#new-mode">2.1. 新增代理模式</a>
+      <a href="#multi-reward">2.2. 多奖励模式修改</a>
+      <a href="#public-setting">2.3. 代理公共设置</a>
+      <a href="#guide-modal">2.4. 代理模式使用说明弹窗</a>
+      <a href="#mode-examples">2.5. 模式举例说明</a>
+      <a href="#logic">3. 核心业务逻辑</a>
+      <a href="#diff-commission">3.1. 极差返佣通用逻辑</a>
+      <a href="#net-profit">3.2. 净盈利定义与计算</a>
+      <a href="#cap">3.3. 返佣上限逻辑</a>
+      <a href="#non-functional">4. 非功能性需求</a>
+    </nav>
+
+    <section class="section" id="overview">
+      <h2>1. 功能概述</h2>
+      <p>为了激励代理发展多级下线，提升平台有效投注量及盈利能力，系统需对现有代理模式进行升级。核心目标是支持<strong>无限层级代理</strong>，采用<strong>极差返佣模式</strong>，根据代理整体业绩（有效投注或净盈利）确定返佣比例，并通过与直属下级的比例差计算额外佣金。</p>
+      <p>本次需求主要包含以下三部分：</p>
+      <ol>
+        <li><strong>新增代理模式</strong>：支持选择“有效投注”或“净盈利”作为佣金计算依据，并支持多种佣金计算层数。</li>
+        <li><strong>多奖励模式修改</strong>：合并返佣设置弹窗，佣金赠送维度保留首充佣金、充值佣金、投注佣金。</li>
+        <li><strong>代理公共设置</strong>：增加全平台通用的有效人数和返佣上限设置（兼容两种业绩指标）。</li>
+        <li><strong>使用说明弹窗</strong>：在后台代理模式页面提供模式介绍、公式和示例，帮助运营快速理解配置结果。</li>
+      </ol>
+    </section>
+
+    <section class="section" id="detail">
+      <h2>2. 核心功能详细设计</h2>
+
+      <h3 id="new-mode">2.1. 新增代理模式</h3>
+      <p><strong>功能位置</strong>：后台：代理管理 -> 代理模式 -> 新增代理</p>
+      <p><strong>功能说明</strong>：新增代理模式，可选择佣金计算依据（有效投注/净盈利），并配置相应的返佣阶梯。</p>
+
+      <h4>新增代理模式字段配置表</h4>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>字段名称</th><th>类型</th><th>必填</th><th>业务说明</th><th>示例/可选值</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>代理模式名称</strong></td><td>字符串</td><td>是</td><td>自定义该代理方案的名称，用于后台识别及前台展示</td><td>“无限极差模式V1”</td></tr>
+            <tr><td><strong>模式来源</strong></td><td>枚举</td><td>是</td><td>标识模式创建来源</td><td>系统自带 / <strong>自定义</strong>（默认为自定义）</td></tr>
+            <tr><td><strong>佣金计算依据</strong></td><td>单选</td><td>是</td><td>佣金按哪个业务指标计算，只能选择一种计算依据。</td><td><strong>有效投注</strong> / <strong>净盈利</strong></td></tr>
+            <tr><td><strong>申请方式</strong></td><td>固定值</td><td>是</td><td>代理开通方式</td><td><strong>直接生效</strong>（无需审核）</td></tr>
+            <tr><td><strong>佣金计算层数</strong></td><td>枚举+数值</td><td>是</td><td>支持：只算一级、最多两级、最多三级、最多四级、最多五级、<strong>无数级</strong>、<strong>自定义层数</strong>。</td><td>无数级 / 自定义层数</td></tr>
+            <tr><td><strong>设置层数</strong></td><td>整数</td><td>条件必填</td><td>当“佣金计算层数”选择“自定义层数”时生效；限制大于5且小于999。</td><td>10（表示最多计算10层下级）</td></tr>
+            <tr><td><strong>返佣阶梯配置</strong></td><td>表格</td><td>是</td><td>针对当前“佣金计算依据”，设置返佣阶梯（业绩门槛与返佣比例）。</td><td>见下文“返佣阶梯配置说明”</td></tr>
+            <tr><td><strong>启用状态</strong></td><td>开关</td><td>是</td><td>当前模式是否启用。</td><td><strong>启用</strong> / 停用</td></tr>
+            <tr><td><strong>结算周期</strong></td><td>单选</td><td>是</td><td>佣金结算频率。<strong>注意：创建后不允许修改</strong></td><td>日结 / 周结 / 月结</td></tr>
+            <tr><td><strong>业绩计算范围</strong></td><td>枚举</td><td>是</td><td><strong>仅当依据为“有效投注”时有效</strong>：计算代理总业绩时是否包含未达到有效会员条件的会员业绩。</td><td>全部计算（含无效）/ <strong>只计算有效会员业绩</strong></td></tr>
+            <tr><td><strong>教程展示开关</strong></td><td>布尔</td><td>是</td><td>前台代理端是否显示教程入口。</td><td>开启 / <strong>关闭</strong></td></tr>
+            <tr><td><strong>代理教程设置</strong></td><td>枚举+富文本</td><td>条件必填</td><td>若开启教程，可选择系统默认或自定义上传教程内容。</td><td>系统默认 / 自定义</td></tr>
+            <tr><td><strong>推广链接地址打开</strong></td><td>枚举</td><td>是</td><td>用户点击代理推广链接后跳转的页面。</td><td>原功能（保持不变）</td></tr>
+            <tr><td><strong>备注</strong></td><td>文本</td><td>否</td><td>后台内部备注，不对外展示。</td><td>-</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">业绩计算范围示例：代理下级会员A达到有效会员条件，有效投注10000；会员B未达到有效会员条件，有效投注3000。选择“全部计算（含无效）”时，总业绩按13000计算；选择“只计算有效会员业绩”时，仅计入会员A，总业绩按10000计算。</div>
+
+      <h4>返佣阶梯配置说明</h4>
+      <ul>
+        <li>佣金计算依据为“有效投注”或“净盈利”时，分别按对应口径配置返佣阶梯。</li>
+        <li>阶梯表格字段：<strong>总业绩门槛（大于等于）、返佣比例（%）</strong>。</li>
+        <li>系统按代理总业绩命中的最高门槛确定返佣比例，不按上下限区间配置。</li>
+        <li>支持自定义多个门槛，门槛值需大于等于0，返佣比例必须为非负整数或小数（如 0.5%）。</li>
+      </ul>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>有效投注总业绩 ≥ 门槛</th><th>返佣比例</th></tr></thead>
+          <tbody><tr><td>≥ 0</td><td>1%</td></tr><tr><td>≥ 10000</td><td>2%</td></tr><tr><td>≥ 50000</td><td>3%</td></tr></tbody>
+        </table>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>净盈利总业绩 ≥ 门槛</th><th>返佣比例</th></tr></thead>
+          <tbody><tr><td>≥ 0</td><td>2%</td></tr><tr><td>≥ 10000</td><td>5%</td></tr><tr><td>≥ 50000</td><td>8%</td></tr></tbody>
+        </table>
+      </div>
+
+      <h3 id="multi-reward">2.2. 多奖励模式修改</h3>
+      <p><strong>功能位置</strong>：后台：代理管理 -> 代理模式 -> 多奖励模式修改</p>
+      <p><strong>功能说明</strong>：对已有的“多奖励模式”进行功能增强和界面合并。</p>
+      <ol>
+        <li><strong>结算周期</strong>：可修改，但选项固定为“日结”，不可更改。</li>
+        <li><strong>佣金赠送维度</strong>：可配置佣金计算依据，支持多选（首充佣金、充值佣金、投注佣金），至少选择一个。前台教程及页面需对应显示。</li>
+        <li><strong>返佣设置合并</strong>：将返佣设置（原有功能）合并到当前的修改弹窗中。根据“佣金赠送维度”勾选的数量，动态显示对应数量的Tab（如：首充佣金设置、充值佣金设置、投注佣金设置）。各Tab内设置功能保持不变（阶梯配置）。</li>
+      </ol>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>字段名称</th><th>类型</th><th>必填</th><th>业务说明</th><th>示例/可选值</th></tr></thead>
+          <tbody>
+            <tr><td><strong>结算周期</strong></td><td>单选</td><td>是</td><td>佣金结算频率。</td><td><strong>日结</strong>（不可修改）</td></tr>
+            <tr><td><strong>佣金赠送维度</strong></td><td>复选</td><td>是</td><td>佣金计算依据，可配置。</td><td>首充佣金、充值佣金、投注佣金（至少选一个）</td></tr>
+            <tr><td><strong>返佣设置</strong></td><td>-</td><td>是</td><td>合并后的返佣设置区域，功能不变。</td><td>根据所选维度，动态生成对应Tab。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="public-setting">2.3. 代理公共设置</h3>
+      <p><strong>功能位置</strong>：后台：代理管理 -> 代理模式 -> 代理公共设置</p>
+      <p><strong>功能说明</strong>：设置全平台通用的代理相关公共参数。有效人数按有效投注口径配置；返佣上限对有效投注模式和净盈利模式统一生效。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>字段名称</th><th>类型</th><th>必填</th><th>业务说明</th><th>示例/可选值</th></tr></thead>
+          <tbody>
+            <tr><td><strong>有效人数计算（有效投注）</strong></td><td>数字输入框</td><td>是</td><td>直属下级在结算周期内需同时满足“有效投注≥X”和“充值≥Y”才算有效人数。0为不限制。</td><td>有效投注≥：<strong>10000</strong><br>充值≥：<strong>500</strong></td></tr>
+            <tr><td><strong>直属下级单个会员返佣上限</strong></td><td>数字输入框</td><td>是</td><td>根据代理模式的结算周期，设置每个直属下级单期可贡献给上级的最大佣金金额（含直属佣金+极差佣金）。0表示不限制。超过部分不计算。</td><td><strong>日结模式上限：</strong>1000<br><strong>周结模式上限：</strong>5000<br><strong>月结模式上限：</strong>20000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">说明：返佣上限对有效投注和净盈利模式统一生效（即无论佣金来自哪种依据，合计佣金受上限控制）。佣金发放时，优先限制其他（极差）佣金，再限制直属佣金。</div>
+
+      <h3 id="guide-modal">2.4. 代理模式使用说明弹窗</h3>
+      <p><strong>功能位置</strong>：后台：代理管理 -> 代理模式 -> 页面顶部工具栏 -> 使用说明</p>
+      <p><strong>功能说明</strong>：代理模式页面需增加“使用说明”弹窗，用简单易懂的方式解释每种代理模式的适用场景、核心公式和计算示例，帮助运营在新增或编辑代理模式前快速理解配置含义。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>模块</th><th>需求说明</th></tr></thead>
+          <tbody>
+            <tr><td><strong>入口展示</strong></td><td>在代理模式页面顶部操作区展示“使用说明”按钮，和新增代理模式、公共设置等按钮风格保持一致。</td></tr>
+            <tr><td><strong>弹窗层级</strong></td><td>弹窗必须显示在最高层级，不可被顶部固定导航或页面其他浮层遮挡。</td></tr>
+            <tr><td><strong>内容结构</strong></td><td>弹窗内按“有效投注模式、多奖励模式、净盈利模式”分块展示，每块包含：模式介绍、核心公式、举例说明。</td></tr>
+            <tr><td><strong>视觉样式</strong></td><td>采用卡片、标签、步骤块、结果高亮等方式做可视化展示；公式要突出显示，示例结果要明显，整体风格与后台代理模式页面保持统一。</td></tr>
+            <tr><td><strong>文案要求</strong></td><td>说明文字要口语化、易理解，避免只展示业务术语；每个示例都需要能看出“业绩如何来、比例如何命中、佣金如何算出”。</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4>有效投注模式说明</h4>
+      <p><strong>模式介绍</strong>：有效投注模式按代理下级产生的有效投注计算返佣，代理总业绩越高，命中的返佣比例越高；多级代理按极差返佣比例计算其他佣金。</p>
+      <pre>直属佣金 = 直属下级本人有效投注 × 当前代理返佣比例
+其他佣金 = 直属下级总业绩 × (当前代理返佣比例 - 直属下级返佣比例)
+本期佣金 = 直属佣金 + 其他佣金</pre>
+      <div class="note">示例：B1本人有效投注500，B2本人有效投注3000，A命中3%返佣比例，则A的直属佣金 = (500 + 3000) × 3% = 105。若B1下级总业绩为3000，B1命中1%，A与B1极差比例为2%，则A从B1获得其他佣金 = 3000 × 2% = 60。A本期佣金 = 105 + 60 = 165。</div>
+
+      <h4>多奖励模式说明</h4>
+      <p><strong>模式介绍</strong>：多奖励模式按多个奖励维度分别计算佣金，后台勾选首充佣金、充值佣金、投注佣金中的哪些维度，前台教程和返佣设置就展示哪些维度。</p>
+      <pre>首充佣金 = 达到首充人数门槛后，发放对应固定奖励
+充值佣金 = 对应层级充值金额 × 对应层级返佣比例
+投注佣金 = 对应层级投注金额 × 对应层级返佣比例
+本期佣金 = 首充佣金 + 充值佣金 + 投注佣金</pre>
+      <div class="note">示例：代理A本期获得首充佣金200、充值佣金38、投注佣金36.4，则A本期佣金 = 200 + 38 + 36.4 = 274.4。若配置为最多两级，则三级及以下不展示、不计算。</div>
+
+      <h4>净盈利模式说明</h4>
+      <p><strong>模式介绍</strong>：净盈利模式按直属会员给平台带来的净盈利计算返佣，公式会根据“净盈利设置”中勾选的扣减项动态调整。</p>
+      <pre>净盈利 = - 直属会员输赢 - 领取优惠 - 充值手续费 - 提现手续费 - 三方游戏统一成本 + 上期结余
+上期结余 = 上个周期内直属会员输赢总和，值为负数或0；若大于0，则转化为佣金
+直属佣金 = 直属会员净盈利 × 当前代理返佣比例
+其他佣金 = 直属下级总净盈利 × 极差返佣比例
+本期佣金 = 直属佣金 + 其他佣金</pre>
+      <div class="note">示例：直属会员输赢为-10000，领取优惠500，充值手续费100，提现手续费80，三方游戏统一成本300，上期结余-1000，则净盈利 = -(-10000) - 500 - 100 - 80 - 300 + (-1000) = 8020。若A命中5%返佣比例，则直属佣金 = 8020 × 5% = 401。若某个扣减项在净盈利设置中未勾选，公式中不展示也不参与计算。</div>
+
+      <h3 id="mode-examples">2.5. 模式举例说明</h3>
+      <p>以下示例用于说明不同代理模式的配置方式和结算口径，实际比例、门槛和上限以后台配置为准。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>模式类型</th><th>配置示例</th><th>计算示例</th><th>适用场景</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>有效投注模式</strong></td>
+              <td>佣金计算依据选择“有效投注”；结算周期选择日结；返佣阶梯配置为：有效投注≥0返佣1%，有效投注≥10000返佣2%，有效投注≥50000返佣3%。</td>
+              <td>代理A下级有效投注合计60000，命中3%档位；直属会员有效投注10000，则直属佣金=10000×3%=300。若直属下级代理B返佣比例为2%，B总业绩30000，则A可获得极差佣金=30000×(3%-2%)=300。</td>
+              <td>适用于希望用会员投注活跃度衡量代理贡献的场景。</td>
+            </tr>
+            <tr>
+              <td><strong>净盈利模式</strong></td>
+              <td>佣金计算依据选择“净盈利”；返佣阶梯配置为：净盈利≥0返佣2%，净盈利≥10000返佣5%，净盈利≥50000返佣8%。</td>
+              <td>代理A直属会员输赢为-60000，领取优惠5000，手续费和三方成本合计0，上期结余0，则净盈利=-(-60000)-5000=55000，命中8%档位。若直属会员净盈利10000，则直属佣金=10000×8%=800。</td>
+              <td>适用于希望按平台实际盈利能力计算代理佣金的场景。</td>
+            </tr>
+            <tr>
+              <td><strong>多奖励模式</strong></td>
+              <td>佣金赠送维度可选择首充佣金、充值佣金、投注佣金；选择多个维度时，返佣设置中展示对应多个Tab。</td>
+              <td>代理A勾选首充佣金、充值佣金、投注佣金。会员本期满足首充奖励100，充值佣金150，投注佣金200，则该会员贡献佣金合计=100+150+200=450。</td>
+              <td>适用于需要按多个行为指标组合激励代理的场景。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section" id="logic">
+      <h2>3. 核心业务逻辑</h2>
+
+      <h3 id="diff-commission">3.1. 极差返佣通用逻辑</h3>
+      <p>佣金计算层数（只算一级、最多两级、...、无数级、自定义层数）均采用此逻辑。该逻辑适用于<strong>有效投注</strong>和<strong>净盈利</strong>两种业绩指标，唯一区别在于“业绩”的定义。</p>
+      <h4>核心规则</h4>
+      <ol>
+        <li><strong>业绩定义</strong>：每个代理的“总业绩”等于其所有下级（不限层级）的<strong>自身业绩之和</strong>，不包括代理本人的业绩。代理本人的业绩只计入上级的直属业绩。若依据为<strong>有效投注</strong>：自身业绩 = 会员本人有效投注额。若依据为<strong>净盈利</strong>：自身业绩 = 会员本人净盈利（定义见3.2）。</li>
+        <li><strong>返佣比例</strong>：根据代理的“总业绩”，按该模式预设的阶梯确定返佣比例。</li>
+        <li><strong>佣金构成</strong>：直属佣金 = 所有直属下级本人业绩之和 × 自己的返佣比例；其他佣金（极差佣金） = Σ [ 每个直属下级的总业绩 × (自己的返佣比例 − 该下级的返佣比例) ]；总佣金 = 直属佣金 + 其他佣金。</li>
+        <li><strong>无限层级</strong>：计算时只关注直接下级，间接下级通过下级的总业绩递归体现。</li>
+      </ol>
+      <h4>计算步骤（后序遍历）</h4>
+      <ol>
+        <li>计算每个节点的“总业绩”（递归汇总下级自身业绩）。</li>
+        <li>根据每个节点的“总业绩”，确定其“返佣比例”。</li>
+        <li>计算每个节点的“总佣金”（直属佣金+极差佣金）。</li>
+      </ol>
+      <div class="note">重要：此极差模式的数学特性保证了所有佣金之和等于根节点总业绩与根节点返佣比例的乘积，实现分配守恒。</div>
+      <h4>举例说明</h4>
+      <p>以下示例参考前台代理教程的展示口径，用于说明“直属佣金 + 其他佣金（极差佣金）”的计算方式。示例中的“业绩”可按代理模式分别替换为有效投注或净盈利。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>角色</th><th>层级关系</th><th>本人业绩</th><th>下级总业绩</th><th>总业绩</th><th>返佣比例</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>当前代理</td><td>-</td><td>B1、B2及其下级合计</td><td>26500</td><td>3%</td></tr>
+            <tr><td>B1</td><td>A的直属下级</td><td>500</td><td>C1 1000 + C2 2000</td><td>3000</td><td>1%</td></tr>
+            <tr><td>B2</td><td>A的直属下级</td><td>3000</td><td>C3 20000</td><td>20000</td><td>3%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ol>
+        <li>A的直属业绩 = B1本人业绩500 + B2本人业绩3000 = 3500。</li>
+        <li>A的直属佣金 = 直属业绩3500 × A返佣比例3% = 105。</li>
+        <li>A与B1的极差比例 = A返佣比例3% - B1返佣比例1% = 2%，A从B1下级总业绩获得其他佣金 = 3000 × 2% = 60。</li>
+        <li>A与B2的极差比例 = A返佣比例3% - B2返佣比例3% = 0%，A从B2下级总业绩获得其他佣金 = 20000 × 0% = 0。</li>
+        <li>A本期总佣金 = 直属佣金105 + 其他佣金60 + 0 = 165。</li>
+      </ol>
+      <div class="note">前台教程展示建议：用层级图展示A、B1、B2、C1、C2、C3关系；用高亮数字展示直属业绩、直属佣金、其他佣金、本期佣金；同时说明“极差返佣比例 = 当前代理返佣比例 - 直属下级返佣比例”。</div>
+
+      <h3 id="net-profit">3.2. 净盈利定义与计算</h3>
+      <p><strong>适用场景</strong>：当代理模式的“佣金计算依据”选择“净盈利”时。</p>
+      <p><strong>净盈利</strong> 指直属会员在结算周期内按平台净盈利口径汇总后的业绩值。公式会根据“净盈利设置”中勾选的扣减项动态调整。</p>
+      <ul>
+        <li><strong>直属会员输赢</strong>：直属会员在周期内的输赢汇总。会员输钱时通常为负数，因此公式中使用“- 直属会员输赢”转为平台净盈利。</li>
+        <li><strong>领取优惠</strong>：会员在周期内领取的返水、红包、彩金、活动奖励等。</li>
+        <li><strong>充值手续费 / 提现手续费</strong>：会员充值、提现产生的手续费成本。</li>
+        <li><strong>三方游戏统一成本</strong>：三方游戏或平台统一配置的成本扣减项。</li>
+        <li><strong>上期结余</strong>：上个周期内直属会员输赢总和，值为负数或0；若大于0，则转化为佣金，不作为结余继续累加。</li>
+      </ul>
+      <h4>公式</h4>
+      <pre>净盈利 = - 直属会员输赢 - 领取优惠 - 充值手续费 - 提现手续费 - 三方游戏统一成本 + 上期结余</pre>
+      <h4>代理业绩（总业绩）</h4>
+      <ul>
+        <li>每个代理的总业绩 = 其所有下级（不限层级）会员的净盈利之和。</li>
+        <li>代理本人的净盈利不计入自己的总业绩（仅用于上级的直属业绩计算）。</li>
+        <li>若某项成本未在“净盈利设置”中勾选，则前台说明、后台说明和实际计算公式中均不展示、不参与计算。</li>
+      </ul>
+      <h4>净盈利为负的处理</h4>
+      <ul>
+        <li>若某会员净盈利为负（即赢钱或优惠过多），则其贡献的业绩为负数，会降低上级的总业绩。</li>
+        <li>若代理的“总业绩”为负，则其返佣比例按最低档（或0%），不发放佣金，也不倒扣。</li>
+      </ul>
+      <h4>净盈利模式前台教程</h4>
+      <p>当代理模式为净盈利时，前台代理教程需按净盈利口径展示，整体结构参考前台页面的代理教程：先说明层级关系，再说明净盈利业绩、返佣比例、直属佣金、其他佣金和本期佣金。</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>教程模块</th><th>展示内容</th><th>示例文案/公式</th></tr></thead>
+          <tbody>
+            <tr><td>1. 模式说明</td><td>说明当前代理模式按净盈利计算佣金。</td><td>净盈利 = -直属会员输赢 - 领取优惠 - 充值手续费 - 提现手续费 - 三方游戏统一成本 + 上期结余。</td></tr>
+            <tr><td>2. 层级关系</td><td>展示A发展B1、B2，B1/B2继续发展C级会员的关系。</td><td>A的佣金来源包含直属下级贡献和其他下级通过极差产生的贡献。</td></tr>
+            <tr><td>3. 净盈利业绩</td><td>展示每个下级会员或代理线的净盈利贡献。</td><td>例：B1本人净盈利500，B2本人净盈利3000，C1净盈利1000，C2净盈利2000，C3净盈利20000。</td></tr>
+            <tr><td>4. 返佣比例</td><td>根据总净盈利命中返佣阶梯。</td><td>例：A总净盈利26500，对应返佣比例5%；B1总净盈利3000，对应返佣比例2%；B2总净盈利20000，对应返佣比例5%。</td></tr>
+            <tr><td>5. 佣金计算</td><td>展示直属佣金、其他佣金、本期佣金。</td><td>直属佣金 = 直属下级本人净盈利 × A返佣比例；其他佣金 = 直属下级总净盈利 × 极差返佣比例；本期佣金 = 直属佣金 + 其他佣金。</td></tr>
+            <tr><td>6. 异常说明</td><td>说明净盈利为负时的处理。</td><td>会员净盈利为负会降低上级总净盈利；代理总净盈利为负时按最低档或0%处理，不倒扣佣金。</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="note">前台教程需要把“有效投注”相关文字替换为“净盈利”，金额字段展示净盈利贡献，并保留前台页面中分步骤、高亮计算结果的展示方式。</div>
+
+      <h3 id="cap">3.3. 返佣上限逻辑</h3>
+      <p>为防止单一代理下级因业绩过高而产生过大佣金支出，平台按结算周期设置<strong>每个直属下级</strong>单期可贡献给上级的最大佣金金额。</p>
+      <h4>处理规则</h4>
+      <ol>
+        <li>在结算佣金时，对每个直属下级 X 单独计算其贡献给上级 A 的佣金总额 C。C = 来自 X 的直属佣金 + 来自 X 的极差佣金（无论佣金依据是有效投注还是净盈利，均合并计算）。</li>
+        <li>获取该结算周期对应的上限值 L（日结/周结/月结上限）。</li>
+        <li>若 C ≤ L：C 全额计入上级 A 的佣金。</li>
+        <li>若 C > L：只计入 L 金额，超出部分 (C - L) 丢弃，不累积。</li>
+        <li><strong>优先级</strong>：当总贡献佣金超过上限时，<strong>优先限制其他（极差）佣金</strong>，再限制直属佣金。即：先发满直属佣金，剩余上限额度若不足以发放极差佣金，则极差佣金部分将被截断。</li>
+        <li><strong>适用范围</strong>：该上限只针对<strong>直属下级</strong>，非直属下级贡献不单独设上限。该上限<strong>不影响下级自身的佣金计算</strong>。</li>
+      </ol>
+      <h4>示例（净盈利+上限）</h4>
+      <ul>
+        <li>代理A（上级），直属下级B。A返佣比例8%，B返佣比例5%。</li>
+        <li>B本人净盈利50000元，B的总业绩（含下级）为200000元。</li>
+        <li>计算A从B获得的总佣金：直属佣金 = 50000 × 8% = 4000元；极差佣金 = 200000 × (8% - 5%) = 6000元；下级B贡献总额 = 10000元。</li>
+        <li>若日结上限为8000元，则A实际获得：直属佣金4000元 + 极差佣金4000元（截断2000元极差部分）。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="non-functional">
+      <h2>4. 非功能性需求</h2>
+      <ul>
+        <li><strong>性能要求</strong>：当代理层级深、人员多时（如百万级节点），佣金结算过程需进行性能优化，避免超时或内存溢出。可采用异步任务、数据库批量计算等方式。</li>
+        <li><strong>扩展性</strong>：佣金计算依据（有效投注、净盈利）和返佣阶梯应设计为可配置，便于未来扩展其他类型（如充值金额、投注笔数等）。</li>
+        <li><strong>数据一致性</strong>：佣金结算涉及金额，需使用数据库事务确保数据的一致性和准确性，避免出现错账。</li>
+        <li><strong>净盈利数据准确性</strong>：净盈利涉及赢/输额、优惠、成本等多个数据源，需保证账变记录精确，建议每日预计算净盈利快照，便于结算时快速汇总。</li>
+      </ul>
+      <p class="muted">文档结束</p>
+    </section>
+  </main>
+</body>
+</html>
