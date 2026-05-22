@@ -1,0 +1,2279 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>下载站模板</title>
+<style>
+/* ═══════════════ TOKENS (from 代理模式) ═══════════════ */
+:root {
+  --td-brand: #0052d9;
+  --td-brand-hover: #366ef4;
+  --td-success: #00a870;
+  --td-danger: #e34d59;
+  --td-warning: #ed7b2f;
+  --td-text-1: rgba(0,0,0,.9);
+  --td-text-2: rgba(0,0,0,.6);
+  --td-text-3: rgba(0,0,0,.4);
+  --td-border: #cfd7e3;
+  --td-border-2: #e7edf5;
+  --td-bg: #f5f7fb;
+  --td-card: #fff;
+  --td-card-soft: #fbfcfe;
+  --td-radius: 8px;
+  --td-radius-sm: 6px;
+  --td-shadow: 0 8px 26px rgba(15,40,80,.06);
+  --td-shadow-modal: 0 20px 48px rgba(15,40,80,.16);
+  --td-focus: 0 0 0 2px rgba(0,82,217,.2);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{width:100%;overflow-x:hidden;}
+body{
+  font:14px/1.5 "Helvetica Neue","PingFang SC","Hiragino Sans GB","Microsoft YaHei",-apple-system,BlinkMacSystemFont,sans-serif;
+  color:var(--td-text-1);background:var(--td-bg);
+  padding-top:54px;overflow-x:hidden;
+}
+
+/* ═══════════════ GLOBAL LINKS BAR ═══════════════ */
+.global-links{
+  position:fixed;top:0;left:0;right:0;z-index:300;
+  height:54px;display:flex;align-items:center;gap:10px;
+  padding:0 18px;overflow-x:auto;
+  background:rgba(255,255,255,.96);
+  border-bottom:1px solid var(--td-border-2);
+  box-shadow:0 4px 14px rgba(15,40,80,.08);
+  backdrop-filter:blur(8px);
+}
+
+/* ═══════════════ LAYOUT ═══════════════ */
+.app{
+  min-height:calc(100vh - 54px);width:100%;max-width:100vw;
+  display:grid;grid-template-columns:240px 1fr;overflow-x:hidden;
+}
+
+/* ═══════════════ SIDEBAR ═══════════════ */
+.side{
+  background:#fff;border-right:1px solid var(--td-border-2);
+  position:sticky;top:54px;height:calc(100vh - 54px);
+  overflow:auto;box-shadow:1px 0 0 rgba(15,40,80,.02);
+}
+.logo{
+  height:60px;display:flex;align-items:center;
+  padding:0 20px;font-size:20px;font-weight:700;
+  color:var(--td-brand);border-bottom:1px solid var(--td-border-2);
+}
+.logo::before{
+  content:"";width:28px;height:28px;margin-right:10px;
+  border-radius:7px;
+  background:linear-gradient(135deg,var(--td-brand) 0%,#00a870 100%);
+  box-shadow:0 6px 14px rgba(0,82,217,.18);flex-shrink:0;
+}
+.menu{padding:12px 10px;}
+.menu a{
+  display:flex;align-items:center;gap:10px;
+  color:#4b5565;text-decoration:none;
+  padding:11px 12px;margin-bottom:4px;
+  border-radius:var(--td-radius-sm);
+  transition:background-color .18s,color .18s;font-weight:500;
+}
+.menu a::before{
+  content:attr(data-icon);
+  display:inline-flex;align-items:center;justify-content:center;
+  width:24px;height:24px;border-radius:6px;
+  background:#f2f5fb;color:#6b778c;font-size:13px;flex-shrink:0;
+}
+.menu a:hover{background:#f4f7fc;color:var(--td-brand);}
+.menu a.active{background:#eef4ff;color:var(--td-brand);}
+.menu a.active::before{background:var(--td-brand);color:#fff;}
+.menu-group-label{
+  font-size:11px;font-weight:600;color:var(--td-text-3);
+  padding:14px 12px 4px;letter-spacing:.5px;text-transform:uppercase;
+}
+
+/* ═══════════════ MAIN ═══════════════ */
+.main{display:flex;flex-direction:column;min-width:0;max-width:100%;overflow-x:hidden;}
+.topbar{
+  height:60px;background:var(--td-card);
+  border-bottom:1px solid var(--td-border-2);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;font-size:14px;
+  box-shadow:0 1px 0 rgba(15,40,80,.02);
+}
+.topbar-title{font-size:16px;font-weight:700;color:var(--td-text-1);}
+.container{padding:20px;}
+
+/* ═══════════════ BUTTONS ═══════════════ */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  height:36px;padding:0 16px;border-radius:var(--td-radius-sm);
+  font:13px/1 inherit;cursor:pointer;border:1px solid var(--td-border);
+  background:#fff;color:var(--td-text-1);transition:.18s;font-weight:500;
+  text-decoration:none;
+}
+.btn:hover{border-color:var(--td-brand-hover);color:var(--td-brand-hover);background:#f8fbff;}
+.btn.primary{background:var(--td-brand);color:#fff;border-color:var(--td-brand);}
+.btn.primary:hover{background:var(--td-brand-hover);border-color:var(--td-brand-hover);}
+.btn.danger{color:var(--td-danger);border-color:#f3b3b8;}
+.btn.danger:hover{background:#fff1f2;border-color:var(--td-danger);}
+.btn-sm{height:28px;padding:0 12px;font-size:12px;}
+
+/* ═══════════════ CARDS GRID ═══════════════ */
+.action-bar{display:flex;justify-content:flex-end;margin-bottom:18px;}
+.templates-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+  gap:20px;
+}
+.tpl-card{
+  background:var(--td-card);border:1px solid var(--td-border-2);
+  border-radius:var(--td-radius);box-shadow:var(--td-shadow);overflow:hidden;
+  transition:box-shadow .2s;
+}
+.tpl-card:hover{box-shadow:0 12px 32px rgba(15,40,80,.1);}
+.tpl-card-head{
+  padding:14px 16px 10px;
+  display:flex;justify-content:space-between;align-items:flex-start;
+}
+.tpl-name{font-size:15px;font-weight:700;}
+.tpl-sub{font-size:12px;color:var(--td-text-2);margin-top:2px;}
+.switch-wrap{display:flex;flex-direction:column;align-items:center;gap:2px;}
+.switch-label{font-size:11px;color:var(--td-text-2);}
+.switch{
+  width:40px;height:22px;border-radius:11px;
+  background:#bfc4cc;cursor:pointer;position:relative;transition:.2s;border:none;
+}
+.switch::after{
+  content:"";position:absolute;top:3px;left:3px;
+  width:16px;height:16px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:.2s;
+}
+.switch.on{background:var(--td-brand);}
+.switch.on::after{left:21px;}
+.tpl-preview-wrap{
+  margin:0 12px 10px;border-radius:6px;overflow:hidden;
+  border:1px solid var(--td-border-2);background:#111;
+  height:220px;overflow-y:auto;position:relative;
+}
+.tpl-preview-inner{width:100%;min-height:100%;}
+.tpl-card-foot{padding:10px 16px 14px;display:flex;gap:8px;}
+
+/* ═══════════════ MODAL OVERLAY ═══════════════ */
+.mask{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.4);backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;
+  padding:20px 16px;
+}
+.mask.open{display:flex;}
+.modal{
+  background:#fff;border-radius:12px;
+  box-shadow:var(--td-shadow-modal);
+  width:100%;max-width:980px;
+  max-height:calc(100vh - 40px);
+  display:flex;flex-direction:column;
+  animation:mIn .22s ease;
+  overflow:hidden;
+}
+@keyframes mIn{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
+
+/* Modal header and footer — fixed, never scroll */
+.mh{
+  padding:16px 24px 14px;border-bottom:1px solid var(--td-border-2);
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:16px;font-weight:700;flex-shrink:0;
+}
+.close{
+  width:30px;height:30px;border-radius:50%;border:none;background:none;
+  cursor:pointer;font-size:20px;color:var(--td-text-3);
+  display:flex;align-items:center;justify-content:center;transition:.18s;
+}
+.close:hover{background:#f5f7fb;color:var(--td-text-1);}
+
+/* Modal layout: form left + preview right — takes all remaining height */
+.modal-layout{
+  display:grid;grid-template-columns:1fr 320px;
+  flex:1;min-height:0;overflow:hidden;
+}
+.modal-form-col{
+  border-right:1px solid var(--td-border-2);
+  display:flex;flex-direction:column;min-height:0;overflow:hidden;
+}
+.modal-preview-col{
+  background:#f5f7fb;display:flex;flex-direction:column;
+  overflow:hidden;border-radius:0 0 12px 0;
+}
+
+/* Scrollable body — only this area scrolls */
+.mb{padding:20px 24px;overflow-y:auto;flex:1;min-height:0;}
+
+/* Footer — always visible at the bottom of form col */
+.modal-footer{
+  padding:12px 24px;border-top:1px solid var(--td-border-2);
+  display:flex;justify-content:flex-end;gap:10px;flex-shrink:0;
+  background:#fff;
+}
+
+/* ═══════════════ FORM INSIDE MODAL ═══════════════ */
+.section-title{
+  font-size:13px;font-weight:700;color:var(--td-text-1);
+  margin:0 0 12px;padding-bottom:8px;
+  border-bottom:1px solid var(--td-border-2);
+  display:flex;align-items:center;gap:8px;
+}
+.badge-sm{
+  font-size:11px;font-weight:500;color:var(--td-text-2);
+  background:#f0f4fb;border-radius:4px;padding:1px 6px;
+}
+.form-section{margin-bottom:22px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.form-row.full{grid-template-columns:1fr;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.lb{font-size:12px;color:var(--td-text-2);font-weight:500;}
+.lb .req{color:var(--td-danger);margin-left:2px;}
+.inp{
+  height:34px;padding:0 10px;width:100%;
+  border:1px solid var(--td-border);border-radius:var(--td-radius-sm);
+  font:13px/1 inherit;color:var(--td-text-1);
+  background:#fff;outline:none;transition:.18s;
+}
+.inp:focus{border-color:var(--td-brand);box-shadow:var(--td-focus);}
+.inp::placeholder{color:var(--td-text-3);}
+.inp.invalid{border-color:var(--td-danger);}
+
+/* image rows */
+.img-rows{display:flex;flex-direction:column;gap:8px;}
+.img-row{
+  background:#f9fbfd;border:1px solid var(--td-border-2);
+  border-radius:var(--td-radius-sm);padding:10px 12px;
+  display:grid;grid-template-columns:70px 1fr 28px;gap:10px;align-items:center;
+}
+.img-thumb{
+  width:64px;height:46px;border-radius:5px;
+  border:1px dashed var(--td-border);background:#eef2f8;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;transition:.18s;flex-shrink:0;position:relative;
+}
+.img-thumb:hover{border-color:var(--td-brand);background:#eef4ff;}
+.img-thumb img{width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0;}
+.img-thumb .th-hint{
+  display:flex;flex-direction:column;align-items:center;
+  gap:1px;color:var(--td-text-3);font-size:9px;text-align:center;
+}
+.img-row-fields{display:flex;flex-direction:column;gap:6px;}
+.rm-btn{
+  width:26px;height:26px;border-radius:50%;border:1px solid var(--td-border);
+  background:#fff;color:var(--td-text-3);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:.18s;flex-shrink:0;align-self:center;
+}
+.rm-btn:hover{border-color:var(--td-danger);color:var(--td-danger);}
+.add-row-btn{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  height:36px;border:1px dashed var(--td-border);border-radius:var(--td-radius-sm);
+  background:#f9fbfd;color:var(--td-brand);font-size:12px;cursor:pointer;
+  transition:.18s;
+}
+.add-row-btn:hover{border-color:var(--td-brand);background:#eef4ff;}
+.add-row-btn:disabled{opacity:.4;cursor:not-allowed;}
+
+/* float icon pair */
+.float-pair{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.float-item{
+  background:#f9fbfd;border:1px solid var(--td-border-2);
+  border-radius:var(--td-radius-sm);padding:10px 12px;
+}
+.float-item-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.float-icon-box{
+  width:48px;height:48px;border-radius:8px;
+  border:1px dashed var(--td-border);background:#eef2f8;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;transition:.18s;flex-shrink:0;position:relative;
+}
+.float-icon-box:hover{border-color:var(--td-brand);background:#eef4ff;}
+.float-icon-box img{width:100%;height:100%;object-fit:cover;display:none;position:absolute;inset:0;}
+.float-icon-label{font-size:12px;font-weight:600;color:var(--td-text-2);}
+
+/* bottom image */
+.bottom-img-box{
+  width:100%;height:64px;border-radius:6px;
+  border:1px dashed var(--td-border);background:#eef2f8;
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;cursor:pointer;transition:.18s;margin-bottom:10px;position:relative;
+}
+.bottom-img-box:hover{border-color:var(--td-brand);background:#eef4ff;}
+.bottom-img-box img{width:100%;height:100%;object-fit:contain;display:none;position:absolute;inset:0;}
+.bottom-img-hint{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--td-text-3);font-size:11px;}
+
+/* ═══════════════ PREVIEW PANEL ═══════════════ */
+.preview-panel{
+  padding:16px;overflow-y:auto;flex:1;min-height:0;
+  display:flex;flex-direction:column;align-items:center;
+}
+.preview-panel-title{
+  font-size:12px;font-weight:700;color:var(--td-text-2);
+  margin-bottom:10px;letter-spacing:.5px;text-transform:uppercase;
+  width:100%;text-align:center;
+}
+.phone-frame{
+  width:220px;margin:0 auto;
+  background:#0d0d0d;border-radius:28px;
+  box-shadow:0 0 0 8px #222,0 20px 40px rgba(0,0,0,.5);
+  overflow:hidden;position:relative;flex-shrink:0;
+}
+.phone-notch{
+  height:22px;background:#0d0d0d;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:2;
+}
+.phone-notch::after{
+  content:"";width:60px;height:12px;border-radius:6px;background:#111;
+}
+.phone-screen{
+  background:#1a1a2e;min-height:380px;position:relative;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+/* preview image area */
+.pv-imgs{flex:1;overflow-y:auto;padding:0;}
+.pv-img-item{width:100%;display:block;}
+.pv-img-item img{width:100%;display:block;object-fit:cover;}
+.pv-img-placeholder{
+  width:100%;height:80px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#1e3a6e,#0a1628);
+  color:rgba(255,255,255,.25);font-size:10px;
+}
+/* float icons on phone */
+.pv-floats{
+  position:absolute;right:6px;top:16px;
+  display:flex;flex-direction:column;gap:4px;z-index:10;
+}
+.pv-float{
+  width:30px;height:30px;border-radius:8px;
+  background:rgba(255,255,255,.15);backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;
+  overflow:hidden;font-size:10px;color:#fff;
+}
+.pv-float img{width:100%;height:100%;object-fit:cover;display:none;}
+/* bottom bar on phone */
+.pv-bottom{
+  background:#1a1a2e;padding:6px;
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;gap:4px;flex-shrink:0;
+}
+.pv-bottom-img{
+  flex:1;height:36px;border-radius:4px;overflow:hidden;
+  background:linear-gradient(135deg,#0052d9,#00a870);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:9px;
+}
+.pv-bottom-img img{width:100%;height:100%;object-fit:cover;display:none;}
+
+/* ═══════════════ ENABLE TOGGLE ROW ═══════════════ */
+.enable-toggle-row{
+  display:flex;align-items:center;gap:8px;height:34px;
+}
+.enable-toggle-label{
+  font-size:13px;font-weight:600;color:var(--td-success);min-width:60px;
+}
+.enable-toggle-tip{
+  font-size:11px;color:var(--td-text-3);
+}
+
+/* ═══════════════ IMAGE SIZE HINT ═══════════════ */
+.img-size-hint{
+  display:flex;align-items:center;gap:5px;
+  font-size:12px;color:var(--td-text-2);
+  background:#f0f6ff;border:1px solid #d4e5ff;
+  border-radius:var(--td-radius-sm);
+  padding:6px 10px;margin-bottom:10px;line-height:1.4;
+}
+.img-size-hint svg{flex-shrink:0;color:var(--td-brand);}
+.img-size-hint strong{color:var(--td-brand);}
+
+/* size tag inside img row */
+.img-size-tag{
+  display:inline-flex;align-items:center;gap:3px;
+  font-size:10px;color:var(--td-text-3);
+  background:#f0f4fb;border-radius:3px;padding:1px 5px;
+  margin-top:2px;
+}
+
+/* ═══════════════ PRD MODAL ═══════════════ */
+.prd-mask{
+  display:none;position:fixed;inset:0;z-index:1500;
+  background:rgba(0,0,0,.5);backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.prd-mask.open{display:flex;}
+.prd-box{
+  background:#fff;border-radius:12px;
+  box-shadow:0 20px 60px rgba(15,40,80,.2);
+  width:100%;max-width:760px;max-height:calc(100vh - 40px);
+  display:flex;flex-direction:column;animation:mIn .22s ease;overflow:hidden;
+}
+.prd-head{
+  padding:16px 24px;border-bottom:1px solid var(--td-border-2);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.prd-head-left{display:flex;align-items:center;gap:10px;}
+.prd-head-tag{
+  font-size:11px;font-weight:700;color:#fff;
+  background:var(--td-brand);border-radius:4px;padding:2px 8px;letter-spacing:.5px;
+}
+.prd-head-title{font-size:15px;font-weight:700;color:var(--td-text-1);}
+.prd-head-ver{font-size:12px;color:var(--td-text-3);}
+.prd-body{overflow-y:auto;padding:24px 28px;flex:1;}
+.prd-cover{
+  text-align:center;padding:20px 0 28px;
+  border-bottom:2px solid var(--td-border-2);margin-bottom:24px;
+}
+.prd-cover-title{font-size:22px;font-weight:800;color:var(--td-brand);margin-bottom:4px;}
+.prd-cover-sub{font-size:13px;color:var(--td-text-3);}
+.prd-cover-meta{
+  display:inline-flex;gap:20px;margin-top:14px;
+  background:#f5f7fb;border-radius:8px;padding:10px 20px;font-size:12px;color:var(--td-text-2);
+}
+.prd-cover-meta span strong{color:var(--td-text-1);}
+.prd-section{margin-bottom:24px;}
+.prd-h1{
+  font-size:15px;font-weight:800;color:var(--td-text-1);
+  padding:8px 12px;background:#f0f6ff;border-left:3px solid var(--td-brand);
+  border-radius:0 6px 6px 0;margin-bottom:12px;
+}
+.prd-h2{font-size:13px;font-weight:700;color:var(--td-brand);margin:14px 0 6px;}
+.prd-p{font-size:13px;color:#555;line-height:1.7;margin-bottom:6px;}
+.prd-ul{list-style:none;padding:0;margin:0 0 8px;}
+.prd-ul li{font-size:13px;color:#555;line-height:1.6;padding:2px 0 2px 16px;position:relative;}
+.prd-ul li::before{content:'·';position:absolute;left:4px;color:var(--td-brand);font-weight:700;}
+.prd-table{width:100%;border-collapse:collapse;font-size:12px;margin-bottom:10px;}
+.prd-table th{background:var(--td-brand);color:#fff;padding:7px 10px;text-align:left;font-weight:600;}
+.prd-table td{padding:7px 10px;border-bottom:1px solid var(--td-border-2);color:#555;vertical-align:top;line-height:1.5;}
+.prd-table tr:nth-child(even) td{background:#f9fbfd;}
+.prd-table tr:last-child td{border-bottom:none;}
+.prd-tag{
+  display:inline-block;font-size:11px;padding:1px 6px;border-radius:3px;font-weight:600;
+}
+.prd-tag.todo{background:#fff3cd;color:#856404;}
+.prd-tag.yes{background:#d1fae5;color:#065f46;}
+.prd-tag.no{background:#fee2e2;color:#991b1b;}
+.prd-divider{height:1px;background:var(--td-border-2);margin:20px 0;}
+.prd-foot{
+  padding:12px 24px;border-top:1px solid var(--td-border-2);
+  display:flex;justify-content:flex-end;gap:8px;flex-shrink:0;background:#fafbfd;
+}
+
+/* ═══════════════ CONFIRM DIALOG ═══════════════ */
+.confirm-mask{
+  display:none;position:fixed;inset:0;z-index:2000;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(2px);
+  align-items:center;justify-content:center;
+}
+.confirm-mask.open{display:flex;}
+.confirm-box{
+  background:#fff;border-radius:10px;
+  box-shadow:0 20px 48px rgba(15,40,80,.18);
+  width:320px;padding:24px 24px 18px;
+  animation:mIn .18s ease;
+}
+.confirm-icon{
+  width:40px;height:40px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 12px;font-size:20px;
+}
+.confirm-icon.warn{background:#fff7ed;}
+.confirm-title{font-size:15px;font-weight:700;text-align:center;margin-bottom:6px;}
+.confirm-desc{font-size:13px;color:var(--td-text-2);text-align:center;line-height:1.6;margin-bottom:18px;}
+.confirm-btns{display:flex;gap:8px;}
+.confirm-btns .btn{flex:1;height:36px;}
+
+/* ═══════════════ CARD ENABLE SWITCH ═══════════════ */
+.card-status-bar{
+  padding:8px 16px 0;
+  display:flex;align-items:center;justify-content:space-between;
+  border-top:1px solid var(--td-border-2);margin:0 0 -2px;
+}
+.card-status-label{font-size:12px;color:var(--td-text-2);}
+.card-status-val{
+  font-size:12px;font-weight:600;
+  display:flex;align-items:center;gap:6px;
+}
+.card-status-val.enabled{color:var(--td-success);}
+.card-status-val.disabled{color:var(--td-text-3);}
+.card-enable-btn{
+  font-size:12px;cursor:pointer;
+  padding:2px 8px;border-radius:4px;border:1px solid var(--td-border);
+  background:#fff;color:var(--td-text-2);transition:.15s;
+}
+.card-enable-btn:hover{border-color:var(--td-brand);color:var(--td-brand);}
+
+/* ═══════════════ TOAST ═══════════════ */
+.toast{
+  position:fixed;bottom:28px;left:50%;
+  transform:translateX(-50%) translateY(10px);
+  background:#1a2332;color:#fff;padding:9px 20px;
+  border-radius:99px;font-size:13px;z-index:9999;
+  opacity:0;transition:.25s;pointer-events:none;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ═══════════════ V2 TABS ═══════════════ */
+.v2-tabs{display:flex;overflow-x:auto;gap:2px;padding:0 4px;}
+.v2-tab{
+  white-space:nowrap;height:44px;padding:0 14px;
+  background:none;border:none;border-bottom:2px solid transparent;
+  font:13px/1 inherit;color:var(--td-text-2);cursor:pointer;
+  transition:.15s;font-weight:500;
+}
+.v2-tab:hover{color:var(--td-text-1);}
+.v2-tab.active{color:var(--td-brand);border-bottom-color:var(--td-brand);font-weight:700;}
+
+/* ═══════════════ SCROLLBAR ═══════════════ */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#d0d7e5;border-radius:3px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<!-- Global links bar (from 代理模式) -->
+<div class="global-links">
+  <span style="font-weight:700;color:var(--td-brand);font-size:15px;white-space:nowrap;">后台管理系统</span>
+</div>
+
+<div class="app">
+  <!-- ── Sidebar (from 代理模式) ── -->
+  <aside class="side">
+    <div class="logo">管理平台</div>
+    <nav class="menu">
+      <div class="menu-group-label">首页</div>
+      <a href="#" data-icon="📊">数据概览</a>
+      <div class="menu-group-label">推广管理</div>
+      <a href="#" data-icon="👥">代理模式</a>
+      <a href="#" data-icon="🔗">推广链接</a>
+      <div class="menu-group-label">运营管理</div>
+      <a href="#" class="active" data-icon="📥" onclick="switchPage('v1',this)">下载站模板</a>
+      <a href="#" data-icon="🚀" onclick="switchPage('v2',this)" style="position:relative;">下载站管理 2.0<span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;background:linear-gradient(135deg,#f59e0b,#ef4444);color:#fff;border-radius:99px;padding:1px 6px;line-height:1.5;">NEW</span></a>
+      <div class="menu-group-label">财务管理</div>
+      <a href="#" data-icon="💰">充值管理</a>
+      <a href="#" data-icon="💸">提现管理</a>
+      <div class="menu-group-label">系统设置</div>
+      <a href="#" data-icon="⚙️">基本设置</a>
+      <a href="#" data-icon="🔒">权限管理</a>
+    </nav>
+  </aside>
+
+  <!-- ── Main ── -->
+  <main class="main">
+
+    <!-- PAGE V1 -->
+    <div id="pageV1">
+    <header class="topbar">
+      <span class="topbar-title">下载站模板</span>
+      <div style="font-size:13px;color:var(--td-text-2);">目前在线人数：<span style="color:var(--td-brand)">4 人</span>&nbsp;&nbsp;编号：1001</div>
+    </header>
+
+    <div class="container">
+      <div class="action-bar">
+        <a class="btn" onclick="openPrd()" style="margin-right:8px;cursor:pointer;">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="1" width="9" height="11" rx="1.5"/><path d="M4 4h5M4 6.5h5M4 9h3"/></svg>
+          需求文档
+        </a>
+        <button class="btn primary" onclick="openModal()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6.5 1v11M1 6.5h11"/></svg>
+          新增
+        </button>
+      </div>
+
+      <!-- Template cards -->
+      <div class="templates-grid" id="templatesGrid">
+        <!-- Sample card -->
+        <div class="tpl-card" data-enabled="1">
+          <div class="tpl-card-head">
+            <div>
+              <div class="tpl-name">3365bet</div>
+              <div class="tpl-sub">黑金内容版</div>
+            </div>
+            <div class="switch-wrap">
+              <div class="switch-label">默认</div>
+              <button class="switch on default-switch" onclick="setDefault(this)"></button>
+              <div class="switch-label" style="color:var(--td-brand);font-weight:600;">开</div>
+            </div>
+          </div>
+          <div class="tpl-preview-wrap">
+            <div class="tpl-preview-inner" style="background:#111;padding:8px;display:flex;flex-direction:column;gap:6px;">
+              <div style="height:80px;background:linear-gradient(135deg,#1a1a2e,#162447);border-radius:4px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:11px;">图片区域</div>
+              <div style="height:60px;background:linear-gradient(135deg,#1e3a6e,#0a1628);border-radius:4px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:11px;">图片区域</div>
+              <div style="height:36px;background:linear-gradient(90deg,#0052d9,#00a870);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:600;">下载 App</div>
+            </div>
+          </div>
+          <div class="card-status-bar">
+            <span class="card-status-label">模板状态</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="card-status-val enabled" id="statusVal_0">
+                <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已启用
+              </span>
+              <button class="card-enable-btn" onclick="confirmToggleEnable(this,0)">禁用</button>
+            </div>
+          </div>
+          <div class="tpl-card-foot">
+            <button class="btn btn-sm" onclick="openModal('edit')">修改</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div><!-- /pageV1 -->
+
+    <!-- PAGE V2 -->
+    <div id="pageV2" style="display:none;">
+    <header class="topbar">
+      <span class="topbar-title" style="display:flex;align-items:center;gap:8px;">
+        下载站管理
+        <span style="font-size:11px;font-weight:700;background:linear-gradient(135deg,#0052d9,#00a870);color:#fff;border-radius:99px;padding:2px 8px;">2.0</span>
+      </span>
+      <div style="font-size:13px;color:var(--td-text-2);">目前在线人数：<span style="color:var(--td-brand)">4 人</span>&nbsp;&nbsp;编号：1001</div>
+    </header>
+
+    <div class="container">
+      <!-- Stats bar -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;">
+        <div style="background:#fff;border:1px solid var(--td-border-2);border-radius:var(--td-radius);padding:16px 20px;box-shadow:var(--td-shadow);">
+          <div style="font-size:12px;color:var(--td-text-2);margin-bottom:6px;">模板总数</div>
+          <div style="font-size:28px;font-weight:800;color:var(--td-text-1);">3</div>
+          <div style="font-size:11px;color:var(--td-text-3);margin-top:4px;">上限 20 个</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--td-border-2);border-radius:var(--td-radius);padding:16px 20px;box-shadow:var(--td-shadow);">
+          <div style="font-size:12px;color:var(--td-text-2);margin-bottom:6px;">已启用</div>
+          <div style="font-size:28px;font-weight:800;color:var(--td-success);">2</div>
+          <div style="font-size:11px;color:var(--td-text-3);margin-top:4px;">前台运行中</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--td-border-2);border-radius:var(--td-radius);padding:16px 20px;box-shadow:var(--td-shadow);">
+          <div style="font-size:12px;color:var(--td-text-2);margin-bottom:6px;">支持语言</div>
+          <div style="font-size:28px;font-weight:800;color:var(--td-brand);">6</div>
+          <div style="font-size:11px;color:var(--td-text-3);margin-top:4px;">多语言版本</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--td-border-2);border-radius:var(--td-radius);padding:16px 20px;box-shadow:var(--td-shadow);">
+          <div style="font-size:12px;color:var(--td-text-2);margin-bottom:6px;">模板样式</div>
+          <div style="font-size:28px;font-weight:800;color:#f59e0b;">7</div>
+          <div style="font-size:11px;color:var(--td-text-3);margin-top:4px;">可选风格</div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn primary" onclick="openV2Modal()">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6.5 1v11M1 6.5h11"/></svg>
+          新增
+        </button>
+      </div>
+
+      <!-- V2 Template cards -->
+      <div class="templates-grid" id="v2TemplatesGrid">
+
+        <!-- Sample V2 card 1 -->
+        <div class="tpl-card v2-card" data-enabled="1" data-style="蓝白版" data-lang="葡萄牙语">
+          <div style="height:4px;background:linear-gradient(90deg,#0052d9,#366ef4);"></div>
+          <div class="tpl-card-head">
+            <div>
+              <div class="tpl-name">188.com 葡萄牙语版</div>
+              <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                <span style="font-size:10px;background:#eef4ff;color:var(--td-brand);border-radius:3px;padding:1px 6px;font-weight:600;">蓝白版</span>
+                <span style="font-size:10px;background:#f0fdf4;color:#16a34a;border-radius:3px;padding:1px 6px;font-weight:600;">葡萄牙语</span>
+              </div>
+            </div>
+            <div class="switch-wrap">
+              <div class="switch-label">默认</div>
+              <button class="switch on default-switch v2-default" onclick="setV2Default(this)"></button>
+              <div class="switch-label" style="color:var(--td-brand);font-weight:600;">开</div>
+            </div>
+          </div>
+          <div class="tpl-preview-wrap">
+            <div style="background:#1565C0;padding:6px 8px;display:flex;align-items:center;gap:6px;">
+              <div style="width:20px;height:20px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#0052d9;">A</div>
+              <span style="color:#fff;font-size:10px;font-weight:700;flex:1;">text</span>
+            </div>
+            <div style="height:120px;background:linear-gradient(135deg,#1e3a8a,#1565C0);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,.5);">ANOS DE JOGO CONFIÁVEL</div>
+            <div style="background:#f0f4ff;padding:8px;display:flex;gap:6px;">
+              <div style="flex:1;height:28px;background:#0052d9;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;">Jogue Agora</div>
+              <div style="flex:1;height:28px;background:#f59e0b;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;">Baixe Agora</div>
+            </div>
+          </div>
+          <div class="card-status-bar">
+            <span class="card-status-label">模板状态</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="card-status-val enabled">
+                <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已启用
+              </span>
+              <button class="card-enable-btn" onclick="confirmV2ToggleEnable(this)">禁用</button>
+            </div>
+          </div>
+          <div class="tpl-card-foot">
+            <button class="btn btn-sm" onclick="openV2Modal('edit',this)">修改</button>
+            <button class="btn btn-sm" style="margin-left:auto;color:var(--td-text-3);" onclick="">复制链接</button>
+          </div>
+        </div>
+
+        <!-- Sample V2 card 2 -->
+        <div class="tpl-card v2-card" data-enabled="1" data-style="黑金版" data-lang="英语">
+          <div style="height:4px;background:linear-gradient(90deg,#b45309,#f59e0b);"></div>
+          <div class="tpl-card-head">
+            <div>
+              <div class="tpl-name">3365bet 英语版</div>
+              <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                <span style="font-size:10px;background:#1a1a2e;color:#f59e0b;border-radius:3px;padding:1px 6px;font-weight:600;">黑金版</span>
+                <span style="font-size:10px;background:#f0fdf4;color:#16a34a;border-radius:3px;padding:1px 6px;font-weight:600;">英语</span>
+              </div>
+            </div>
+            <div class="switch-wrap">
+              <div class="switch-label">默认</div>
+              <button class="switch v2-default" onclick="setV2Default(this)"></button>
+              <div class="switch-label">关</div>
+            </div>
+          </div>
+          <div class="tpl-preview-wrap">
+            <div style="background:#111;padding:6px 8px;display:flex;align-items:center;gap:6px;">
+              <div style="width:20px;height:20px;background:#f59e0b;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#111;">A</div>
+              <span style="color:#f59e0b;font-size:10px;font-weight:700;flex:1;">text</span>
+            </div>
+            <div style="height:120px;background:linear-gradient(135deg,#111,#1a1a2e);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(245,158,11,.5);">GAMING PLATFORM</div>
+            <div style="background:#0d0d0d;padding:8px;display:flex;gap:6px;">
+              <div style="flex:1;height:28px;background:#f59e0b;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#111;font-size:9px;font-weight:700;">Play Now</div>
+              <div style="flex:1;height:28px;border:1px solid #f59e0b;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#f59e0b;font-size:9px;font-weight:700;">Download</div>
+            </div>
+          </div>
+          <div class="card-status-bar">
+            <span class="card-status-label">模板状态</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="card-status-val enabled">
+                <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已启用
+              </span>
+              <button class="card-enable-btn" onclick="confirmV2ToggleEnable(this)">禁用</button>
+            </div>
+          </div>
+          <div class="tpl-card-foot">
+            <button class="btn btn-sm" onclick="openV2Modal('edit',this)">修改</button>
+            <button class="btn btn-sm" style="margin-left:auto;color:var(--td-text-3);" onclick="">复制链接</button>
+          </div>
+        </div>
+
+        <!-- Sample V2 card 3 - disabled -->
+        <div class="tpl-card v2-card" data-enabled="0" data-style="应用商店版" data-lang="西班牙语" style="opacity:.55">
+          <div style="height:4px;background:linear-gradient(90deg,#6366f1,#8b5cf6);"></div>
+          <div class="tpl-card-head">
+            <div>
+              <div class="tpl-name">多语言应用商店版</div>
+              <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+                <span style="font-size:10px;background:#eef4ff;color:#6366f1;border-radius:3px;padding:1px 6px;font-weight:600;">应用商店版</span>
+                <span style="font-size:10px;background:#fef9f0;color:#b45309;border-radius:3px;padding:1px 6px;font-weight:600;">西班牙语</span>
+              </div>
+            </div>
+            <div class="switch-wrap">
+              <div class="switch-label">默认</div>
+              <button class="switch v2-default" onclick="setV2Default(this)"></button>
+              <div class="switch-label">关</div>
+            </div>
+          </div>
+          <div class="tpl-preview-wrap">
+            <div style="background:#4338ca;padding:6px 8px;display:flex;align-items:center;gap:6px;">
+              <div style="width:20px;height:20px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#4338ca;">A</div>
+              <span style="color:#fff;font-size:10px;font-weight:700;flex:1;">text</span>
+            </div>
+            <div style="height:120px;background:linear-gradient(135deg,#3730a3,#4338ca);display:flex;align-items:center;justify-content:center;font-size:10px;color:rgba(255,255,255,.5);">TIENDA DE APLICACIONES</div>
+            <div style="background:#eef2ff;padding:8px;display:flex;gap:6px;">
+              <div style="flex:1;height:28px;background:#4338ca;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;">Jugar Ahora</div>
+              <div style="flex:1;height:28px;background:#8b5cf6;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;">Descargar</div>
+            </div>
+          </div>
+          <div class="card-status-bar">
+            <span class="card-status-label">模板状态</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span class="card-status-val disabled">
+                <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已禁用
+              </span>
+              <button class="card-enable-btn" onclick="confirmV2ToggleEnable(this)">启用</button>
+            </div>
+          </div>
+          <div class="tpl-card-foot">
+            <button class="btn btn-sm" onclick="openV2Modal('edit',this)">修改</button>
+            <button class="btn btn-sm" style="margin-left:auto;color:var(--td-text-3);" onclick="">复制链接</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </div><!-- /pageV2 -->
+
+  </main>
+</div>
+
+<!-- ═══════════════ V2 MODAL ═══════════════ -->
+<div class="mask" id="v2ModalMask">
+  <div class="modal" style="max-width:1100px;">
+    <div class="mh">
+      <span id="v2ModalTitle">新增</span>
+      <button class="close" onclick="closeV2Modal()">×</button>
+    </div>
+
+    <!-- Top meta row -->
+    <div style="padding:14px 24px 0;border-bottom:1px solid var(--td-border-2);background:#fafbfd;flex-shrink:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:18px;">
+      <div style="display:flex;align-items:center;gap:10px;padding-bottom:14px;">
+        <span style="font-size:13px;color:var(--td-text-2);font-weight:500;white-space:nowrap;">选择样式</span>
+        <div style="position:relative;">
+          <select id="v2StyleSel" onchange="v2StyleChange()" style="height:34px;padding:0 32px 0 12px;border:1px solid var(--td-border);border-radius:var(--td-radius-sm);font:13px inherit;color:var(--td-text-1);appearance:none;background:#fff;cursor:pointer;min-width:130px;">
+            <option>蓝白版</option>
+            <option>内容版</option>
+            <option>黑金版</option>
+            <option>黑金内容版</option>
+            <option>应用商店版</option>
+            <option>PWA专用模板</option>
+            <option>专业广告模板</option>
+          </select>
+          <svg style="position:absolute;right:8px;top:50%;transform:translateY(-50%);pointer-events:none;" width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#888" stroke-width="1.8"><path d="M2 4l4 4 4-4"/></svg>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding-bottom:14px;">
+        <span style="font-size:13px;color:var(--td-danger);font-weight:500;">*</span>
+        <span style="font-size:13px;color:var(--td-text-2);font-weight:500;white-space:nowrap;">模板名称</span>
+        <input class="inp" id="v2Name" placeholder="请输入模板名称" style="width:220px;">
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding-bottom:14px;background:#fff8e7;border-radius:6px;padding:8px 14px;margin-bottom:6px;border:1px solid #f5d87a;">
+        <span style="font-size:13px;color:var(--td-text-2);font-weight:500;white-space:nowrap;">选择语言</span>
+        <div style="position:relative;">
+          <select id="v2LangSel" style="height:32px;padding:0 28px 0 10px;border:1px solid #e0c060;border-radius:var(--td-radius-sm);font:13px inherit;color:var(--td-text-1);appearance:none;background:#fff;cursor:pointer;min-width:120px;">
+            <option>葡萄牙语 🌐</option>
+            <option>英语 🌐</option>
+            <option>西班牙语 🌐</option>
+            <option>印地语 🌐</option>
+            <option>印尼语 🌐</option>
+            <option>泰语 🌐</option>
+          </select>
+          <svg style="position:absolute;right:6px;top:50%;transform:translateY(-50%);pointer-events:none;" width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="#888" stroke-width="1.8"><path d="M2 4l4 4 4-4"/></svg>
+        </div>
+        <button class="btn primary btn-sm" onclick="v2EditLang()">编辑</button>
+      </div>
+    </div>
+
+    <!-- Body: left preview + right tabbed form -->
+    <div style="display:grid;grid-template-columns:300px 1fr;flex:1;min-height:0;overflow:hidden;">
+
+      <!-- Phone preview -->
+      <div style="background:#f5f7fb;border-right:1px solid var(--td-border-2);display:flex;flex-direction:column;align-items:center;padding:20px 16px;overflow-y:auto;">
+        <div style="font-size:11px;font-weight:700;color:var(--td-text-2);margin-bottom:12px;letter-spacing:.5px;text-transform:uppercase;width:100%;text-align:center;">实时预览</div>
+        <div class="phone-frame" style="width:200px;">
+          <div class="phone-notch"></div>
+          <div class="phone-screen" id="v2PhoneScreen" style="min-height:360px;">
+            <!-- V2 top bar -->
+            <div id="v2PvTop" style="background:#1565C0;padding:8px 10px;display:flex;align-items:center;gap:6px;flex-shrink:0;">
+              <div style="width:22px;height:22px;background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#0052d9;flex-shrink:0;">A</div>
+              <span id="v2PvTopText" style="color:#fff;font-size:11px;font-weight:700;flex:1;text-align:center;">text</span>
+            </div>
+            <!-- Banner area -->
+            <div style="flex:1;background:linear-gradient(135deg,#1e3a8a,#1565C0);position:relative;overflow:hidden;min-height:200px;">
+              <div style="position:absolute;inset:0;display:flex;align-items:flex-end;padding:10px;font-size:9px;color:rgba(255,255,255,.7);font-weight:700;">ANOS DE JOGO CONFIÁVEL</div>
+              <!-- Float icons -->
+              <div style="position:absolute;right:5px;top:10px;display:flex;flex-direction:column;gap:4px;">
+                <div style="width:28px;height:28px;border-radius:7px;background:rgba(0,82,217,.8);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-direction:column;gap:1px;">
+                  <span>📞</span><span style="font-size:6px;color:rgba(255,255,255,.8);">Suporte</span>
+                </div>
+                <div style="width:28px;height:28px;border-radius:7px;background:rgba(0,82,217,.8);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;flex-direction:column;gap:1px;">
+                  <span>📖</span><span style="font-size:6px;color:rgba(255,255,255,.8);">Tutorial</span>
+                </div>
+              </div>
+            </div>
+            <!-- Highlights -->
+            <div style="background:#f0f4ff;padding:6px 8px;flex-shrink:0;">
+              <div style="font-size:9px;font-weight:700;color:#1e3a8a;margin-bottom:5px;text-align:center;">Destaques</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:4px;">
+                <div style="background:#e8f0fe;border-radius:4px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;">🃏</div>
+                <div style="background:#e8f0fe;border-radius:4px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;">🎰</div>
+                <div style="background:#e8f0fe;border-radius:4px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;">🎲</div>
+                <div style="background:#e8f0fe;border-radius:4px;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:12px;">♠️</div>
+              </div>
+            </div>
+            <!-- Bottom buttons -->
+            <div style="padding:6px 8px;display:flex;gap:5px;flex-shrink:0;background:#fff;">
+              <div style="flex:1;height:26px;background:#0052d9;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700;">Jogue Agora</div>
+              <div style="flex:1;height:26px;background:#f59e0b;border-radius:4px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700;">Baixe Agora</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--td-text-3);">效果仅供参考</div>
+      </div>
+
+      <!-- Right: tabs + form content -->
+      <div style="display:flex;flex-direction:column;min-height:0;overflow:hidden;">
+
+        <!-- Theme color + Tab bar -->
+        <div style="padding:0 20px;border-bottom:1px solid var(--td-border-2);background:#fff;display:flex;align-items:center;gap:6px;flex-shrink:0;">
+          <span style="font-size:12px;color:var(--td-text-2);font-weight:500;padding:14px 0;white-space:nowrap;">主题颜色</span>
+          <div id="v2ThemeColorBox" onclick="document.getElementById('v2ThemeColorInp').click()" style="width:22px;height:22px;border-radius:4px;border:1px solid var(--td-border);cursor:pointer;background:#1565C0;margin-right:4px;"></div>
+          <input type="color" id="v2ThemeColorInp" value="#1565C0" oninput="v2ThemeColorChange()" style="display:none;">
+          <div class="v2-tabs">
+            <button class="v2-tab active" onclick="v2SwitchTab('top',this)">编辑顶部</button>
+            <button class="v2-tab" onclick="v2SwitchTab('bottom',this)">编辑底部</button>
+            <button class="v2-tab" onclick="v2SwitchTab('float',this)">编辑悬浮图标</button>
+            <button class="v2-tab" onclick="v2SwitchTab('route',this)">编辑线路</button>
+            <button class="v2-tab" onclick="v2SwitchTab('page',this)">页面设置</button>
+            <button class="v2-tab" onclick="v2SwitchTab('license',this)">牌照设置</button>
+          </div>
+        </div>
+
+        <!-- Tab content scrollable -->
+        <div style="flex:1;overflow-y:auto;padding:20px 24px;" id="v2TabContent">
+
+          <!-- TOP TAB -->
+          <div id="v2Tab_top">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+              <span style="font-size:13px;color:var(--td-text-2);font-weight:500;">选择样式</span>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--td-text-2);">
+                <input type="checkbox" id="v2HideTop"> 隐藏顶部
+              </label>
+            </div>
+            <!-- Style options -->
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                <input type="radio" name="topStyle" value="logo_text" checked>
+                <div style="flex:1;height:44px;background:#1565C0;border-radius:6px;display:flex;align-items:center;padding:0 12px;gap:8px;border:2px solid #0052d9;">
+                  <div style="width:28px;height:28px;background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#0052d9;">A</div>
+                  <span style="color:#fff;font-size:13px;font-weight:700;">text</span>
+                </div>
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                <input type="radio" name="topStyle" value="text_only">
+                <div style="flex:1;height:44px;background:#1565C0;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                  <span style="color:#fff;font-size:13px;font-weight:700;">text</span>
+                </div>
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                <input type="radio" name="topStyle" value="logo_only">
+                <div style="flex:1;height:44px;background:#1565C0;border-radius:6px;display:flex;align-items:center;justify-content:center;">
+                  <div style="width:28px;height:28px;background:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:#0052d9;">A</div>
+                </div>
+              </label>
+            </div>
+            <!-- LOGO upload -->
+            <div class="form-section">
+              <div class="form-row">
+                <div class="form-group">
+                  <div class="lb">LOGO：</div>
+                  <div style="display:flex;align-items:center;gap:12px;">
+                    <div style="width:80px;height:80px;border:1px dashed var(--td-border);border-radius:8px;background:#eef2f8;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;position:relative;" onclick="document.getElementById('v2LogoFile').click()">
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                      <input type="file" id="v2LogoFile" accept="image/*" style="display:none">
+                    </div>
+                    <div style="font-size:11px;color:var(--td-text-3);line-height:1.6;">仅限上传png,jpg,jpeg,gif格式，不超过200KB，<br>宽不超过750px,固定高度120px，上传前请一定要到<br>https://tinypng.com/ 压缩后再上传，否则影响打开速度</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Background -->
+            <div class="form-group" style="margin-bottom:16px;">
+              <div class="lb" style="margin-bottom:6px;">背景：</div>
+              <div id="v2TopBgBox" style="width:40px;height:28px;border:1px solid var(--td-border);border-radius:5px;background:#1565C0;cursor:pointer;" onclick="document.getElementById('v2TopBgInp').click()"></div>
+              <input type="color" id="v2TopBgInp" value="#1565C0" oninput="document.getElementById('v2TopBgBox').style.background=this.value" style="display:none;">
+            </div>
+            <!-- Title editor -->
+            <div class="form-group">
+              <div class="lb" style="margin-bottom:6px;">标题：</div>
+              <div style="border:1px solid var(--td-border);border-radius:var(--td-radius-sm);overflow:hidden;">
+                <div style="padding:6px 10px;border-bottom:1px solid var(--td-border-2);display:flex;align-items:center;gap:8px;background:#fafbfd;">
+                  <button class="btn btn-sm" style="font-weight:700;">B</button>
+                  <select style="height:26px;font:12px inherit;border:1px solid var(--td-border);border-radius:4px;padding:0 4px;">
+                    <option>24px</option><option>20px</option><option>18px</option><option>16px</option>
+                  </select>
+                  <span style="color:var(--td-text-3);font-size:11px;">A ▾</span>
+                </div>
+                <div contenteditable="true" style="min-height:50px;padding:8px 10px;font-size:14px;outline:none;color:var(--td-text-1);" placeholder="请输入标题文字"></div>
+                <div style="padding:4px 10px;font-size:11px;color:var(--td-text-3);border-top:1px solid var(--td-border-2);">p › span › strong › span</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- BOTTOM TAB -->
+          <div id="v2Tab_bottom" style="display:none;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+              <span style="font-size:13px;color:var(--td-text-2);font-weight:500;">选择样式</span>
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--td-text-2);">
+                <input type="checkbox" id="v2HideBottom"> 隐藏底部
+              </label>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                <input type="radio" name="btmStyle" value="two_btn" checked>
+                <div style="flex:1;height:44px;background:#111;border-radius:6px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 12px;border:2px solid #0052d9;">
+                  <div style="flex:1;height:28px;background:#0052d9;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;">Jogue Agora</div>
+                  <div style="flex:1;height:28px;background:#f59e0b;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;">Baixe Agora</div>
+                </div>
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                <input type="radio" name="btmStyle" value="game_only">
+                <div style="flex:1;height:44px;background:#111;border-radius:6px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;">
+                  <span style="color:rgba(255,255,255,.6);font-size:11px;">title</span>
+                  <div style="height:28px;padding:0 14px;background:#0052d9;border-radius:4px;display:flex;align-items:center;font-size:10px;font-weight:700;color:#fff;">Jogue Agora</div>
+                </div>
+              </label>
+              <label style="display:flex;align-items:center;gap:10px;cursor:pointer;">
+                <input type="radio" name="btmStyle" value="dl_only">
+                <div style="flex:1;height:44px;background:#111;border-radius:6px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;">
+                  <span style="color:rgba(255,255,255,.6);font-size:11px;">title</span>
+                  <div style="height:28px;padding:0 14px;background:#f59e0b;border-radius:4px;display:flex;align-items:center;font-size:10px;font-weight:700;color:#fff;">Baixe Agora</div>
+                </div>
+              </label>
+            </div>
+            <!-- Bottom options -->
+            <div class="form-section">
+              <div class="form-row">
+                <div class="form-group">
+                  <div class="lb">LOGO：</div>
+                  <div style="width:60px;height:60px;border:1px dashed var(--td-border);border-radius:8px;background:#eef2f8;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M10 5v10M5 10h10"/></svg>
+                  </div>
+                  <div style="font-size:11px;color:var(--td-text-3);margin-top:4px;">仅限上传png格式，不超过1MB，尺寸：120px*120px</div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <div class="lb">下载按钮文案</div>
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="dlText" value="default" checked> <span style="color:var(--td-brand);">默认跟随站点语言</span></label>
+                    <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="dlText" value="custom"> 自定义</label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="lb">下载按钮颜色</div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:28px;height:28px;border-radius:4px;background:#f59e0b;cursor:pointer;border:1px solid var(--td-border);" onclick=""></div>
+                    <span style="font-size:12px;color:var(--td-text-3);">下载字体颜色</span>
+                    <div style="width:28px;height:28px;border-radius:4px;background:repeating-linear-gradient(45deg,#ccc 0,#ccc 2px,#fff 2px,#fff 6px);cursor:pointer;border:1px solid var(--td-border);" onclick=""></div>
+                  </div>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <div class="lb">游戏按钮文案</div>
+                  <div style="display:flex;gap:10px;align-items:center;">
+                    <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="gameText" value="default" checked> <span style="color:var(--td-brand);">默认跟随站点语言</span></label>
+                    <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="gameText" value="custom"> 自定义</label>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <div class="lb">游戏按钮颜色</div>
+                  <div style="display:flex;align-items:center;gap:8px;">
+                    <div style="width:28px;height:28px;border-radius:4px;background:#0052d9;cursor:pointer;border:1px solid var(--td-border);" onclick=""></div>
+                  </div>
+                </div>
+              </div>
+              <!-- Bubble & Link config -->
+              <div style="background:#f9fbfd;border:1px solid var(--td-border-2);border-radius:var(--td-radius-sm);padding:14px;margin-top:8px;">
+                <div style="font-size:12px;font-weight:700;color:var(--td-text-2);margin-bottom:10px;">气泡 & 链接配置</div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <div class="lb">立即下载按钮链接</div>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                      <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="dlLink" value="default" checked> <span style="color:var(--td-brand);">系统默认地址</span></label>
+                      <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="dlLink" value="custom"> 自定义</label>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="lb">立即游戏按钮链接</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                      <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="gameLink" value="hall" checked> <span style="color:var(--td-brand);">默认大厅链接</span></label>
+                      <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="gameLink" value="channel"> 选择渠道链接</label>
+                      <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="gameLink" value="fixed"> 固定域名</label>
+                      <label style="display:flex;align-items:center;gap:4px;font-size:12px;cursor:pointer;"><input type="radio" name="gameLink" value="wildcard"> 泛解析随机域名</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FLOAT ICONS TAB -->
+          <div id="v2Tab_float" style="display:none;">
+            <div class="form-group" style="margin-bottom:16px;">
+              <div class="lb" style="margin-bottom:8px;">选择展示位置</div>
+              <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;">
+                <label style="cursor:pointer;">
+                  <input type="radio" name="floatPos" value="top_right" checked style="margin-bottom:4px;"> 右上
+                  <div style="height:70px;background:#e8edf5;border-radius:6px;position:relative;margin-top:4px;border:2px solid #0052d9;">
+                    <div style="position:absolute;right:6px;top:6px;display:flex;flex-direction:column;gap:3px;">
+                      <div style="width:14px;height:14px;background:#0052d9;border-radius:2px;"></div>
+                      <div style="width:14px;height:14px;background:#0052d9;border-radius:2px;"></div>
+                    </div>
+                  </div>
+                </label>
+                <label style="cursor:pointer;">
+                  <input type="radio" name="floatPos" value="bot_right" style="margin-bottom:4px;"> 右下
+                  <div style="height:70px;background:#e8edf5;border-radius:6px;position:relative;margin-top:4px;">
+                    <div style="position:absolute;right:6px;bottom:6px;display:flex;flex-direction:column;gap:3px;">
+                      <div style="width:14px;height:14px;background:#0052d9;border-radius:2px;"></div>
+                      <div style="width:14px;height:14px;background:#0052d9;border-radius:2px;"></div>
+                    </div>
+                  </div>
+                </label>
+                <label style="cursor:pointer;">
+                  <input type="radio" name="floatPos" value="top_left" style="margin-bottom:4px;"> 左上
+                  <div style="height:70px;background:#e8edf5;border-radius:6px;position:relative;margin-top:4px;">
+                    <div style="position:absolute;left:6px;top:6px;display:flex;flex-direction:column;gap:3px;">
+                      <div style="width:14px;height:14px;background:#0052d9;border-radius:2px;"></div>
+                      <div style="width:14px;height:14px;background:#0052d9;border-radius:2px;"></div>
+                    </div>
+                  </div>
+                </label>
+                <label style="cursor:pointer;">
+                  <input type="radio" name="floatPos" value="bot_left" style="margin-bottom:4px;"> 左下
+                  <div style="height:70px;background:#e8edf5;border-radius:6px;position:relative;margin-top:4px;">
+                    <div style="position:absolute;left:6px;bottom:6px;display:flex;flex-direction:column;gap:3px;">
+                      <div style="width:14px;height:14px;background:#0052d9;border-radius:2px;"></div>
+                      <div style="width:14px;height:14px;background:#0052d9;border-radius:2px;"></div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <div class="form-row" style="margin-bottom:12px;">
+              <div class="form-group">
+                <div class="lb">颜色</div>
+                <div style="width:32px;height:28px;border-radius:4px;background:#0052d9;cursor:pointer;border:1px solid var(--td-border);"></div>
+              </div>
+            </div>
+            <div style="margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:13px;font-weight:600;color:var(--td-text-1);">展示按钮</span>
+              <button class="btn btn-sm" style="color:var(--td-brand);border-color:var(--td-brand);">恢复默认</button>
+            </div>
+            <!-- Icon 1 -->
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f9fbfd;border:1px solid var(--td-border-2);border-radius:var(--td-radius-sm);margin-bottom:8px;">
+              <span style="color:var(--td-text-3);cursor:move;font-size:16px;">✥</span>
+              <div style="width:50px;height:50px;background:#0052d9;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;color:#fff;cursor:pointer;flex-shrink:0;">
+                <span>📞</span><span style="font-size:8px;font-weight:700;">Suporte</span>
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--td-text-1);margin-bottom:4px;">客服icon</div>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox"> 隐藏图标</label>
+              </div>
+            </div>
+            <!-- Icon 2 -->
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f9fbfd;border:1px solid var(--td-border-2);border-radius:var(--td-radius-sm);margin-bottom:8px;">
+              <span style="color:var(--td-text-3);cursor:move;font-size:16px;">✥</span>
+              <div style="width:50px;height:50px;background:#0052d9;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:2px;color:#fff;cursor:pointer;flex-shrink:0;">
+                <span>📖</span><span style="font-size:8px;font-weight:700;">Tutorial</span>
+              </div>
+              <div>
+                <div style="font-size:12px;font-weight:600;color:var(--td-text-1);margin-bottom:4px;">iOS教程icon</div>
+                <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;"><input type="checkbox"> 隐藏图标</label>
+              </div>
+            </div>
+            <!-- Add icon -->
+            <div class="add-row-btn" style="margin-top:4px;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1v12M1 7h12"/></svg>
+              仅限上传png,jpg,jpeg格式，建议:120px*120px, 200KB
+            </div>
+          </div>
+
+          <!-- ROUTE TAB -->
+          <div id="v2Tab_route" style="display:none;">
+            <div style="margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--td-text-2);">
+                <input type="checkbox" id="v2HideRoute" checked> 隐藏线路（自动匹配）
+              </label>
+            </div>
+            <div class="form-group" style="margin-bottom:16px;">
+              <div class="lb" style="margin-bottom:10px;">大厅线路域名配置</div>
+              <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;"><input type="radio" name="routeMode" value="default" checked onchange="v2RouteChange(this)"> <span style="color:var(--td-brand);">系统默认6条(自动轮巡)</span></label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;"><input type="radio" name="routeMode" value="fixed" onchange="v2RouteChange(this)"> 固定域名 <span style="color:var(--td-text-3);font-size:11px;">❓</span></label>
+                <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;"><input type="radio" name="routeMode" value="wildcard" onchange="v2RouteChange(this)"> 泛解析随机域名 <span style="color:var(--td-text-3);font-size:11px;">❓</span></label>
+              </div>
+            </div>
+            <!-- Fixed domain rows (hidden by default) -->
+            <div id="v2FixedRoutes" style="display:none;">
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div class="form-row" style="align-items:center;gap:8px;">
+                  <span style="font-size:12px;color:var(--td-text-2);white-space:nowrap;width:40px;">线路1</span>
+                  <select style="flex:0.6;height:32px;font:12px inherit;border:1px solid var(--td-border);border-radius:5px;padding:0 8px;"><option>大厅域名</option></select>
+                  <select style="flex:1;height:32px;font:12px inherit;border:1px solid var(--td-border);border-radius:5px;padding:0 8px;"><option>请选择大厅域名</option></select>
+                  <button class="btn btn-sm" style="width:28px;padding:0;">+</button>
+                  <button class="btn btn-sm danger" style="width:28px;padding:0;">-</button>
+                </div>
+                <div class="form-row" style="align-items:center;gap:8px;">
+                  <span style="font-size:12px;color:var(--td-text-2);white-space:nowrap;width:40px;">线路2</span>
+                  <select style="flex:0.6;height:32px;font:12px inherit;border:1px solid var(--td-border);border-radius:5px;padding:0 8px;"><option>大厅域名</option></select>
+                  <select style="flex:1;height:32px;font:12px inherit;border:1px solid var(--td-border);border-radius:5px;padding:0 8px;"><option>请选择大厅域名</option></select>
+                  <button class="btn btn-sm" style="width:28px;padding:0;">+</button>
+                  <button class="btn btn-sm danger" style="width:28px;padding:0;">-</button>
+                </div>
+                <div class="form-row" style="align-items:center;gap:8px;">
+                  <span style="font-size:12px;color:var(--td-text-2);white-space:nowrap;width:40px;">线路3</span>
+                  <select style="flex:0.6;height:32px;font:12px inherit;border:1px solid var(--td-border);border-radius:5px;padding:0 8px;"><option>大厅域名</option></select>
+                  <select style="flex:1;height:32px;font:12px inherit;border:1px solid var(--td-border);border-radius:5px;padding:0 8px;"><option>请选择大厅域名</option></select>
+                  <button class="btn btn-sm" style="width:28px;padding:0;">+</button>
+                  <button class="btn btn-sm danger" style="width:28px;padding:0;">-</button>
+                </div>
+              </div>
+            </div>
+            <!-- Wildcard domain input (hidden by default) -->
+            <div id="v2WildcardRoute" style="display:none;">
+              <div class="form-group">
+                <div class="lb">泛解析域名</div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <input class="inp" placeholder="请输入自定义链接" style="flex:1;">
+                  <span style="font-size:11px;color:var(--td-text-3);white-space:nowrap;">0/500</span>
+                  <button class="btn btn-sm">+</button>
+                  <button class="btn btn-sm danger">-</button>
+                </div>
+              </div>
+            </div>
+            <!-- Route style (shown when route is visible) -->
+            <div id="v2RouteStyle" style="margin-top:16px;">
+              <div style="margin-bottom:10px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+                <span style="font-size:12px;color:var(--td-text-2);font-weight:500;">背景</span>
+                <div style="width:28px;height:22px;background:repeating-linear-gradient(45deg,#ccc 0,#ccc 2px,#fff 2px,#fff 6px);border:1px solid var(--td-border);border-radius:3px;cursor:pointer;"></div>
+                <span style="font-size:12px;color:var(--td-text-2);font-weight:500;">文字颜色</span>
+                <div style="width:28px;height:22px;background:#222;border:1px solid var(--td-border);border-radius:3px;cursor:pointer;"></div>
+                <span style="font-size:12px;color:var(--td-text-2);font-weight:500;">按钮背景</span>
+                <div style="width:28px;height:22px;background:#0052d9;border:1px solid var(--td-border);border-radius:3px;cursor:pointer;"></div>
+              </div>
+              <div style="font-size:12px;font-weight:700;color:var(--td-text-1);margin-bottom:10px;">样式</div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                <label style="cursor:pointer;">
+                  <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><input type="radio" name="routeStyle" value="1" checked> 样式1</div>
+                  <div style="border:1px solid var(--td-border-2);border-radius:6px;overflow:hidden;">
+                    <div style="padding:6px 8px;background:#f9fbfd;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--td-border-2);">
+                      <div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:3px;background:#00a870;border-radius:1px;"></div><span style="font-size:10px;color:var(--td-text-2);">200ms</span></div>
+                      <span style="font-size:10px;color:var(--td-text-1);">Online1</span>
+                      <div style="height:20px;padding:0 8px;background:#0052d9;border-radius:3px;display:flex;align-items:center;color:#fff;font-size:9px;">Jogue Agora</div>
+                    </div>
+                    <div style="padding:6px 8px;background:#f9fbfd;display:flex;align-items:center;justify-content:space-between;">
+                      <div style="display:flex;align-items:center;gap:4px;"><div style="width:8px;height:3px;background:#00a870;border-radius:1px;"></div><span style="font-size:10px;color:var(--td-text-2);">200ms</span></div>
+                      <span style="font-size:10px;color:var(--td-text-1);">Online2</span>
+                      <div style="height:20px;padding:0 8px;background:#0052d9;border-radius:3px;display:flex;align-items:center;color:#fff;font-size:9px;">Jogue Agora</div>
+                    </div>
+                  </div>
+                </label>
+                <label style="cursor:pointer;">
+                  <div style="display:flex;align-items:center;gap:4px;margin-bottom:4px;"><input type="radio" name="routeStyle" value="2"> 样式2</div>
+                  <div style="border:1px solid var(--td-border-2);border-radius:6px;overflow:hidden;">
+                    <div style="padding:6px 8px;background:#f9fbfd;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--td-border-2);">
+                      <div style="width:8px;height:3px;background:#00a870;border-radius:1px;"></div>
+                      <span style="font-size:10px;color:var(--td-brand);font-weight:600;">Online1</span>
+                      <span style="font-size:10px;color:var(--td-brand);flex:1;">200ms</span>
+                      <div style="height:20px;padding:0 8px;background:#0052d9;border-radius:3px;display:flex;align-items:center;color:#fff;font-size:9px;">Jogue Agora</div>
+                    </div>
+                    <div style="padding:6px 8px;background:#f9fbfd;display:flex;align-items:center;gap:6px;">
+                      <div style="width:8px;height:3px;background:#00a870;border-radius:1px;"></div>
+                      <span style="font-size:10px;color:var(--td-brand);font-weight:600;">Online2</span>
+                      <span style="font-size:10px;color:var(--td-brand);flex:1;">200ms</span>
+                      <div style="height:20px;padding:0 8px;background:#0052d9;border-radius:3px;display:flex;align-items:center;color:#fff;font-size:9px;">Jogue Agora</div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- PAGE SETTINGS TAB -->
+          <div id="v2Tab_page" style="display:none;">
+            <div class="form-section">
+              <div class="form-group" style="margin-bottom:14px;">
+                <div class="lb" style="margin-bottom:6px;">标题</div>
+                <input class="inp" placeholder="浏览器页签显示文案">
+              </div>
+              <div class="form-group" style="margin-bottom:14px;">
+                <div class="lb" style="margin-bottom:6px;">关键词</div>
+                <input class="inp" placeholder="浏览器搜索关键词">
+              </div>
+              <div class="form-group" style="margin-bottom:14px;">
+                <div class="lb" style="margin-bottom:6px;">网页描述</div>
+                <textarea class="inp" placeholder="搜索关键词显示结果的描述语句" style="height:100px;padding:8px 10px;resize:vertical;"></textarea>
+              </div>
+              <div class="form-group" style="margin-bottom:14px;">
+                <div class="lb" style="margin-bottom:6px;">网页Logo</div>
+                <div style="display:flex;align-items:center;gap:12px;">
+                  <div style="width:60px;height:60px;border:1px dashed var(--td-border);border-radius:8px;background:#eef2f8;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M10 5v10M5 10h10"/></svg>
+                  </div>
+                  <div style="font-size:11px;color:var(--td-text-3);line-height:1.6;">仅支持.ICO格式，且文件名为favicon.ico，<br>尺寸32px*32px，支持将.png后缀改为.ico后，直接上传</div>
+                </div>
+              </div>
+              <div class="form-group" style="margin-bottom:14px;">
+                <div class="lb" style="margin-bottom:6px;">统计代码</div>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                  <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="radio" name="analytics" value="none" checked> <span style="color:var(--td-brand);">无</span></label>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="radio" name="analytics" value="google"> Google</label>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="radio" name="analytics" value="baidu"> 百度</label>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="radio" name="analytics" value="youmeng"> 友盟</label>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="radio" name="analytics" value="other"> 其他</label>
+                </div>
+                <div style="font-size:11px;color:var(--td-text-3);margin-top:4px;">统计代码设置，请参考三方统计帮助文档</div>
+              </div>
+              <div class="form-group">
+                <div class="lb" style="margin-bottom:6px;">下载站自动跳转大厅</div>
+                <div style="display:flex;gap:14px;flex-wrap:wrap;">
+                  <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="radio" name="autoJump" value="off" checked> 关闭</label>
+                  <label style="display:flex;align-items:center;gap:5px;font-size:13px;cursor:pointer;"><input type="radio" name="autoJump" value="on" onchange="v2AutoJumpChange(this)"> <span style="color:var(--td-brand);">开启</span></label>
+                </div>
+                <div id="v2AutoJumpConfig" style="display:none;margin-top:10px;background:#f9fbfd;border:1px solid var(--td-border-2);border-radius:6px;padding:12px;">
+                  <span style="font-size:12px;color:var(--td-text-2);">页面停留超过</span>
+                  <input class="inp" style="width:60px;display:inline-block;margin:0 6px;" placeholder="5">
+                  <span style="font-size:12px;color:var(--td-text-2);">秒，自动跳转至</span>
+                  <select style="height:32px;font:12px inherit;border:1px solid var(--td-border);border-radius:5px;padding:0 8px;margin:0 6px;"><option>大厅域名</option></select>
+                  <select style="height:32px;font:12px inherit;border:1px solid var(--td-border);border-radius:5px;padding:0 8px;"><option>请选择大厅域名</option></select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- LICENSE TAB -->
+          <div id="v2Tab_license" style="display:none;">
+            <div style="margin-bottom:14px;">
+              <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:13px;color:var(--td-text-2);">
+                <input type="checkbox" id="v2HideLicense" checked> 隐藏牌照
+              </label>
+            </div>
+            <div class="form-group" style="margin-bottom:16px;">
+              <div class="lb" style="margin-bottom:8px;">牌照信息</div>
+              <div style="border:1px solid var(--td-border);border-radius:var(--td-radius-sm);overflow:hidden;">
+                <!-- Simplified rich text toolbar -->
+                <div style="padding:6px 10px;border-bottom:1px solid var(--td-border-2);display:flex;flex-wrap:wrap;gap:4px;background:#fafbfd;">
+                  <select style="height:26px;font:12px inherit;border:1px solid var(--td-border);border-radius:4px;padding:0 4px;"><option>20px</option></select>
+                  <select style="height:26px;font:12px inherit;border:1px solid var(--td-border);border-radius:4px;padding:0 4px;"><option>系统字体</option></select>
+                  <button class="btn btn-sm" style="font-weight:700;">A</button>
+                  <button class="btn btn-sm" style="font-weight:700;">B</button>
+                  <button class="btn btn-sm" style="font-style:italic;">I</button>
+                  <button class="btn btn-sm" style="text-decoration:underline;">U</button>
+                </div>
+                <div contenteditable="true" style="min-height:120px;padding:10px;font-size:13px;outline:none;" placeholder="请输入牌照信息…"></div>
+                <div style="padding:4px 10px;font-size:11px;color:var(--td-text-3);border-top:1px solid var(--td-border-2);">p</div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="lb" style="margin-bottom:6px;">牌照图片</div>
+              <div style="width:80px;height:80px;border:1px dashed var(--td-border);border-radius:8px;background:#eef2f8;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5"><path d="M12 5v14M5 12h14"/></svg>
+              </div>
+              <div style="font-size:11px;color:var(--td-text-3);margin-top:4px;">仅限png,jpg,jpeg格式，且不超过1MB，尺寸为80px * 80px</div>
+            </div>
+          </div>
+
+        </div><!-- /tab content -->
+
+        <!-- Footer -->
+        <div class="modal-footer">
+          <button class="btn" onclick="closeV2Modal()">取消</button>
+          <button class="btn primary" onclick="saveV2Template()">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MODAL ═══════════════ -->
+<div class="mask" id="modalMask">
+  <div class="modal">
+    <!-- Header spans full width -->
+    <div class="mh" style="grid-column:1/-1;">
+      <span id="modalTitle">新增下载站模板</span>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-layout">
+      <!-- LEFT: form -->
+      <div class="modal-form-col">
+        <div class="mb" id="formScrollArea">
+
+          <!-- 基本信息 -->
+          <div class="form-section">
+            <div class="section-title">基本信息</div>
+            <div class="form-row">
+              <div class="form-group">
+                <div class="lb">模板名称<span class="req">*</span></div>
+                <input class="inp" id="fName" placeholder="请输入模板名称" oninput="refreshPreview()">
+              </div>
+              <div class="form-group">
+                <div class="lb">版本描述</div>
+                <input class="inp" id="fDesc" placeholder="如：黑金内容版">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <div class="lb">启用状态</div>
+                <div class="enable-toggle-row">
+                  <button class="switch on" id="fEnableSwitch" onclick="toggleEnableSwitch(this)"></button>
+                  <span class="enable-toggle-label" id="fEnableLabel">已启用</span>
+                  <span class="enable-toggle-tip">关闭后该模板将不在前台展示</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 图片配置 -->
+          <div class="form-section">
+            <div class="section-title">
+              图片配置
+              <span class="badge-sm" id="imgBadge">0 / 20</span>
+            </div>
+            <div class="img-size-hint">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M6.5 6v3.5M6.5 4h.01"/></svg>
+              图片宽度统一为 <strong>750px</strong>，高度不限；建议使用 PNG / JPG 格式，单张不超过 2MB
+            </div>
+            <div class="img-rows" id="imgRows"></div>
+            <div class="add-row-btn" id="addImgBtn" onclick="addImgRow()" style="margin-top:8px;">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 1v12M1 7h12"/></svg>
+              添加图片（最多20张）
+            </div>
+          </div>
+
+          <!-- 底部图片 -->
+          <div class="form-section">
+            <div class="section-title">底部下载图片</div>
+            <div style="background:#f9fbfd;border:1px solid var(--td-border-2);border-radius:var(--td-radius-sm);padding:12px;">
+              <div class="img-size-hint" style="margin-bottom:8px;">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M6.5 6v3.5M6.5 4h.01"/></svg>
+                宽度 <strong>750px</strong>，高度不限；建议高度 120–200px，突出下载按钮视觉
+              </div>
+              <div class="bottom-img-box" id="bottomBox" onclick="document.getElementById('bottomFile').click()">
+                <img id="bottomImgEl" alt="">
+                <div class="bottom-img-hint" id="bottomHint">
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4"><rect x="2" y="2" width="16" height="16" rx="3"/><circle cx="7" cy="7" r="1.5"/><path d="m18 13-4-4L2 18"/></svg>
+                  点击上传底部图片
+                </div>
+              </div>
+              <input type="file" id="bottomFile" accept="image/*" style="display:none" onchange="handleUpload(event,'bottomImgEl','bottomHint','pvBottomImg','pvBottomImgEl')">
+              <div class="form-group">
+                <div class="lb">下载 App 链接<span class="req">*</span></div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                  <input class="inp" id="fBottomLink" placeholder="https://s3.sadslj88.com/apk/speed_release_bs8.apk" style="flex:1;">
+                  <button class="btn btn-sm" onclick="autoDetectApk()" id="autoDetectBtn" style="flex-shrink:0;white-space:nowrap;">
+                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5v2.5l1.5 1"/></svg>
+                    自动获取
+                  </button>
+                </div>
+                <div id="apkDetectTip" style="font-size:11px;color:var(--td-text-3);margin-top:3px;display:none;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 悬浮图标（两个） -->
+          <div class="form-section">
+            <div class="section-title">悬浮图标</div>
+            <div class="img-size-hint" style="margin-bottom:10px;">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M6.5 6v3.5M6.5 4h.01"/></svg>
+              图标建议尺寸 <strong>100 × 100px</strong>，正方形；支持 PNG（带透明背景）
+            </div>
+            <div class="float-pair">
+              <!-- Icon 1 -->
+              <div class="float-item">
+                <div class="float-item-head">
+                  <div class="float-icon-box" id="floatBox1" onclick="document.getElementById('floatFile1').click()">
+                    <img id="floatImg1" alt="">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4" id="floatHint1"><rect x="2" y="2" width="16" height="16" rx="3"/><circle cx="7" cy="7" r="1.5"/><path d="m18 13-4-4L2 18"/></svg>
+                  </div>
+                  <span class="float-icon-label">图标一</span>
+                </div>
+                <input type="file" id="floatFile1" accept="image/*" style="display:none" onchange="handleFloatUpload(event,1)">
+                <div class="form-group" style="margin-bottom:6px;">
+                  <div class="lb">绑定链接</div>
+                  <input class="inp" id="fFloat1Link" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                  <div class="lb">提示文字</div>
+                  <input class="inp" id="fFloat1Label" placeholder="客服">
+                </div>
+              </div>
+              <!-- Icon 2 -->
+              <div class="float-item">
+                <div class="float-item-head">
+                  <div class="float-icon-box" id="floatBox2" onclick="document.getElementById('floatFile2').click()">
+                    <img id="floatImg2" alt="">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".4" id="floatHint2"><rect x="2" y="2" width="16" height="16" rx="3"/><circle cx="7" cy="7" r="1.5"/><path d="m18 13-4-4L2 18"/></svg>
+                  </div>
+                  <span class="float-icon-label">图标二</span>
+                </div>
+                <input type="file" id="floatFile2" accept="image/*" style="display:none" onchange="handleFloatUpload(event,2)">
+                <div class="form-group" style="margin-bottom:6px;">
+                  <div class="lb">绑定链接</div>
+                  <input class="inp" id="fFloat2Link" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                  <div class="lb">提示文字</div>
+                  <input class="inp" id="fFloat2Label" placeholder="教程">
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /mb -->
+        <div class="modal-footer">
+          <button class="btn" onclick="closeModal()">取消</button>
+          <button class="btn primary" onclick="saveTemplate()">保存模板</button>
+        </div>
+      </div>
+
+      <!-- RIGHT: phone preview -->
+      <div class="modal-preview-col">
+        <div class="preview-panel">
+          <div class="preview-panel-title">实时预览</div>
+          <div class="phone-frame">
+            <div class="phone-notch"></div>
+            <div class="phone-screen" id="phoneScreen">
+              <!-- Dynamic image slots -->
+              <div class="pv-imgs" id="pvImgs">
+                <div class="pv-img-placeholder">暂无图片</div>
+              </div>
+              <!-- Float icons -->
+              <div class="pv-floats" id="pvFloats">
+                <div class="pv-float" id="pvFloat1" title="">
+                  <img id="pvFloatImg1" alt="">
+                  <span id="pvFloatTxt1" style="font-size:8px;">📞</span>
+                </div>
+                <div class="pv-float" id="pvFloat2" title="">
+                  <img id="pvFloatImg2" alt="">
+                  <span id="pvFloatTxt2" style="font-size:8px;">📖</span>
+                </div>
+              </div>
+              <!-- Bottom bar -->
+              <div class="pv-bottom">
+                <div class="pv-bottom-img" id="pvBottomImg">
+                  <img id="pvBottomImgEl" alt="">
+                  <span id="pvBottomTxt" style="font-size:9px;font-weight:700;">下载 App</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--td-text-3);">效果仅供参考</div>
+        </div>
+      </div>
+    </div><!-- /modal-layout -->
+  </div>
+</div>
+
+<!-- ═══════════════ PRD MODAL ═══════════════ -->
+<div class="prd-mask" id="prdMask">
+  <div class="prd-box">
+    <div class="prd-head">
+      <div class="prd-head-left">
+        <span class="prd-head-tag">PRD</span>
+        <span class="prd-head-title">下载站模板管理系统</span>
+        <span class="prd-head-ver">V1.0 · 2026-05-21</span>
+      </div>
+      <button class="close" onclick="closePrd()">×</button>
+    </div>
+    <div class="prd-body">
+
+      <!-- 封面信息 -->
+      <div class="prd-cover">
+        <div class="prd-cover-title">下载站模板管理系统</div>
+        <div class="prd-cover-sub">Product Requirements Document</div>
+        <div class="prd-cover-meta">
+          <span><strong>文档编号</strong> PRD-DL-2026-001</span>
+          <span><strong>版本</strong> V1.0</span>
+          <span><strong>状态</strong> 评审中</span>
+          <span><strong>日期</strong> 2026-05-21</span>
+        </div>
+      </div>
+
+      <!-- 1. 背景与目标 -->
+      <div class="prd-section">
+        <div class="prd-h1">1. 背景与目标</div>
+        <p class="prd-p">运营团队需要为不同渠道配置差异化的 App 下载落地页，当前依赖开发手动发布，效率低且无法快速切换。本系统目标是让运营人员自主完成模板配置，无需开发介入。</p>
+        <div class="prd-h2">核心目标</div>
+        <ul class="prd-ul">
+          <li>运营可独立完成模板新增、修改、启用/禁用，全程不依赖开发；</li>
+          <li>模板总数上限 20 个；支持最多 20 张图片，宽度统一 750px，保证前台显示一致；</li>
+          <li>支持 2 个悬浮图标（位置固定右侧居上）+ 底部下载引导图配置；</li>
+          <li>同一时间只允许一个模板在前台运行（默认模板），切换时自动排他；</li>
+          <li>禁用等高危操作需二次确认，防止误操作；</li>
+          <li>所有写操作记录操作日志（操作人、类型、时间）。</li>
+        </ul>
+      </div>
+
+      <!-- 2. 功能清单 -->
+      <div class="prd-section">
+        <div class="prd-h1">2. 功能清单</div>
+        <div class="prd-h2">2.1 模板列表页</div>
+        <table class="prd-table">
+          <thead><tr><th>功能点</th><th>说明</th><th>备注</th></tr></thead>
+          <tbody>
+            <tr><td>卡片展示</td><td>名称、版本描述、图片预览、状态栏、操作按钮</td><td>网格自适应布局</td></tr>
+            <tr><td>默认开关</td><td>全局唯一，点击自动关闭其他；已默认时不可关闭</td><td>互斥逻辑</td></tr>
+            <tr><td>启用/禁用</td><td>点击触发二次确认弹窗，确认后切换状态</td><td>禁用后卡片半透明</td></tr>
+            <tr><td>新增按钮</td><td>点击打开新增弹窗</td><td>—</td></tr>
+            <tr><td>修改按钮</td><td>点击打开修改弹窗</td><td>—</td></tr>
+          </tbody>
+        </table>
+        <div class="prd-h2">2.2 新增 / 修改弹窗</div>
+        <table class="prd-table">
+          <thead><tr><th>字段</th><th>必填</th><th>规格说明</th></tr></thead>
+          <tbody>
+            <tr><td>模板名称</td><td><span class="prd-tag yes">必填</span></td><td>最大 50 字符</td></tr>
+            <tr><td>版本描述</td><td><span class="prd-tag no">选填</span></td><td>最大 50 字符</td></tr>
+            <tr><td>启用状态</td><td><span class="prd-tag yes">必填</span></td><td>默认已启用</td></tr>
+            <tr><td>图片列表</td><td><span class="prd-tag no">选填</span></td><td>最多 20 张；宽度统一 750px，高度不限；PNG/JPG，≤ 2MB；每张可填写跳转链接</td></tr>
+            <tr><td>底部下载图片</td><td><span class="prd-tag no">选填</span></td><td>750px 宽，建议高 120–200px；绑定 App 下载链接（必填），支持「自动获取」按钮自动拉取 APK 包地址（如 https://s3.sadslj88.com/apk/speed_release_bs8.apk）</td></tr>
+            <tr><td>悬浮图标（×2）</td><td><span class="prd-tag no">选填</span></td><td>各含：图片上传（100×100px，PNG）、绑定链接、提示文字</td></tr>
+          </tbody>
+        </table>
+        <div class="prd-h2">2.3 实时预览</div>
+        <ul class="prd-ul">
+          <li>弹窗右侧手机外壳实时渲染：图片、悬浮图标、底部下载图随填随更新；</li>
+          <li>未上传图片时显示占位提示「暂无图片」。</li>
+        </ul>
+      </div>
+
+      <!-- 3. 交互规则 -->
+      <div class="prd-section">
+        <div class="prd-h1">3. 关键交互规则</div>
+        <table class="prd-table">
+          <thead><tr><th>场景</th><th>规则</th></tr></thead>
+          <tbody>
+            <tr><td>默认开关</td><td>同一时刻仅一个开启；点击其他模板默认开关时，原默认自动关闭</td></tr>
+            <tr><td>禁用/启用</td><td>均需二次确认弹窗，点取消不执行操作</td></tr>
+            <tr><td>保存校验</td><td>模板名称、下载 App 链接为必填；图片格式/大小不合规时阻止上传并提示</td></tr>
+            <tr><td>图片上传</td><td>格式：PNG/JPG；轮播图 ≤ 2MB；悬浮图标 ≤ 500KB；宽度建议 750px</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4. 图片规格速查 -->
+      <div class="prd-section">
+        <div class="prd-h1">4. 图片规格速查</div>
+        <table class="prd-table">
+          <thead><tr><th>图片类型</th><th>宽度</th><th>高度</th><th>格式</th><th>大小限制</th></tr></thead>
+          <tbody>
+            <tr><td>轮播图片（最多20张）</td><td>750px（统一）</td><td>不限</td><td>PNG / JPG</td><td>≤ 2MB</td></tr>
+            <tr><td>底部下载图片</td><td>750px</td><td>建议 120–200px</td><td>PNG / JPG</td><td>≤ 2MB</td></tr>
+            <tr><td>悬浮图标（×2）</td><td>100px</td><td>100px</td><td>PNG（透明背景）</td><td>≤ 500KB</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5. 待确认 -->
+      <div class="prd-section">
+        <div class="prd-h1">5. 已确认事项</div>
+        <table class="prd-table">
+          <thead><tr><th>#</th><th>问题</th><th>结论</th><th>状态</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>模板总数是否有上限？</td><td>最多 20 个模板</td><td><span class="prd-tag yes">已确认</span></td></tr>
+            <tr><td>2</td><td>前台是否支持多语言？</td><td>不支持，仅单语言</td><td><span class="prd-tag yes">已确认</span></td></tr>
+            <tr><td>3</td><td>悬浮图标位置是否支持运营自定义？</td><td>不支持，固定右侧居上</td><td><span class="prd-tag yes">已确认</span></td></tr>
+            <tr><td>4</td><td>多个启用模板的前台排序规则？</td><td>同一时间只允许一个模板在前台运行（即默认模板）</td><td><span class="prd-tag yes">已确认</span></td></tr>
+            <tr><td>5</td><td>是否需要操作日志记录？</td><td>需要，记录操作人、操作类型、操作时间</td><td><span class="prd-tag yes">已确认</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div><!-- /prd-body -->
+    <div class="prd-foot">
+      <button class="btn" onclick="closePrd()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ CONFIRM DIALOG ═══════════════ -->
+<div class="confirm-mask" id="confirmMask">
+  <div class="confirm-box">
+    <div class="confirm-icon warn" id="confirmIcon">⚠️</div>
+    <div class="confirm-title" id="confirmTitle">确认操作</div>
+    <div class="confirm-desc" id="confirmDesc">确定要执行此操作吗？</div>
+    <div class="confirm-btns">
+      <button class="btn" onclick="closeConfirm()">取消</button>
+      <button class="btn primary" id="confirmOkBtn" onclick="confirmOk()">确认</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+// ── state ──
+let imgCount = 0;
+const MAX_IMG = 20;
+const state = { imgs: [], float1: null, float2: null, bottom: null };
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+
+function toggleEnableSwitch(btn){
+  btn.classList.toggle('on');
+  const label = btn.nextElementSibling;
+  if(!label) return;
+  label.textContent = btn.classList.contains('on') ? '已启用' : '已禁用';
+  label.style.color  = btn.classList.contains('on') ? 'var(--td-success)' : 'var(--td-danger)';
+}
+
+// ── Default switch: only one can be ON at a time ──
+function setDefault(btn){
+  if(btn.classList.contains('on')) return; // already default, do nothing
+  // turn off all other default switches
+  document.querySelectorAll('.default-switch').forEach(sw => {
+    if(sw !== btn){
+      sw.classList.remove('on');
+      const lbl = sw.nextElementSibling;
+      if(lbl){ lbl.textContent='关'; lbl.style.color=''; lbl.style.fontWeight=''; }
+    }
+  });
+  btn.classList.add('on');
+  const lbl = btn.nextElementSibling;
+  if(lbl){ lbl.textContent='开'; lbl.style.color='var(--td-brand)'; lbl.style.fontWeight='600'; }
+  showToast('已设为默认模板');
+}
+
+// ── Enable/disable with confirm ──
+let _pendingEnableBtn = null;
+let _pendingEnableCardIdx = null;
+
+function confirmToggleEnable(btn, cardIdx){
+  const card = btn.closest('.tpl-card');
+  const isEnabled = card.dataset.enabled === '1';
+  const name = card.querySelector('.tpl-name')?.textContent || '该模板';
+  _pendingEnableBtn = btn;
+  _pendingEnableCardIdx = cardIdx;
+  showConfirm(
+    isEnabled ? '⚠️' : '✅',
+    isEnabled ? `禁用模板` : `启用模板`,
+    isEnabled
+      ? `确定要禁用「${name}」吗？禁用后该模板将不在前台展示。`
+      : `确定要启用「${name}」吗？`,
+    isEnabled ? 'danger' : 'primary'
+  );
+}
+
+function confirmOk(){
+  if(!_pendingEnableBtn) return;
+  const card = _pendingEnableBtn.closest('.tpl-card');
+  const isEnabled = card.dataset.enabled === '1';
+  const statusVal = card.querySelector('.card-status-val');
+  const btn = _pendingEnableBtn;
+
+  if(isEnabled){
+    card.dataset.enabled = '0';
+    card.style.opacity = '.55';
+    statusVal.className = 'card-status-val disabled';
+    statusVal.innerHTML = `<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已禁用`;
+    btn.textContent = '启用';
+    showToast('模板已禁用');
+  } else {
+    card.dataset.enabled = '1';
+    card.style.opacity = '';
+    statusVal.className = 'card-status-val enabled';
+    statusVal.innerHTML = `<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已启用`;
+    btn.textContent = '禁用';
+    showToast('模板已启用');
+  }
+  closeConfirm();
+  _pendingEnableBtn = null;
+}
+
+// ── Auto detect APK link ──
+function autoDetectApk(){
+  const btn = document.getElementById('autoDetectBtn');
+  const tip = document.getElementById('apkDetectTip');
+  const input = document.getElementById('fBottomLink');
+  btn.disabled = true;
+  btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" style="animation:spin .8s linear infinite"><path d="M6 1.5A4.5 4.5 0 1 1 1.5 6"/></svg> 获取中…';
+  tip.style.display = 'block';
+  tip.style.color = 'var(--td-text-3)';
+  tip.textContent = '正在获取应用包地址…';
+  // Simulate fetch — in production this calls the server API
+  setTimeout(() => {
+    const apkUrl = 'https://s3.sadslj88.com/apk/speed_release_bs8.apk';
+    input.value = apkUrl;
+    input.classList.remove('invalid');
+    tip.style.color = 'var(--td-success)';
+    tip.textContent = '✓ 已自动获取最新 APK 地址';
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="6" cy="6" r="4.5"/><path d="M6 3.5v2.5l1.5 1"/></svg> 重新获取';
+    refreshPreview();
+  }, 1200);
+}
+
+// ── PRD Modal ──
+function openPrd(){
+  document.getElementById('prdMask').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closePrd(){
+  document.getElementById('prdMask').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('prdMask').addEventListener('click',e=>{
+  if(e.target===document.getElementById('prdMask')) closePrd();
+});
+
+// ── Confirm dialog ──
+function showConfirm(icon, title, desc, okStyle){
+  document.getElementById('confirmIcon').textContent = icon;
+  document.getElementById('confirmTitle').textContent = title;
+  document.getElementById('confirmDesc').textContent = desc;
+  const okBtn = document.getElementById('confirmOkBtn');
+  okBtn.className = 'btn ' + (okStyle === 'danger' ? 'danger' : 'primary');
+  document.getElementById('confirmMask').classList.add('open');
+}
+function closeConfirm(){
+  document.getElementById('confirmMask').classList.remove('open');
+}
+document.getElementById('confirmMask').addEventListener('click', e => {
+  if(e.target === document.getElementById('confirmMask')) closeConfirm();
+});
+
+// ── Modal open/close ──
+function openModal(mode){
+  resetForm();
+  document.getElementById('modalTitle').textContent = mode==='edit' ? '修改下载站模板' : '新增下载站模板';
+  document.getElementById('modalMask').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){
+  document.getElementById('modalMask').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('modalMask').addEventListener('click',e=>{
+  if(e.target===document.getElementById('modalMask')) closeModal();
+});
+
+function resetForm(){
+  imgCount=0; state.imgs=[]; state.float1=null; state.float2=null; state.bottom=null;
+  document.getElementById('fName').value='';
+  document.getElementById('fDesc').value='';
+  document.getElementById('fBottomLink').value='';
+  document.getElementById('fFloat1Link').value='';
+  document.getElementById('fFloat1Label').value='';
+  document.getElementById('fFloat2Link').value='';
+  document.getElementById('fFloat2Label').value='';
+  document.getElementById('imgRows').innerHTML='';
+  document.getElementById('imgBadge').textContent='0 / 20';
+  document.getElementById('addImgBtn').style.display='flex';
+  // reset enable switches
+  const enSw=document.getElementById('fEnableSwitch');
+  const enLb=document.getElementById('fEnableLabel');
+  if(enSw){ enSw.classList.add('on'); }
+  if(enLb){ enLb.textContent='已启用'; enLb.style.color='var(--td-success)'; }
+  // reset images
+  resetImgBox('bottomImgEl','bottomHint');
+  resetFloatBox(1); resetFloatBox(2);
+  refreshPreview();
+}
+
+function resetImgBox(imgId, hintId){
+  const img=document.getElementById(imgId);
+  const hint=document.getElementById(hintId);
+  if(img){img.src='';img.style.display='none';}
+  if(hint) hint.style.display='flex';
+}
+function resetFloatBox(n){
+  const img=document.getElementById('floatImg'+n);
+  const hint=document.getElementById('floatHint'+n);
+  if(img){img.src='';img.style.display='none';}
+  if(hint) hint.style.display='block';
+}
+
+// ── Image rows ──
+function addImgRow(){
+  if(imgCount>=MAX_IMG){ showToast('最多添加20张图片'); return; }
+  imgCount++;
+  state.imgs.push(null);
+  const idx = imgCount;
+  const id = 'imgrow_'+idx+'_'+Date.now();
+  const row = document.createElement('div');
+  row.className='img-row'; row.dataset.idx=imgCount-1;
+  row.innerHTML=`
+    <div>
+      <div class="img-thumb" onclick="document.getElementById('imgfile_${id}').click()">
+        <img id="imgprev_${id}" alt="">
+        <div class="th-hint" id="imghint_${id}">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" opacity=".5"><rect x="1" y="1" width="12" height="12" rx="2"/><circle cx="5" cy="5" r="1.2"/><path d="m13 10-3-3L1 13"/></svg>
+          上传
+        </div>
+      </div>
+      <input type="file" id="imgfile_${id}" accept="image/*" style="display:none"
+        onchange="handleImgRowUpload(event,'${id}',${imgCount-1})">
+    </div>
+    <div class="img-row-fields">
+      <input class="inp" placeholder="图片对应链接（可选）" style="font-size:12px;" data-img-link>
+      <input class="inp" placeholder="图片描述（可选）" style="font-size:12px;">
+      <div class="img-size-tag">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="1" width="8" height="8" rx="1.5"/><path d="M1 7l2.5-2.5L6 7l1.5-1.5L9 7"/></svg>
+        宽度：750px &nbsp;|&nbsp; 高度：不限 &nbsp;|&nbsp; 格式：PNG / JPG &nbsp;|&nbsp; ≤ 2MB
+      </div>
+    </div>
+    <button class="rm-btn" onclick="removeImgRow(this)" title="删除">×</button>`;
+  document.getElementById('imgRows').appendChild(row);
+  updateImgBadge();
+  if(imgCount>=MAX_IMG) document.getElementById('addImgBtn').style.display='none';
+  refreshPreview();
+}
+
+function removeImgRow(btn){
+  const row=btn.closest('.img-row');
+  const idx=parseInt(row.dataset.idx);
+  state.imgs.splice(idx,1);
+  row.remove();
+  imgCount--;
+  // reindex remaining rows
+  document.querySelectorAll('#imgRows .img-row').forEach((r,i)=>r.dataset.idx=i);
+  updateImgBadge();
+  if(imgCount<MAX_IMG) document.getElementById('addImgBtn').style.display='flex';
+  refreshPreview();
+}
+
+function updateImgBadge(){
+  document.getElementById('imgBadge').textContent=imgCount+' / 20';
+}
+
+function handleImgRowUpload(e, id, idx){
+  const f=e.target.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const src=ev.target.result;
+    state.imgs[idx]=src;
+    const img=document.getElementById('imgprev_'+id);
+    const hint=document.getElementById('imghint_'+id);
+    if(img){ img.src=src; img.style.display='block'; }
+    if(hint) hint.style.display='none';
+    refreshPreview();
+  };
+  reader.readAsDataURL(f);
+}
+
+// ── Upload helpers ──
+function handleUpload(e, imgElId, hintId, pvContainerId, pvImgId){
+  const f=e.target.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const src=ev.target.result;
+    state.bottom=src;
+    const img=document.getElementById(imgElId);
+    const hint=document.getElementById(hintId);
+    if(img){ img.src=src; img.style.display='block'; }
+    if(hint) hint.style.display='none';
+    refreshPreview();
+  };
+  reader.readAsDataURL(f);
+}
+
+function handleFloatUpload(e, n){
+  const f=e.target.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    const src=ev.target.result;
+    state['float'+n]=src;
+    const img=document.getElementById('floatImg'+n);
+    const hint=document.getElementById('floatHint'+n);
+    if(img){ img.src=src; img.style.display='block'; }
+    if(hint) hint.style.display='none';
+    refreshPreview();
+  };
+  reader.readAsDataURL(f);
+}
+
+// ── Preview ──
+function refreshPreview(){
+  // images
+  const pvImgs=document.getElementById('pvImgs');
+  if(state.imgs.filter(Boolean).length===0){
+    pvImgs.innerHTML='<div class="pv-img-placeholder">暂无图片</div>';
+  } else {
+    pvImgs.innerHTML=state.imgs.map((src,i)=>src
+      ? `<div class="pv-img-item"><img src="${src}" alt="" style="width:100%;display:block;object-fit:cover;max-height:90px;"></div>`
+      : `<div class="pv-img-placeholder" style="height:50px;font-size:9px;">图片 ${i+1}（未上传）</div>`
+    ).join('');
+  }
+
+  // float 1
+  const pvF1img=document.getElementById('pvFloatImg1');
+  const pvF1txt=document.getElementById('pvFloatTxt1');
+  if(state.float1){ pvF1img.src=state.float1; pvF1img.style.display='block'; pvF1txt.style.display='none'; }
+  else{ pvF1img.style.display='none'; pvF1txt.style.display=''; pvF1txt.textContent='📞'; }
+  // float 2
+  const pvF2img=document.getElementById('pvFloatImg2');
+  const pvF2txt=document.getElementById('pvFloatTxt2');
+  if(state.float2){ pvF2img.src=state.float2; pvF2img.style.display='block'; pvF2txt.style.display='none'; }
+  else{ pvF2img.style.display='none'; pvF2txt.style.display=''; pvF2txt.textContent='📖'; }
+
+  // float labels as tooltips
+  const l1=document.getElementById('fFloat1Label')?.value;
+  const l2=document.getElementById('fFloat2Label')?.value;
+  document.getElementById('pvFloat1').title=l1||'';
+  document.getElementById('pvFloat2').title=l2||'';
+
+  // bottom
+  const pvBtmImg=document.getElementById('pvBottomImgEl');
+  const pvBtmTxt=document.getElementById('pvBottomTxt');
+  if(state.bottom){ pvBtmImg.src=state.bottom; pvBtmImg.style.display='block'; pvBtmTxt.style.display='none'; }
+  else{ pvBtmImg.style.display='none'; pvBtmTxt.style.display=''; }
+}
+
+// listen to float label changes
+['fFloat1Label','fFloat2Label'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('input',refreshPreview);
+});
+
+// ── Save ──
+function saveTemplate(){
+  const name=document.getElementById('fName').value.trim();
+  if(!name){
+    showToast('请填写模板名称');
+    document.getElementById('fName').classList.add('invalid');
+    return;
+  }
+  document.getElementById('fName').classList.remove('invalid');
+  const desc=document.getElementById('fDesc').value.trim()||'自定义模板';
+  const uploadedImgs=state.imgs.filter(Boolean);
+
+  // build mini preview HTML for card
+  const previewHTML=uploadedImgs.length>0
+    ? uploadedImgs.slice(0,3).map(s=>`<img src="${s}" style="width:100%;display:block;object-fit:cover;max-height:70px;">`).join('')
+    : '<div style="height:60px;background:linear-gradient(135deg,#1e3a6e,#162447);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.3);font-size:11px;">暂无图片</div>';
+  const bottomPreview=state.bottom
+    ? `<img src="${state.bottom}" style="width:100%;height:100%;object-fit:contain;">`
+    : `<span style="color:#fff;font-size:9px;font-weight:700;">下载 App</span>`;
+
+  const cardIdx = document.querySelectorAll('.tpl-card').length;
+  const isEnabled = document.getElementById('fEnableSwitch')?.classList.contains('on') !== false;
+
+  const grid=document.getElementById('templatesGrid');
+  const card=document.createElement('div');
+  card.className='tpl-card';
+  card.dataset.enabled = isEnabled ? '1' : '0';
+  if(!isEnabled) card.style.opacity = '.55';
+  card.innerHTML=`
+    <div class="tpl-card-head">
+      <div>
+        <div class="tpl-name">${esc(name)}</div>
+        <div class="tpl-sub">${esc(desc)}</div>
+      </div>
+      <div class="switch-wrap">
+        <div class="switch-label">默认</div>
+        <button class="switch default-switch" onclick="setDefault(this)"></button>
+        <div class="switch-label">关</div>
+      </div>
+    </div>
+    <div class="tpl-preview-wrap">
+      <div style="background:#111;padding:8px;display:flex;flex-direction:column;gap:4px;">
+        ${previewHTML}
+        <div style="height:32px;border-radius:4px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(90deg,#0052d9,#00a870);">
+          ${bottomPreview}
+        </div>
+      </div>
+    </div>
+    <div class="card-status-bar">
+      <span class="card-status-label">模板状态</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="card-status-val ${isEnabled?'enabled':'disabled'}" id="statusVal_${cardIdx}">
+          <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>
+          ${isEnabled?'已启用':'已禁用'}
+        </span>
+        <button class="card-enable-btn" onclick="confirmToggleEnable(this,${cardIdx})">${isEnabled?'禁用':'启用'}</button>
+      </div>
+    </div>
+    <div class="tpl-card-foot">
+      <button class="btn btn-sm" onclick="openModal('edit')">修改</button>
+    </div>`;
+  grid.appendChild(card);
+  closeModal();
+  showToast('模板保存成功');
+}
+
+function esc(s){ return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+// ══ PAGE SWITCHING ══
+function switchPage(page, clickedLink){
+  document.getElementById('pageV1').style.display = page==='v1' ? '' : 'none';
+  document.getElementById('pageV2').style.display = page==='v2' ? '' : 'none';
+  document.querySelectorAll('.menu a').forEach(a=>a.classList.remove('active'));
+  if(clickedLink) clickedLink.classList.add('active');
+}
+
+// ══ V2 MODAL ══
+function openV2Modal(mode, btn){
+  document.getElementById('v2ModalTitle').textContent = mode==='edit' ? '修改' : '新增';
+  if(mode==='edit' && btn){
+    const card = btn.closest('.v2-card');
+    const name = card?.querySelector('.tpl-name')?.textContent||'';
+    const style = card?.dataset.style||'蓝白版';
+    const lang = card?.dataset.lang||'葡萄牙语';
+    document.getElementById('v2Name').value = name;
+    // set style select
+    const styleSel = document.getElementById('v2StyleSel');
+    for(let i=0;i<styleSel.options.length;i++){
+      if(styleSel.options[i].text===style){ styleSel.selectedIndex=i; break; }
+    }
+  } else {
+    document.getElementById('v2Name').value='';
+  }
+  v2SwitchTab('top', document.querySelector('.v2-tab'));
+  document.getElementById('v2ModalMask').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeV2Modal(){
+  document.getElementById('v2ModalMask').classList.remove('open');
+  document.body.style.overflow='';
+}
+document.getElementById('v2ModalMask').addEventListener('click',e=>{
+  if(e.target===document.getElementById('v2ModalMask')) closeV2Modal();
+});
+
+// ══ V2 TABS ══
+function v2SwitchTab(tab, clickedBtn){
+  const tabs=['top','bottom','float','route','page','license'];
+  tabs.forEach(t=>{
+    const el=document.getElementById('v2Tab_'+t);
+    if(el) el.style.display = t===tab?'':'none';
+  });
+  document.querySelectorAll('.v2-tab').forEach(b=>b.classList.remove('active'));
+  if(clickedBtn) clickedBtn.classList.add('active');
+}
+
+// ══ V2 THEME COLOR ══
+function v2ThemeColorChange(){
+  const c=document.getElementById('v2ThemeColorInp').value;
+  document.getElementById('v2ThemeColorBox').style.background=c;
+  document.getElementById('v2PvTop').style.background=c;
+  document.getElementById('v2TopBgBox').style.background=c;
+  document.getElementById('v2TopBgInp').value=c;
+}
+
+// ══ V2 STYLE CHANGE ══
+function v2StyleChange(){
+  // Just visual feedback for now
+  showToast('样式已切换：' + document.getElementById('v2StyleSel').value);
+}
+
+// ══ V2 LANG EDIT ══
+function v2EditLang(){
+  showToast('多语言编辑功能开发中');
+}
+
+// ══ V2 ROUTE CHANGE ══
+function v2RouteChange(radio){
+  document.getElementById('v2FixedRoutes').style.display = radio.value==='fixed' ? '' : 'none';
+  document.getElementById('v2WildcardRoute').style.display = radio.value==='wildcard' ? '' : 'none';
+}
+
+// ══ V2 AUTO JUMP ══
+function v2AutoJumpChange(radio){
+  document.getElementById('v2AutoJumpConfig').style.display = radio.value==='on' ? '' : 'none';
+}
+
+// ══ V2 DEFAULT SWITCH ══
+function setV2Default(btn){
+  if(btn.classList.contains('on')) return;
+  document.querySelectorAll('.v2-default').forEach(sw=>{
+    if(sw!==btn){
+      sw.classList.remove('on');
+      const lbl=sw.nextElementSibling;
+      if(lbl){lbl.textContent='关';lbl.style.color='';lbl.style.fontWeight='';}
+    }
+  });
+  btn.classList.add('on');
+  const lbl=btn.nextElementSibling;
+  if(lbl){lbl.textContent='开';lbl.style.color='var(--td-brand)';lbl.style.fontWeight='600';}
+  showToast('已设为默认模板');
+}
+
+// ══ V2 ENABLE TOGGLE ══
+function confirmV2ToggleEnable(btn){
+  const card=btn.closest('.v2-card');
+  const isEnabled=card.dataset.enabled==='1';
+  const name=card.querySelector('.tpl-name')?.textContent||'该模板';
+  showConfirm(
+    isEnabled?'⚠️':'✅',
+    isEnabled?'禁用模板':'启用模板',
+    isEnabled?`确定要禁用「${name}」吗？禁用后该模板将不在前台展示。`:`确定要启用「${name}」吗？`,
+    isEnabled?'danger':'primary'
+  );
+  // reuse existing confirm, but we need a different handler
+  _pendingV2EnableBtn = btn;
+  _pendingEnableBtn = null; // cancel v1 handler
+}
+let _pendingV2EnableBtn = null;
+const _origConfirmOk = confirmOk;
+
+// patch confirmOk to handle both
+window.confirmOk = function(){
+  if(_pendingV2EnableBtn){
+    const card=_pendingV2EnableBtn.closest('.v2-card');
+    const isEnabled=card.dataset.enabled==='1';
+    const statusVal=card.querySelector('.card-status-val');
+    const btn=_pendingV2EnableBtn;
+    if(isEnabled){
+      card.dataset.enabled='0';card.style.opacity='.55';
+      statusVal.className='card-status-val disabled';
+      statusVal.innerHTML=`<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已禁用`;
+      btn.textContent='启用';showToast('模板已禁用');
+    } else {
+      card.dataset.enabled='1';card.style.opacity='';
+      statusVal.className='card-status-val enabled';
+      statusVal.innerHTML=`<svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已启用`;
+      btn.textContent='禁用';showToast('模板已启用');
+    }
+    closeConfirm();_pendingV2EnableBtn=null;return;
+  }
+  _origConfirmOk();
+};
+
+// ══ V2 SAVE ══
+function saveV2Template(){
+  const name=document.getElementById('v2Name').value.trim();
+  if(!name){showToast('请填写模板名称');document.getElementById('v2Name').classList.add('invalid');return;}
+  document.getElementById('v2Name').classList.remove('invalid');
+  const style=document.getElementById('v2StyleSel').value;
+  const themeColor=document.getElementById('v2ThemeColorInp').value;
+
+  const grid=document.getElementById('v2TemplatesGrid');
+  const cardCount=grid.querySelectorAll('.v2-card').length;
+  const card=document.createElement('div');
+  card.className='tpl-card v2-card';
+  card.dataset.enabled='1';
+  card.dataset.style=style;
+  card.innerHTML=`
+    <div style="height:4px;background:linear-gradient(90deg,${themeColor},${themeColor}aa);"></div>
+    <div class="tpl-card-head">
+      <div>
+        <div class="tpl-name">${esc(name)}</div>
+        <div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">
+          <span style="font-size:10px;background:#eef4ff;color:var(--td-brand);border-radius:3px;padding:1px 6px;font-weight:600;">${esc(style)}</span>
+        </div>
+      </div>
+      <div class="switch-wrap">
+        <div class="switch-label">默认</div>
+        <button class="switch v2-default" onclick="setV2Default(this)"></button>
+        <div class="switch-label">关</div>
+      </div>
+    </div>
+    <div class="tpl-preview-wrap">
+      <div style="background:${themeColor};padding:6px 8px;display:flex;align-items:center;gap:6px;">
+        <div style="width:20px;height:20px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:${themeColor};">A</div>
+        <span style="color:#fff;font-size:10px;font-weight:700;flex:1;">text</span>
+      </div>
+      <div style="height:100px;background:linear-gradient(135deg,#1e3a8a,${themeColor});display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.5);">预览</div>
+      <div style="background:#f0f4ff;padding:6px;display:flex;gap:5px;">
+        <div style="flex:1;height:24px;background:${themeColor};border-radius:3px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700;">Jogue</div>
+        <div style="flex:1;height:24px;background:#f59e0b;border-radius:3px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:8px;font-weight:700;">Baixe</div>
+      </div>
+    </div>
+    <div class="card-status-bar">
+      <span class="card-status-label">模板状态</span>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span class="card-status-val enabled">
+          <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="4" fill="currentColor"/></svg>已启用
+        </span>
+        <button class="card-enable-btn" onclick="confirmV2ToggleEnable(this)">禁用</button>
+      </div>
+    </div>
+    <div class="tpl-card-foot">
+      <button class="btn btn-sm" onclick="openV2Modal('edit',this)">修改</button>
+      <button class="btn btn-sm" style="margin-left:auto;color:var(--td-text-3);">复制链接</button>
+    </div>`;
+  grid.appendChild(card);
+  closeV2Modal();
+  showToast('模板保存成功 ✓');
+}
+</script>
+</body>
+</html>
